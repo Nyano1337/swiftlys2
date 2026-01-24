@@ -250,4 +250,32 @@ public unsafe struct RnQueryShapeAttr_t
         get => BitFieldHelper.GetBit(ref data, 6);
         set => BitFieldHelper.SetBit(ref data, 6, value);
     }
+
+    public RnQueryShapeAttr_t()
+    {
+        InteractsWith = 0;
+        InteractsExclude = 0;
+        InteractsAs = 0;
+
+        EntityIdsToIgnore[0] = uint.MaxValue;
+        EntityIdsToIgnore[1] = uint.MaxValue;
+
+        OwnerIdsToIgnore[0] = uint.MaxValue;
+        OwnerIdsToIgnore[1] = uint.MaxValue;
+
+        HierarchyIds[0] = 0;
+        HierarchyIds[1] = 0;
+        IncludedDetailLayers = ushort.MaxValue;
+        TargetDetailLayer = 0;
+        ObjectSetMask = RnQueryObjectSet.All;
+        CollisionGroup = CollisionGroup.Always;
+
+        HitSolid = true;
+        HitSolidRequiresGenerateContacts = false;
+        HitTrigger = false;
+        ShouldIgnoreDisabledPairs = true;
+        IgnoreIfBothInteractWithHitboxes = false;
+        ForceHitEverything = false;
+        Unknown = true;
+    }
 }
