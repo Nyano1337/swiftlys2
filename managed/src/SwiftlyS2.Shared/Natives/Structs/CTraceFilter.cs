@@ -1,5 +1,4 @@
 ﻿using SwiftlyS2.Shared.SchemaDefinitions;
-using SwiftlyS2.Shared.Schemas;
 using System.Runtime.InteropServices;
 
 namespace SwiftlyS2.Shared.Natives;
@@ -9,7 +8,11 @@ public struct CTraceFilter
 {
     [FieldOffset(0x0)] private nint _pVTable;
     [FieldOffset(0x8)] public RnQueryShapeAttr_t QueryShapeAttributes;
-    [FieldOffset(0x38)] public bool IterateEntities;
+    [FieldOffset(0x3A)] public byte bIterateEntities;
+    public bool IterateEntities {
+        get => bIterateEntities != 0;
+        set => bIterateEntities = (byte)(value ? 1 : 0);
+    }
 
     public CTraceFilter( bool checkIgnoredEntities = true )
     {
