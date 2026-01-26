@@ -319,7 +319,7 @@ void OnClientConnectedHook(void* _this, CPlayerSlot slot, const char* pszName, u
     }
     else
     {
-        iF(engine->IsClientFullyAuthenticated(slot))
+        if (engine->IsClientFullyAuthenticated(slot))
         {
             auto player = playermanager->GetPlayer(playerid);
             if (player)
