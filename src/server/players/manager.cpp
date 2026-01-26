@@ -309,12 +309,22 @@ bool ClientConnectHook(void* _this, CPlayerSlot slot, const char* pszName, uint6
 void OnClientConnectedHook(void* _this, CPlayerSlot slot, const char* pszName, uint64 xuid, const char* pszNetworkID, const char* pszAddress, bool bFakePlayer)
 {
     static auto playermanager = g_ifaceService.FetchInterface<IPlayerManager>(PLAYERMANAGER_INTERFACE_VERSION);
+    static auto engine = g_ifaceService.FetchInterface<IVEngineServer2>(INTERFACEVERSION_VENGINESERVER);
     auto playerid = slot.Get();
+
     if (bFakePlayer)
     {
         auto player = playermanager->RegisterPlayer(playerid);
         player->SetFakeClient(true);
-        // player->Initialize(playerid);
+    }
+    else
+    {
+        iF(engine->IsClientFullyAuthenticated(slot))
+        {
+            auto player = playermanager->GetPlayer(playerid);
+            if (player)
+                player->ChangeAuthorizationState(true);
+        }
     }
 
     reinterpret_cast<decltype(&OnClientConnectedHook)>(g_pOnClientConnectedHook->GetOriginal())(_this, slot, pszName, xuid, pszNetworkID, pszAddress, bFakePlayer);
