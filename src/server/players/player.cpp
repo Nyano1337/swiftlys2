@@ -166,7 +166,10 @@ void CPlayer::SendMsg(MessageType type, const std::string& message, int duration
                 if (!schema)
                     return;
 
-                msg = ProcessColor(message, *(int*)(schema->GetPropPtr(GetController(), CBaseEntity_m_iTeamNum)));
+                auto controller = GetController();
+                if (!controller)
+                    return;
+                msg = ProcessColor(message, *(int*)(schema->GetPropPtr(controller, CBaseEntity_m_iTeamNum)));
 
                 if (startsWithColor)
                     msg = " " + msg;
