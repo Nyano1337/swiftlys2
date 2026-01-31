@@ -189,5 +189,9 @@
     "CGameRules::GetViewVectors": {
         "windows": 32,
         "linux": 33
+    },
+    "CNetworkGameServer::m_Clients": {
+        "windows": 592,
+        "linux": 592
     }
 }

@@ -56,6 +56,11 @@ public interface IPlayer : IEquatable<IPlayer>
     public int Slot { get; }
 
     /// <summary>
+    /// Gets the name of the player.
+    /// </summary>
+    public string Name { get; }
+
+    /// <summary>
     /// Sends a message of the specified type to the player.
     /// 
     /// Thread unsafe, use async variant instead for non-main thread context.

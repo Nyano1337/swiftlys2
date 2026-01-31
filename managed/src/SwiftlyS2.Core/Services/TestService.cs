@@ -80,7 +80,7 @@ internal class TestService
     public void Test2()
     {
         _ = core.Command.RegisterCommand("abc", (ctx) => {
-            core.Engine.DispatchParticleEffect("particles/smoke_trail_01", ParticleAttachment_t.PATTACH_ABSORIGIN, 0, new CUtlSymbolLarge(), new CRecipientFilter(), false, 0, null);
+            ctx.Reply(ctx.Sender!.Name);
         });
 
 

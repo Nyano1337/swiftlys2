@@ -28,6 +28,8 @@
 #include <public/const.h>
 
 #include "usermessages.pb.h"
+#include <api/sdk/serversideclient.h>
+#include <public/iserver.h>
 
 #define CBaseEntity_m_iTeamNum 0x9DC483B8A5BFEFB3
 #define CBaseEntity_m_fFlags 0x9DC483B8A4A37590
@@ -107,6 +109,14 @@ static const std::vector<std::string> g_vButtons = {
 };
 
 uint64_t sessionId = 1000;
+
+CServerSideClient* GetServerSideClient(int playerid)
+{
+    auto gameserver = g_ifaceService.FetchInterface<INetworkServerService>(NETWORKSERVERSERVICE_INTERFACE_VERSION)->GetIGameServer();
+    auto offset = g_ifaceService.FetchInterface<IGameDataManager>(GAMEDATA_INTERFACE_VERSION)->GetOffsets()->Fetch("CNetworkGameServer::m_Clients");
+    auto clients = ((CUtlVector<CServerSideClient*>*)((uintptr_t)gameserver + offset));
+    return clients->Element(playerid);
+}
 
 void CPlayer::Initialize(int playerid)
 {
@@ -544,3 +554,9 @@ uint64_t CPlayer::GetSessionID()
 {
     return m_uSessionId;
 }
+
+const char* CPlayer::GetName()
+{
+    return GetServerSideClient(m_iPlayerId)->GetClientName();
+}
+

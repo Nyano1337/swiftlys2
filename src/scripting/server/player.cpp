@@ -371,6 +371,23 @@ uint64_t Bridge_Player_GetSessionID(int playerid)
     return player->GetSessionID();
 }
 
+int Bridge_Player_GetName(char* out, int playerid)
+{
+    static auto playerManager = g_ifaceService.FetchInterface<IPlayerManager>(PLAYERMANAGER_INTERFACE_VERSION);
+    auto player = playerManager->GetPlayer(playerid);
+    if (!player)
+        return 0;
+
+    static std::string s;
+    s = player->GetName();
+
+    if (out != nullptr)
+        strcpy(out, s.c_str());
+
+    return s.size();
+
+}
+
 DEFINE_NATIVE("Player.SendMessage", Bridge_Player_SendMessage);
 DEFINE_NATIVE("Player.IsFakeClient", Bridge_Player_IsFakeClient);
 DEFINE_NATIVE("Player.IsAuthorized", Bridge_Player_IsAuthorized);
@@ -399,3 +416,4 @@ DEFINE_NATIVE("Player.ExecuteCommand", Bridge_Player_ExecuteCommand);
 DEFINE_NATIVE("Player.IsFirstSpawn", Bridge_Player_IsFirstSpawn);
 DEFINE_NATIVE("Player.GetUserID", Bridge_Player_GetUserID);
 DEFINE_NATIVE("Player.GetSessionID", Bridge_Player_GetSessionID);
+DEFINE_NATIVE("Player.GetName", Bridge_Player_GetName);

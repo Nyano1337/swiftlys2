@@ -73,6 +73,7 @@ public:
     virtual bool IsFirstSpawn() override;
     virtual void SetFirstSpawn(bool state) override;
     virtual uint64_t GetSessionID() override;
+    virtual const char* GetName() override;
 
 private:
     int m_iPlayerId;

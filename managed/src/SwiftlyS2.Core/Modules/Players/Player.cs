@@ -32,6 +32,8 @@ internal class Player : IPlayer, IDisposable
 
     public int UserID { get { ThrowIfDisposed(); return NativePlayer.GetUserID(Slot); } }
 
+    public string Name { get { ThrowIfDisposed(); return NativePlayer.GetName(Slot); } }
+
     public bool IsFakeClient { get { ThrowIfDisposed(); return NativePlayer.IsFakeClient(Slot); } }
 
     public bool IsAuthorized { get { ThrowIfDisposed(); return NativePlayer.IsAuthorized(Slot); } }
