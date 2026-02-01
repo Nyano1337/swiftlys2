@@ -210,6 +210,7 @@ internal static class SchedulerManager
                 _timerQueueMs.Enqueue(timer, timer.Context.ExpectedNextTimeMs);
                 break;
             case TimerStep.StopStep:
+                if (timer.CancellationTokenSource.IsCancellationRequested) break;
                 timer.CancellationTokenSource.Cancel();
                 break;
             default:
