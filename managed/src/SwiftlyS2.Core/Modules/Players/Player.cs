@@ -62,6 +62,7 @@ internal class Player : IPlayer, IDisposable
 
     public VoiceFlagValue VoiceFlags { get { ThrowIfDisposed(); return (VoiceFlagValue)NativeVoiceManager.GetClientVoiceFlags(Slot); } set { ThrowIfDisposed(); NativeVoiceManager.SetClientVoiceFlags(Slot, (int)value); } }
     public bool IsValid =>
+        !_disposed &&
         Controller is { IsValid: true, IsHLTV: false, Connected: PlayerConnectedState.PlayerConnected } &&
         Pawn is { IsValid: true };
 
