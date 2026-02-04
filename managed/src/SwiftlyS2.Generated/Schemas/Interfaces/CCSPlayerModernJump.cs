@@ -11,7 +11,7 @@ namespace SwiftlyS2.Shared.SchemaDefinitions;
 public partial interface CCSPlayerModernJump : ISchemaClass<CCSPlayerModernJump>
 {
     static CCSPlayerModernJump ISchemaClass<CCSPlayerModernJump>.From(nint handle) => new CCSPlayerModernJumpImpl(handle);
-    static int ISchemaClass<CCSPlayerModernJump>.Size => 48;
+    static int ISchemaClass<CCSPlayerModernJump>.Size => 56;
     static string? ISchemaClass<CCSPlayerModernJump>.ClassName => null;
 
 
@@ -31,6 +31,8 @@ public partial interface CCSPlayerModernJump : ISchemaClass<CCSPlayerModernJump>
 
     public ref float LastLandedVelocityY { get; }
 
+    public ref float LastLandedVelocityZ { get; }
+
     public void LastActualJumpPressTickUpdated();
     public void LastActualJumpPressFracUpdated();
     public void LastUsableJumpPressTickUpdated();
@@ -39,4 +41,5 @@ public partial interface CCSPlayerModernJump : ISchemaClass<CCSPlayerModernJump>
     public void LastLandedFracUpdated();
     public void LastLandedVelocityXUpdated();
     public void LastLandedVelocityYUpdated();
+    public void LastLandedVelocityZUpdated();
 }

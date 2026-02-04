@@ -11,7 +11,7 @@ namespace SwiftlyS2.Shared.SchemaDefinitions;
 public partial interface CMolotovProjectile : CBaseCSGrenadeProjectile, ISchemaClass<CMolotovProjectile>
 {
     static CMolotovProjectile ISchemaClass<CMolotovProjectile>.From(nint handle) => new CMolotovProjectileImpl(handle);
-    static int ISchemaClass<CMolotovProjectile>.Size => 3264;
+    static int ISchemaClass<CMolotovProjectile>.Size => 3248;
     static string? ISchemaClass<CMolotovProjectile>.ClassName => "molotov_projectile";
 
 
@@ -20,8 +20,6 @@ public partial interface CMolotovProjectile : CBaseCSGrenadeProjectile, ISchemaC
     public ref bool Detonated { get; }
 
     public IntervalTimer StillTimer { get; }
-
-    public ref bool HasBouncedOffPlayer { get; }
 
     public void IsIncGrenadeUpdated();
 }
