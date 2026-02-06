@@ -5,7 +5,7 @@ namespace SwiftlyS2.Core.Scheduler;
 
 internal class SchedulerService : ISchedulerService, IDisposable
 {
-    private readonly List<CancellationTokenSource> _timers = new();
+    private readonly List<CancellationTokenSource> _timers = [];
     private readonly Lock _lock = new();
     private readonly CancellationTokenSource _lifecycleCts = new();
     private CancellationTokenSource _mapChangeCts = new();
@@ -175,14 +175,14 @@ internal class SchedulerService : ISchedulerService, IDisposable
 
     public void StopOnMapChange( CancellationTokenSource cts )
     {
-        _mapChangeCts.Token.Register(cts.Cancel);
+        _ = _mapChangeCts.Token.Register(cts.Cancel);
     }
 
     private void CleanFinishedTimers()
     {
         lock (_lock)
         {
-            _timers.RemoveAll(timer => timer.IsCancellationRequested);
+            _ = _timers.RemoveAll(timer => timer.IsCancellationRequested);
         }
     }
 

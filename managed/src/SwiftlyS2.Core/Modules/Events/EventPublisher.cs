@@ -708,31 +708,6 @@ internal static class EventPublisher
         }
     }
 
-    [Obsolete("InvokeOnEntityTouchHook is deprecated. Use InvokeOnEntityStartTouch, InvokeOnEntityTouch, or InvokeOnEntityEndTouch instead.")]
-    public static void InvokeOnEntityTouchHook( OnEntityTouchHookEvent @event )
-    {
-        if (subscribers.Count == 0)
-        {
-            return;
-        }
-
-        try
-        {
-            foreach (var subscriber in subscribers)
-            {
-                subscriber.InvokeOnEntityTouchHook(@event);
-            }
-        }
-        catch (Exception e)
-        {
-            if (!GlobalExceptionHandler.Handle(e))
-            {
-                return;
-            }
-            AnsiConsole.WriteException(e);
-        }
-    }
-
     public static void InvokeOnEntityStartTouch( OnEntityStartTouchEvent @event )
     {
         if (subscribers.Count == 0)

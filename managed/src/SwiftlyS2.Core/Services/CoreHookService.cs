@@ -436,7 +436,6 @@ internal class CoreHookService : IDisposable
                 var entity = new CBaseEntityImpl(pBaseEntity);
                 var otherEntity = new CBaseEntityImpl(pOtherEntity);
                 EventPublisher.InvokeOnEntityStartTouch(new OnEntityStartTouchEvent { Entity = entity, OtherEntity = otherEntity });
-                EventPublisher.InvokeOnEntityTouchHook(new OnEntityTouchHookEvent { Entity = entity, OtherEntity = otherEntity, TouchType = EntityTouchType.StartTouch });
                 return next()(pBaseEntity, pOtherEntity);
             };
         });
@@ -448,7 +447,6 @@ internal class CoreHookService : IDisposable
                 var entity = new CBaseEntityImpl(pBaseEntity);
                 var otherEntity = new CBaseEntityImpl(pOtherEntity);
                 EventPublisher.InvokeOnEntityTouch(new OnEntityTouchEvent { Entity = entity, OtherEntity = otherEntity });
-                EventPublisher.InvokeOnEntityTouchHook(new OnEntityTouchHookEvent { Entity = entity, OtherEntity = otherEntity, TouchType = EntityTouchType.Touch });
                 return next()(pBaseEntity, pOtherEntity);
             };
         });
@@ -460,7 +458,6 @@ internal class CoreHookService : IDisposable
                 var entity = new CBaseEntityImpl(pBaseEntity);
                 var otherEntity = new CBaseEntityImpl(pOtherEntity);
                 EventPublisher.InvokeOnEntityEndTouch(new OnEntityEndTouchEvent { Entity = entity, OtherEntity = otherEntity });
-                EventPublisher.InvokeOnEntityTouchHook(new OnEntityTouchHookEvent { Entity = entity, OtherEntity = otherEntity, TouchType = EntityTouchType.EndTouch });
                 return next()(pBaseEntity, pOtherEntity);
             };
         });

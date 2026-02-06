@@ -139,9 +139,6 @@ public interface IEventSubscriber
     /// </summary>
     public event EventDelegates.OnCommandExecuteHook? OnCommandExecuteHook;
 
-    [Obsolete("OnEntityTouchHook is deprecated. Use OnEntityStartTouch, OnEntityTouch, or OnEntityEndTouch instead.")]
-    public event EventDelegates.OnEntityTouchHook? OnEntityTouchHook;
-
     /// <summary>
     /// Called when an entity starts touching another entity.
     /// </summary>

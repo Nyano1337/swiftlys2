@@ -49,7 +49,6 @@ internal class EventSubscriber : IEventSubscriber, IDisposable
     public event EventDelegates.OnConVarCreated? OnConVarCreated;
     public event EventDelegates.OnEntityTakeDamage? OnEntityTakeDamage;
     public event EventDelegates.OnPrecacheResource? OnPrecacheResource;
-    public event EventDelegates.OnEntityTouchHook? OnEntityTouchHook;
     public event EventDelegates.OnEntityStartTouch? OnEntityStartTouch;
     public event EventDelegates.OnEntityTouch? OnEntityTouch;
     public event EventDelegates.OnEntityEndTouch? OnEntityEndTouch;
@@ -482,31 +481,6 @@ internal class EventSubscriber : IEventSubscriber, IDisposable
         finally
         {
             profiler.StopRecording("Event::OnPrecacheResource");
-        }
-    }
-
-    [Obsolete("InvokeOnEntityTouchHook is deprecated. Use InvokeOnEntityStartTouch, InvokeOnEntityTouch, or InvokeOnEntityEndTouch instead.")]
-    public void InvokeOnEntityTouchHook( OnEntityTouchHookEvent @event )
-    {
-        try
-        {
-            if (OnEntityTouchHook == null)
-            {
-                return;
-            }
-            profiler.StartRecording("Event::OnEntityTouchHook");
-            OnEntityTouchHook?.Invoke(@event);
-        }
-        catch (Exception e)
-        {
-            if (GlobalExceptionHandler.Handle(e))
-            {
-                logger.LogError(e, "Error invoking OnEntityTouchHook.");
-            }
-        }
-        finally
-        {
-            profiler.StopRecording("Event::OnEntityTouchHook");
         }
     }
 

@@ -76,8 +76,6 @@ internal class SwiftlyCore : ISwiftlyCore, IDisposable
     public Localizer Localizer { get; init; }
     public PermissionManager PermissionManager { get; init; }
     public RegistratorService RegistratorService { get; init; }
-    // [Obsolete("MenuManager will be deprecared at the release of SwiftlyS2. Please use MenuManagerAPI instead")]
-    // public MenuManager MenuManager { get; init; }
     public MenuManagerAPI MenuManagerAPI { get; init; }
     public CommandLineService CommandLineService { get; init; }
     public HelpersService Helpers { get; init; }
@@ -238,8 +236,6 @@ internal class SwiftlyCore : ISwiftlyCore, IDisposable
     ILocalizer ISwiftlyCore.Localizer => TranslationService.GetLocalizer();
     IPermissionManager ISwiftlyCore.Permission => PermissionManager;
     IRegistratorService ISwiftlyCore.Registrator => RegistratorService;
-    // [Obsolete("MenuManager will be deprecared at the release of SwiftlyS2. Please use MenuManagerAPI instead")]
-    // IMenuManager ISwiftlyCore.Menus => MenuManager;
     IMenuManagerAPI ISwiftlyCore.MenusAPI => MenuManagerAPI;
     ICommandLine ISwiftlyCore.CommandLine => CommandLineService;
     IHelpers ISwiftlyCore.Helpers => Helpers;

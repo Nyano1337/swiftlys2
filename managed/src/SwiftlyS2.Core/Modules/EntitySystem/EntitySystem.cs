@@ -7,7 +7,6 @@ using SwiftlyS2.Shared.Natives;
 using SwiftlyS2.Shared.Schemas;
 using SwiftlyS2.Core.Extensions;
 using SwiftlyS2.Shared.Profiler;
-using SwiftlyS2.Core.NetMessages;
 using SwiftlyS2.Shared.EntitySystem;
 using SwiftlyS2.Core.SchemaDefinitions;
 using SwiftlyS2.Shared.SchemaDefinitions;
@@ -20,8 +19,6 @@ internal class EntitySystemService : IEntitySystemService, IDisposable
     private readonly IContextedProfilerService profiler;
     private readonly IEventSubscriber eventSubscriber;
 
-    [Obsolete("Use outputHooks instead.")]
-    private readonly ConcurrentDictionary<Guid, EntityOutputHookCallback> outputCallbacks = new();
     private readonly ConcurrentDictionary<Guid, EventDelegates.OnEntityFireOutputHookEvent> outputHooks = new();
     private readonly ConcurrentDictionary<Guid, EventDelegates.OnEntityIdentityAcceptInputHook> inputHooks = new();
 
@@ -99,14 +96,6 @@ internal class EntitySystemService : IEntitySystemService, IDisposable
     {
         ThrowIfEntitySystemInvalid();
         return EntityManager.GetEntityByIndex(index) as T;
-    }
-
-    [Obsolete("Use HookEntityOutput(string outputName, Action<IOnEntityFireOutputHookEvent> callback) instead.")]
-    public Guid HookEntityOutput<T>( string outputName, IEntitySystemService.EntityOutputHandler callback ) where T : class, ISchemaClass<T>
-    {
-        var hook = new EntityOutputHookCallback(T.ClassName ?? throw new ArgumentException($"Can't hook entity output with class {typeof(T).Name}, which doesn't have a designer name"), outputName, callback, loggerFactory, profiler);
-        _ = outputCallbacks.TryAdd(hook.Guid, hook);
-        return hook.Guid;
     }
 
     public Guid HookEntityOutput<T>( string outputName, IEntitySystemService.EntityOutputEventHandler callback ) where T : class, ISchemaClass<T>
@@ -235,12 +224,7 @@ internal class EntitySystemService : IEntitySystemService, IDisposable
 
     public bool UnhookEntityOutput( Guid guid )
     {
-        if (outputCallbacks.TryRemove(guid, out var callback))
-        {
-            callback.Dispose();
-            return true;
-        }
-        else if (outputHooks.TryRemove(guid, out var handler))
+        if (outputHooks.TryRemove(guid, out var handler))
         {
             eventSubscriber.OnEntityFireOutputHook -= handler;
             return true;
@@ -265,12 +249,6 @@ internal class EntitySystemService : IEntitySystemService, IDisposable
             return;
         }
         disposed = true;
-
-        foreach (var callback in outputCallbacks.Values)
-        {
-            callback.Dispose();
-        }
-        outputCallbacks.Clear();
 
         foreach (var handler in outputHooks.Values)
         {

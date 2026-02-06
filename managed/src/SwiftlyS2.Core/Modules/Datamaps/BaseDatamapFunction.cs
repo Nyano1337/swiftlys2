@@ -1,9 +1,7 @@
 using System.Runtime.InteropServices;
 using Spectre.Console;
 using SwiftlyS2.Core.Extensions;
-using SwiftlyS2.Core.Hooks;
 using SwiftlyS2.Core.Natives;
-using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Datamaps;
 using SwiftlyS2.Shared.Profiler;
 using SwiftlyS2.Shared.Schemas;
