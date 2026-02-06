@@ -8,6 +8,7 @@ using SwiftlyS2.Core.SchemaDefinitions;
 using SwiftlyS2.Core.ProtobufDefinitions;
 using SwiftlyS2.Shared.ProtobufDefinitions;
 using SwiftlyS2.Core.Players;
+using SwiftlyS2.Core.EntitySystem;
 
 namespace SwiftlyS2.Core.Events;
 
@@ -392,6 +393,7 @@ internal static class EventPublisher
     [UnmanagedCallersOnly]
     public static void OnEntityCreated( nint entityPtr )
     {
+        var entity = EntityManager.OnEntityCreated(entityPtr);
         if (subscribers.Count == 0)
         {
             return;
@@ -399,7 +401,7 @@ internal static class EventPublisher
 
         try
         {
-            OnEntityCreatedEvent @event = new() { Entity = new CEntityInstanceImpl(entityPtr) };
+            OnEntityCreatedEvent @event = new() { Entity = entity };
             foreach (var subscriber in subscribers)
             {
                 subscriber.InvokeOnEntityCreated(@event);
@@ -420,12 +422,15 @@ internal static class EventPublisher
     {
         if (subscribers.Count == 0)
         {
+            EntityManager.OnEntityDeleted(entityPtr);
             return;
         }
 
+        var entity = EntityManager.GetEntityByAddress(entityPtr);
+
         try
         {
-            OnEntityDeletedEvent @event = new() { Entity = new CEntityInstanceImpl(entityPtr) };
+            OnEntityDeletedEvent @event = new() { Entity = entity! };
             foreach (var subscriber in subscribers)
             {
                 subscriber.InvokeOnEntityDeleted(@event);
@@ -438,6 +443,10 @@ internal static class EventPublisher
                 return;
             }
             AnsiConsole.WriteException(e);
+        }
+        finally
+        {
+            EntityManager.OnEntityDeleted(entityPtr);
         }
     }
 
