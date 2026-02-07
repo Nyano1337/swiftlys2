@@ -120,7 +120,7 @@ internal class CoreHookService : IDisposable
     {
         var address = core.GameData.GetSignature("CEntityIdentity::AcceptInput");
 
-        logger.LogInformation("Hooking CEntityIdentity::AcceptInput at {Address}", address);
+        logger.LogInformation("Hooking CEntityIdentity::AcceptInput at {Address:X}", address);
 
         entityIdentityAcceptInput = core.Memory.GetUnmanagedFunctionByAddress<CEntityIdentityAcceptInput>(address);
         entityIdentityAcceptInputGuid = entityIdentityAcceptInput.AddHook(next =>
@@ -167,7 +167,7 @@ internal class CoreHookService : IDisposable
     {
         var address = core.GameData.GetSignature("CEntityIOOutput::FireOutputInternal");
 
-        logger.LogInformation("Hooking CEntityIOOutput_FireOutputInternal at {Address}", address);
+        logger.LogInformation("Hooking CEntityIOOutput_FireOutputInternal at {Address:X}", address);
 
         entityIOOutputFireOutputInternal = core.Memory.GetUnmanagedFunctionByAddress<CEntityIOOutputFireOutputInternal>(address);
         entityIOOutputFireOutputInternalGuid = entityIOOutputFireOutputInternal.AddHook(next =>
@@ -209,7 +209,7 @@ internal class CoreHookService : IDisposable
     {
         var address = core.GameData.GetSignature("Cmd_ExecuteCommand");
 
-        logger.LogInformation("Hooking Cmd_ExecuteCommand at {Address}", address);
+        logger.LogInformation("Hooking Cmd_ExecuteCommand at {Address:X}", address);
 
         executeCommand = core.Memory.GetUnmanagedFunctionByAddress<ExecuteCommand>(address);
         executeCommandGuid = executeCommand.AddHook(( next ) =>
@@ -247,7 +247,7 @@ internal class CoreHookService : IDisposable
         if (IsWindows)
         {
             dropWeaponWindows = core.Memory.GetUnmanagedFunctionByAddress<DropWeaponWindows>(sig);
-            logger.LogInformation("Hooking CCSPlayer_WeaponServices::DropWeapon at {Address}", dropWeaponWindows.Address);
+            logger.LogInformation("Hooking CCSPlayer_WeaponServices::DropWeapon at {Address:X}", dropWeaponWindows.Address);
             dropWeaponGuid = dropWeaponWindows.AddHook(next =>
             {
                 return ( pWeaponServices, pPlayerWeapon, swapping ) =>
@@ -270,7 +270,7 @@ internal class CoreHookService : IDisposable
         else
         {
             dropWeaponLinux = core.Memory.GetUnmanagedFunctionByAddress<DropWeaponLinux>(sig);
-            logger.LogInformation("Hooking CCSPlayer_WeaponServices::DropWeapon at {Address}", dropWeaponLinux.Address);
+            logger.LogInformation("Hooking CCSPlayer_WeaponServices::DropWeapon at {Address:X}", dropWeaponLinux.Address);
             dropWeaponGuid = dropWeaponLinux.AddHook(next =>
             {
                 return ( pWeaponServices, pPlayerWeapon, swapping ) =>
@@ -298,7 +298,7 @@ internal class CoreHookService : IDisposable
         if (IsWindows)
         {
             findConCommandWindows = core.Memory.GetUnmanagedFunctionByVTable<ICvarFindConCommandWindows>(core.Memory.GetVTableAddress(Library.Tier0, "CCvar")!.Value, offset);
-            logger.LogInformation("Hooking ICvar::FindConCommand at {Address}", findConCommandWindows.Address);
+            logger.LogInformation("Hooking ICvar::FindConCommand at {Address:X}", findConCommandWindows.Address);
             findConCommandGuid = findConCommandWindows.AddHook(( next ) =>
             {
                 return ( pICvar, pRet, pConCommandName, unk1 ) =>
@@ -324,7 +324,7 @@ internal class CoreHookService : IDisposable
         else
         {
             findConCommandLinux = core.Memory.GetUnmanagedFunctionByVTable<ICvarFindConCommandLinux>(core.Memory.GetVTableAddress(Library.Tier0, "CCvar")!.Value, offset);
-            logger.LogInformation("Hooking ICvar::FindConCommand at {Address}", findConCommandLinux.Address);
+            logger.LogInformation("Hooking ICvar::FindConCommand at {Address:X}", findConCommandLinux.Address);
             findConCommandGuid = findConCommandLinux.AddHook(( next ) =>
             {
                 return ( pICvar, pConCommandName, unk1 ) =>
@@ -353,7 +353,7 @@ internal class CoreHookService : IDisposable
     {
         var address = core.GameData.GetSignature("CCSPlayer_ItemServices::CanAcquire");
 
-        logger.LogInformation("Hooking CCSPlayer_ItemServices::CanAcquire at {Address}", address);
+        logger.LogInformation("Hooking CCSPlayer_ItemServices::CanAcquire at {Address:X}", address);
 
         itemServicesCanAcquire = core.Memory.GetUnmanagedFunctionByAddress<CCSPlayerItemServicesCanAcquire>(address);
         itemServicesCanAcquireGuid = itemServicesCanAcquire.AddHook(next =>
@@ -395,7 +395,7 @@ internal class CoreHookService : IDisposable
     {
         var offset = core.GameData.GetOffset("CCSPlayer_WeaponServices::CanUse");
         weaponServicesCanUse = core.Memory.GetUnmanagedFunctionByVTable<CCSPlayerWeaponServicesCanUse>(core.Memory.GetVTableAddress(Library.Server, "CCSPlayer_WeaponServices")!.Value, offset);
-        logger.LogInformation("Hooking CCSPlayer_WeaponServices::CanUse at {Address}", weaponServicesCanUse.Address);
+        logger.LogInformation("Hooking CCSPlayer_WeaponServices::CanUse at {Address:X}", weaponServicesCanUse.Address);
         weaponServicesCanUseGuid = weaponServicesCanUse.AddHook(next =>
         {
             return ( pWeaponServices, pBasePlayerWeapon ) =>
@@ -425,9 +425,9 @@ internal class CoreHookService : IDisposable
         entityStartTouch = core.Memory.GetUnmanagedFunctionByVTable<CBaseEntityTouchTemplate>(core.Memory.GetVTableAddress(Library.Server, "CBaseEntity")!.Value, startTouchOffset);
         entityTouch = core.Memory.GetUnmanagedFunctionByVTable<CBaseEntityTouchTemplate>(core.Memory.GetVTableAddress(Library.Server, "CBaseEntity")!.Value, touchOffset);
         entityEndTouch = core.Memory.GetUnmanagedFunctionByVTable<CBaseEntityTouchTemplate>(core.Memory.GetVTableAddress(Library.Server, "CBaseEntity")!.Value, endTouchOffset);
-        logger.LogInformation("Hooking CBaseEntity::StartTouch at {Address}", entityStartTouch.Address);
-        logger.LogInformation("Hooking CBaseEntity::Touch at {Address}", entityTouch.Address);
-        logger.LogInformation("Hooking CBaseEntity::EndTouch at {Address}", entityEndTouch.Address);
+        logger.LogInformation("Hooking CBaseEntity::StartTouch at {Address:X}", entityStartTouch.Address);
+        logger.LogInformation("Hooking CBaseEntity::Touch at {Address:X}", entityTouch.Address);
+        logger.LogInformation("Hooking CBaseEntity::EndTouch at {Address:X}", entityEndTouch.Address);
 
         entityStartTouchGuid = entityStartTouch.AddHook(next =>
         {
@@ -467,7 +467,7 @@ internal class CoreHookService : IDisposable
     {
         var offset = core.GameData.GetOffset("IServerGameDLL::GameServerSteamAPIActivated");
         steamServerAPIActivated = core.Memory.GetUnmanagedFunctionByVTable<SteamServerAPIActivated>(core.Memory.GetVTableAddress(Library.Server, "CSource2Server")!.Value, offset);
-        logger.LogInformation("Hooking IServerGameDLL::GameServerSteamAPIActivated at {Address}", steamServerAPIActivated.Address);
+        logger.LogInformation("Hooking IServerGameDLL::GameServerSteamAPIActivated at {Address:X}", steamServerAPIActivated.Address);
         steamServerAPIActivatedGuid = steamServerAPIActivated.AddHook(next =>
         {
             return ( pServer ) =>
@@ -488,7 +488,7 @@ internal class CoreHookService : IDisposable
     {
         var offset = core.GameData.GetOffset("CPlayer_MovementServices::RunCommand");
         movementServiceRunCommand = core.Memory.GetUnmanagedFunctionByVTable<CPlayerMovementServicesRunCommand>(core.Memory.GetVTableAddress(Library.Server, "CPlayer_MovementServices")!.Value, offset);
-        logger.LogInformation("Hooking CPlayer_MovementServices::RunCommand at {Address}", movementServiceRunCommand.Address);
+        logger.LogInformation("Hooking CPlayer_MovementServices::RunCommand at {Address:X}", movementServiceRunCommand.Address);
         movementServiceRunCommandGuid = movementServiceRunCommand.AddHook(( next ) =>
         {
             return ( pMovementServices, pUserCmd ) =>
@@ -514,7 +514,7 @@ internal class CoreHookService : IDisposable
     {
         var address = core.GameData.GetSignature("CCSPlayerPawn::PostThink");
 
-        logger.LogInformation("Hooking CCSPlayerPawn::PostThink at {Address}", address);
+        logger.LogInformation("Hooking CCSPlayerPawn::PostThink at {Address:X}", address);
 
         playerPawnPostThink = core.Memory.GetUnmanagedFunctionByAddress<CCSPlayerPawnPostThink>(address);
         playerPawnPostThinkGuid = playerPawnPostThink.AddHook(( next ) =>

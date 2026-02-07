@@ -12,6 +12,8 @@ internal partial class CEntityInstanceImpl : CEntityInstance, IEquatable<CEntity
     public uint Index => Entity?.EntityHandle.EntityIndex ?? uint.MaxValue;
     public string DesignerName => Entity?.DesignerName ?? string.Empty;
 
+    public new bool IsValid => base.IsValid && IsValidEntity;
+
     public bool IsValidEntity => EntityManager.IsAddressValid(Address);
 
     private void ThrowIfInvalidEntity()

@@ -27,6 +27,7 @@ using BenchmarkDotNet.Loggers;
 using SwiftlyS2.Shared.Menus;
 using SwiftlyS2.Shared.SteamAPI;
 using SwiftlyS2.Core.Menus.OptionsBase;
+using System.Diagnostics;
 
 namespace TestPlugin;
 
@@ -1392,7 +1393,11 @@ public class TestPlugin : BasePlugin
     [CommandAlias("cmat")]
     public void CommandTestCommand( ICommandContext context )
     {
-        Console.WriteLine(context);
+        Console.WriteLine("start");
+        var sw = Stopwatch.StartNew();
+        _ = Core.EntitySystem.GetAllEntities().Where(e => e.IsValid);
+        sw.Stop();
+        Console.WriteLine($"end - elapsed: {sw.ElapsedMilliseconds} ms");
     }
 
     [Command("ecwb")]
