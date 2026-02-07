@@ -28,6 +28,16 @@ public interface ICommandService
     public delegate HookResult ClientChatHandler( int playerId, string text, bool teamonly );
 
     /// <summary>
+    /// Registers a command (backward compatibility overload).
+    /// </summary>
+    /// <param name="commandName">The command name.</param>
+    /// <param name="handler">The handler callback for the command.</param>
+    /// <param name="registerRaw">If set to true, the command will not starts with a `sw_` prefix.</param>
+    /// <param name="permission">The permission required to use the command.</param>
+    /// <returns>The guid of the command.</returns>
+    public Guid RegisterCommand( string commandName, CommandListener handler, bool registerRaw, string permission );
+
+    /// <summary>
     /// Registers a command.
     /// </summary>
     /// <param name="commandName">The command name.</param>
