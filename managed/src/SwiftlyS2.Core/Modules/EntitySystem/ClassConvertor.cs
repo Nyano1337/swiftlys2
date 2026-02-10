@@ -400,6 +400,7 @@ internal static class ClassConvertor
             "point_enable_motion_fixup" => new CEnableMotionFixupImpl(address),
             "wearable_item" => new CEconWearableImpl(address),
             "dynamic_prop" => new CDynamicPropImpl(address),
+            "prop_dynamic" => new CDynamicPropImpl(address),
             "func_nav_dynamic_connections" => new CDynamicNavConnectionsVolumeImpl(address),
             "light_dynamic" => new CDynamicLightImpl(address),
             "decoy_projectile" => new CDecoyProjectileImpl(address),
