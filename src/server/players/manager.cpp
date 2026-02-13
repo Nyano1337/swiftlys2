@@ -316,6 +316,15 @@ void OnClientConnectedHook(void* _this, CPlayerSlot slot, const char* pszName, u
     {
         auto player = playermanager->RegisterPlayer(playerid);
         player->SetFakeClient(true);
+
+        if (g_pOnClientConnectCallback)
+        {
+            if (reinterpret_cast<bool (*)(int)>(g_pOnClientConnectCallback)(playerid) == false)
+            {
+                player->Kick("Connection rejected by plugin.", 0);
+                return;
+            }
+        }
     }
     else
     {

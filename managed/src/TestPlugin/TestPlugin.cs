@@ -812,6 +812,23 @@ public class TestPlugin : BasePlugin
         Console.WriteLine(Core.Localizer["test"]);
     }
 
+    [Command("stats")]
+    public void StatsCommand( ICommandContext context )
+    {
+        var player = context.Sender!;
+        var name = player.Name;
+        context.Reply($"Your name is {name} and you ran the stats command!");
+    }
+
+    [Command("kurotest", registerRaw: true)]
+    public void Command_kurotest( ICommandContext context )
+    {
+        foreach (var client in Core.PlayerManager.GetAllPlayers())
+        {
+            Console.WriteLine($"{client.Name}");
+        }
+    }
+
     private Callback<GCMessageAvailable_t>? _authTicketResponse;
 
     [EventListener<EventDelegates.OnSteamAPIActivated>]
