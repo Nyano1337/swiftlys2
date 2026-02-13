@@ -212,6 +212,7 @@ inline void ReportCrashIncident(const std::string& crashDir, void* exceptionInfo
         }
         crashReport["timestamp"] = fmt::format("{} UTC{:+03d}:{:02d}", timeBuffer, offset_hours, abs(offset_mins));
         crashReport["timestampUTC"] = static_cast<uint64_t>(timestamp);
+        crashReport["nativeVersion"] = g_SwiftlyCore.GetVersion();
 
 #ifdef _WIN32
         crashReport["processId"] = processIdOverride ? processIdOverride : static_cast<uint64_t>(GetCurrentProcessId());
