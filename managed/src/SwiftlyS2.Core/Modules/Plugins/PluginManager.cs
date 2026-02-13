@@ -31,6 +31,7 @@ internal class PluginManager : IPluginManager
     private readonly List<PluginContext> _plugins;
     private readonly ConcurrentDictionary<string, DateTime> _fileLastChange;
     private readonly ConcurrentDictionary<string, CancellationTokenSource> _fileReloadTokens;
+    private readonly ConcurrentDictionary<string, string> _pluginLoadErrors;
     private readonly FileSystemWatcher? _fileWatcher;
 
     public PluginManager(
@@ -48,6 +49,7 @@ internal class PluginManager : IPluginManager
         _plugins = [];
         _fileLastChange = new ConcurrentDictionary<string, DateTime>();
         _fileReloadTokens = new ConcurrentDictionary<string, CancellationTokenSource>();
+        _pluginLoadErrors = new ConcurrentDictionary<string, string>();
 
         if (NativeServerHelpers.UseAutoHotReload())
         {
@@ -148,6 +150,9 @@ internal class PluginManager : IPluginManager
             .Where(p => p.Metadata != null)
             .Select(p => p.Metadata!.Id);
 
+    public Dictionary<string, string> GetPluginLoadErrors()
+        => new Dictionary<string, string>(_pluginLoadErrors);
+
     public void RegenerateTranslations()
     {
         foreach (var plugin in _plugins.Where(p => p.Core != null))
@@ -207,6 +212,8 @@ internal class PluginManager : IPluginManager
             if (GlobalExceptionHandler.Handle(e))
             {
                 _logger.LogWarning(e, "Failed to load plugin by name: {Path}", pluginDir);
+                var pluginName = Path.GetFileName(pluginDir);
+                _pluginLoadErrors[pluginName] = e.ToString();
             }
             return false;
         }
@@ -245,6 +252,8 @@ internal class PluginManager : IPluginManager
                 else
                 {
                     _logger.LogWarning("Failed to load plugin: {Path}", fullDisplayPath);
+                    _pluginLoadErrors[dllName] = "Plugin failed to load (status not loaded)";
+                    context?.Status = PluginStatus.Error;
                 }
             }
             catch (Exception e)
@@ -252,6 +261,7 @@ internal class PluginManager : IPluginManager
                 if (GlobalExceptionHandler.Handle(e))
                 {
                     _logger.LogWarning(e, "Failed to load plugin: {Path}", fullDisplayPath);
+                    _pluginLoadErrors[dllName] = e.ToString();
                 }
             }
         });
@@ -343,6 +353,10 @@ internal class PluginManager : IPluginManager
             context.Core = core;
             context.Plugin = plugin;
             context.Loader = loader;
+
+            var pluginName = Path.GetFileName(directory);
+            _ = _pluginLoadErrors.TryRemove(pluginName, out _);
+
             return context;
         }
         catch (Exception e)
@@ -350,6 +364,8 @@ internal class PluginManager : IPluginManager
             _ = GlobalExceptionHandler.Handle(e);
             CleanupFailedPlugin(plugin, loader, core);
             _logger.LogError(e, "Exception occurred while loading plugin: {PluginPath}", entrypointDll);
+            var pluginName = Path.GetFileName(directory);
+            _pluginLoadErrors[pluginName] = e.ToString();
             return FailWithError(context, silent, $"Failed to load plugin: {entrypointDll}");
         }
     }
@@ -820,6 +836,13 @@ internal class PluginManager : IPluginManager
     {
         if (!silent) _logger.LogWarning("{Message}", message);
         context.Status = PluginStatus.Error;
+
+        if (!string.IsNullOrWhiteSpace(context.PluginDirectory))
+        {
+            var pluginName = Path.GetFileName(context.PluginDirectory);
+            _pluginLoadErrors[pluginName] = message;
+        }
+
         return null;
     }
 

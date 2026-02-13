@@ -376,6 +376,18 @@ internal class CoreCommandService
             }
 
             AnsiConsole.Write(table);
+
+            var loadErrors = pluginManager.GetPluginLoadErrors();
+            if (loadErrors.Count > 0)
+            {
+                Console.WriteLine("\n");
+                var errorString = "Plugin Load Errors:";
+                foreach (var error in loadErrors)
+                {
+                    errorString += $"\n  {error.Key}: {error.Value}";
+                }
+                logger.LogWarning(errorString);
+            }
         }
 
         void ShowPluginHelp()

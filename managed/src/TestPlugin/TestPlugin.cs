@@ -150,6 +150,8 @@ public class TestPlugin : BasePlugin
         {
             // Console.WriteLine($"WeaponServicesCanUse: {@event.Weapon.WeaponBaseVData.AttackMovespeedFactor} {@event.OriginalResult}");
         };
+
+        // throw new InvalidOperationException("TestPlugin constructor exception");
     }
 
     [Command("selfmute")]
