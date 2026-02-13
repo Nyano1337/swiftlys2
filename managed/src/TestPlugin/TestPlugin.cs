@@ -138,7 +138,7 @@ public class InProcessConfig : ManualConfig
     }
 }
 
-[PluginMetadata(Id = "sw2.testplugin", Version = "1.0.0")]
+[PluginMetadata(Id = "sw2.testplugin", Version = "1.0.0", MinimumAPIVersion = "1.1.6")]
 public class TestPlugin : BasePlugin
 {
     public TestPlugin( ISwiftlyCore core ) : base(core)

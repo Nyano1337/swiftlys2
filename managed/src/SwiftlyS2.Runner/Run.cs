@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using Semver;
 using SwiftlyS2.Shared.Natives;
 
 namespace SwiftlyS2;
@@ -16,12 +17,13 @@ public class Program
 {
     public static void Main()
     {
-        Console.WriteLine("=================================================");
+        var s1 = SemVersion.Parse("1.1.6", SemVersionStyles.AllowV);
+        Console.WriteLine(s1);
 
-        Console.WriteLine("CUtlMap Struct Layout:");
-        PrintStructInfo<CUtlRBTree<CUtlMapTreeNode<uint, CGcBanInformation_t>, uint>>();
-        Console.WriteLine("CGcBanInformation_t Struct Layout:");
-        PrintStructInfo<CGcBanInformation_t>();
+        var s2 = SemVersion.Parse("1.1.5-beta.55", SemVersionStyles.AllowV);
+        Console.WriteLine(s2);
+
+        Console.WriteLine($"s1 > s2: {SemVersion.CompareSortOrder(s1, s2)}");
     }
 
     private static void PrintStructInfo<T>() where T : struct

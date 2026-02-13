@@ -12,4 +12,5 @@ public class PluginMetadata : Attribute
     public string Author { get; set; } = "Anonymous";
     public string Description { get; set; } = "No further description.";
     public string Website { get; set; } = string.Empty;
+    public string MinimumAPIVersion { get; set; } = "0.0.0";
 }

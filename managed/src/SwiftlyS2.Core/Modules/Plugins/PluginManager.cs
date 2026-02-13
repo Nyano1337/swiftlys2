@@ -10,6 +10,7 @@ using SwiftlyS2.Core.Services;
 using SwiftlyS2.Shared.Plugins;
 using SwiftlyS2.Core.Modules.Plugins;
 using System.Runtime.InteropServices;
+using Semver;
 
 namespace SwiftlyS2.Core.Plugins;
 
@@ -295,6 +296,41 @@ internal class PluginManager : IPluginManager
         }
 
         context.Metadata = metadata;
+
+        var coreVersion = NativeEngineHelpers.GetNativeVersion();
+        var minimumApiVersion = context.Metadata.MinimumAPIVersion ?? "0.0.0";
+
+        SemVersion? coreSemver = null;
+        try
+        {
+            coreSemver = SemVersion.Parse(coreVersion, SemVersionStyles.AllowV);
+        }
+        catch (Exception) { }
+
+        if (coreSemver != null)
+        {
+            SemVersion? minApiSemver = null;
+            try
+            {
+                minApiSemver = SemVersion.Parse(minimumApiVersion, SemVersionStyles.AllowV);
+            }
+            catch (Exception e)
+            {
+                if (GlobalExceptionHandler.Handle(e))
+                {
+                    _logger.LogWarning(e, "Failed to parse minimum API version for plugin {Id}: '{Version}'. Falling back to '0.0.0'.", context.Metadata.Id, minimumApiVersion);
+                }
+                minApiSemver = new SemVersion(0, 0, 0);
+            }
+
+            var r = SemVersion.CompareSortOrder(coreSemver, minApiSemver);
+
+            if (r < 0)
+            {
+                return FailWithError(context, silent, $"Plugin API version '{minimumApiVersion}' is newer than the core version '{coreVersion}'.");
+            }
+        }
+
         _dataDirectoryService.EnsurePluginDataDirectory(metadata.Id);
 
         var core = CreateSwiftlyCore(metadata, pluginType, directory);
