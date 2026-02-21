@@ -284,9 +284,11 @@ internal sealed class MenuAPI : IMenuAPI, IDisposable
             { }
         }
 
-        var playerStates = core.PlayerManager
-            .GetAllPlayers()
-            .Where(player => player.IsValid && !player.IsFakeClient)
+        try
+        {
+            var playerStates = core.PlayerManager
+            .GetAllValidPlayers()
+            .Where(player => !player.IsFakeClient)
             .Select(player => (
                 Player: player,
                 DesiredIndex: desiredOptionIndex.TryGetValue(player.PlayerID, out var desired) ? desired : -1,
@@ -295,16 +297,18 @@ internal sealed class MenuAPI : IMenuAPI, IDisposable
             .Where(state => state.DesiredIndex >= 0 && state.SelectedIndex >= 0)
             .ToList();
 
-        var baseMaxVisibleItems = Configuration.MaxVisibleItems < 1 ? core.MenusAPI.Configuration.ItemsPerPage : Configuration.MaxVisibleItems;
-        var maxVisibleItems = Configuration.AutoIncreaseVisibleItems
-            ? Math.Clamp(baseMaxVisibleItems + (Configuration.HideTitle ? 1 : 0) + (Configuration.HideFooter ? 1 : 0), 1, 7)
-            : Math.Clamp(baseMaxVisibleItems, 1, 5);
-        var halfVisible = maxVisibleItems / 2;
+            var baseMaxVisibleItems = Configuration.MaxVisibleItems < 1 ? core.MenusAPI.Configuration.ItemsPerPage : Configuration.MaxVisibleItems;
+            var maxVisibleItems = Configuration.AutoIncreaseVisibleItems
+                ? Math.Clamp(baseMaxVisibleItems + (Configuration.HideTitle ? 1 : 0) + (Configuration.HideFooter ? 1 : 0), 1, 7)
+                : Math.Clamp(baseMaxVisibleItems, 1, 5);
+            var halfVisible = maxVisibleItems / 2;
 
-        foreach (var (player, desiredIndex, selectedIndex) in playerStates)
-        {
-            ProcessPlayerMenu(player, desiredIndex, selectedIndex, maxOptions, maxVisibleItems, halfVisible);
+            foreach (var (player, desiredIndex, selectedIndex) in playerStates)
+            {
+                ProcessPlayerMenu(player, desiredIndex, selectedIndex, maxOptions, maxVisibleItems, halfVisible);
+            }
         }
+        catch { }
     }
 
     private void ProcessPlayerMenu( IPlayer player, int desiredIndex, int selectedIndex, int maxOptions, int maxVisibleItems, int halfVisible )
