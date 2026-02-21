@@ -20,6 +20,7 @@ internal class SwiftlyLogger( string categoryName, string contextName ) : ILogge
         [LogLevel.Error] = ("Error", "red3"),
         [LogLevel.Critical] = ("Critical", "red3")
     };
+    private static readonly bool HideLogInConsole = ShouldHideLogToConsole();
 
     public IDisposable BeginScope<TState>( TState state ) where TState : notnull => NullScope.Instance;
 
@@ -45,7 +46,7 @@ internal class SwiftlyLogger( string categoryName, string contextName ) : ILogge
         if (!string.IsNullOrEmpty(message))
         {
             FileLogger.Log($"{contextName} | {timestamp} | {levelText} | {categoryName}{eventIdText} | {message}");
-            OutputMessageLines(message);
+            if (!HideLogInConsole) OutputMessageLines(message);
         }
 
         // Exception output
@@ -81,6 +82,12 @@ internal class SwiftlyLogger( string categoryName, string contextName ) : ILogge
             "OFF" => LogLevel.None,
             _ => LogLevel.Information
         };
+    }
+
+    private static bool ShouldHideLogToConsole()
+    {
+        var output = Environment.GetEnvironmentVariable("SWIFTLY_HIDE_LOG_IN_CONSOLE")?.ToUpperInvariant();
+        return output == "1" || output == "TRUE" || output == "YES";
     }
 
     private sealed class NullScope : IDisposable

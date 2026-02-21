@@ -76,12 +76,6 @@ bool LoopInitHook(void* _this, KeyValues* pKeyValues, void* pRegistry);
 
 extern ICvar* g_pCVar;
 
-CON_COMMAND(sw_crash, "")
-{
-    int* ptr = nullptr;
-    *ptr = 0;
-}
-
 bool SwiftlyCore::Load(BridgeKind_t kind)
 {
     g_mainThreadId = std::this_thread::get_id();
@@ -139,6 +133,16 @@ bool SwiftlyCore::Load(BridgeKind_t kind)
         _putenv_s("SWIFTLY_LOG_LEVEL", logLevel);
 #else
         setenv("SWIFTLY_LOG_LEVEL", logLevel, 1);
+#endif
+    }
+
+    const char* hideLogInConsole = CommandLine()->ParmValue(CUtlStringToken("-sw_hide_logs_in_console"));
+    if (hideLogInConsole)
+    {
+#ifdef _WIN32
+        _putenv_s("SWIFTLY_HIDE_LOG_IN_CONSOLE", hideLogInConsole);
+#else
+        setenv("SWIFTLY_HIDE_LOG_IN_CONSOLE", hideLogInConsole, 1);
 #endif
     }
 
