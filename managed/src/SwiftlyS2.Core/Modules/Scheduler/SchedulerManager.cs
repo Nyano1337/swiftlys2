@@ -33,8 +33,15 @@ internal static class SchedulerManager
 
     public static void OnWorldUpdate()
     {
-        ExecuteOnWorldUpdateAsyncTasks();
-        ExecuteOnWorldUpdateTimers();
+        try
+        {
+            ExecuteOnWorldUpdateAsyncTasks();
+            ExecuteOnWorldUpdateTimers();
+        }
+        catch (Exception ex)
+        {
+            if (GlobalExceptionHandler.Handle(ex)) AnsiConsole.WriteException(ex);
+        }
     }
 
     private static void ExecuteOnWorldUpdateAsyncTasks()
@@ -86,8 +93,15 @@ internal static class SchedulerManager
     public static void OnTick()
     {
         _currentTimeMs = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        ExecuteOnTickAsyncTasks();
-        ExecuteOnTickTimers();
+        try
+        {
+            ExecuteOnTickAsyncTasks();
+            ExecuteOnTickTimers();
+        }
+        catch (Exception ex)
+        {
+            if (GlobalExceptionHandler.Handle(ex)) AnsiConsole.WriteException(ex);
+        }
     }
 
     private static void ExecuteOnTickAsyncTasks()
@@ -102,7 +116,7 @@ internal static class SchedulerManager
             }
             catch (Exception ex)
             {
-                AnsiConsole.WriteException(ex);
+                if (GlobalExceptionHandler.Handle(ex)) AnsiConsole.WriteException(ex);
             }
         }
     }
@@ -164,8 +178,7 @@ internal static class SchedulerManager
                 }
                 catch (Exception ex)
                 {
-                    if (!GlobalExceptionHandler.Handle(ex)) return;
-                    AnsiConsole.WriteException(ex);
+                    if (GlobalExceptionHandler.Handle(ex)) AnsiConsole.WriteException(ex);
                 }
             }
         }
@@ -181,8 +194,7 @@ internal static class SchedulerManager
                 }
                 catch (Exception ex)
                 {
-                    if (!GlobalExceptionHandler.Handle(ex)) return;
-                    AnsiConsole.WriteException(ex);
+                    if (GlobalExceptionHandler.Handle(ex)) AnsiConsole.WriteException(ex);
                 }
             }
         }
