@@ -39,7 +39,7 @@ internal class SwiftlyLogger( string categoryName, string contextName ) : ILogge
         AnsiConsole.Profile.Width = 13337;
 
         // Console output
-        AnsiConsole.MarkupLineInterpolated($"[lightsteelblue1 bold]{contextName}[/] [lightsteelblue]|[/] [grey42]{timestamp}[/] [lightsteelblue]|[/] [{color}]{levelText}[/] [lightsteelblue]|[/] [lightsteelblue]{categoryName}{eventIdText}[/]");
+        if (!HideLogInConsole) AnsiConsole.MarkupLineInterpolated($"[lightsteelblue1 bold]{contextName}[/] [lightsteelblue]|[/] [grey42]{timestamp}[/] [lightsteelblue]|[/] [{color}]{levelText}[/] [lightsteelblue]|[/] [lightsteelblue]{categoryName}{eventIdText}[/]");
 
         // Message output
         var message = formatter?.Invoke(state, exception) ?? state?.ToString();
