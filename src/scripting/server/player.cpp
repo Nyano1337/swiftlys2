@@ -173,7 +173,7 @@ void Bridge_Player_ShouldBlockTransmitEntity(int playerid, int entityidx, bool s
 
     auto& bv = player->GetBlockedTransmittingBits();
 
-    auto dword = entityidx / 64;
+    auto dword = entityidx >> 6;
     if (shouldBlockTransmit)
     {
         bool wasEmpty = (bv.blockedMask[dword] == 0);
@@ -212,7 +212,7 @@ bool Bridge_Player_IsTransmitEntityBlocked(int playerid, int entityidx)
     }
 
     auto& bv = player->GetBlockedTransmittingBits();
-    return (bv.blockedMask[entityidx / 64] & (1ULL << (entityidx % 64))) != 0;
+    return (bv.blockedMask[entityidx >> 6] & (1ULL << (entityidx % 64))) != 0;
 }
 
 void Bridge_Player_ClearTransmitEntityBlocked(int playerid)

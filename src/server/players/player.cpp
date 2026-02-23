@@ -112,8 +112,10 @@ uint64_t sessionId = 1000;
 
 CServerSideClient* GetServerSideClient(int playerid)
 {
+    static auto offset = g_ifaceService.FetchInterface<IGameDataManager>(GAMEDATA_INTERFACE_VERSION)->GetOffsets()->Fetch("CNetworkGameServer::m_Clients");
+
     auto gameserver = g_ifaceService.FetchInterface<INetworkServerService>(NETWORKSERVERSERVICE_INTERFACE_VERSION)->GetIGameServer();
-    auto offset = g_ifaceService.FetchInterface<IGameDataManager>(GAMEDATA_INTERFACE_VERSION)->GetOffsets()->Fetch("CNetworkGameServer::m_Clients");
+
     auto clients = ((CUtlVector<CServerSideClient*>*)((uintptr_t)gameserver + offset));
     return clients->Element(playerid);
 }

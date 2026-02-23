@@ -40,7 +40,7 @@ void Bridge_PlayerManager_SendMessage(int kind, const char* message, int duratio
 void Bridge_PlayerManager_ShouldBlockTransmitEntity(int entityidx, bool shouldBlockTransmit)
 {
     static auto playerManager = g_ifaceService.FetchInterface<IPlayerManager>(PLAYERMANAGER_INTERFACE_VERSION);
-    auto dword = entityidx / 64;
+    auto dword = entityidx >> 6;
     for (int i = 0; i < playerManager->GetPlayerCap(); i++) {
         auto player = playerManager->GetPlayer(i);
         if (!player) continue;
@@ -73,7 +73,7 @@ void Bridge_PlayerManager_ClearAllBlockedTransmitEntity()
 
         auto& bv = player->GetBlockedTransmittingBits();
         bv.activeMasks.clear();
-        for (int j = 0; j < 256; j++) bv.blockedMask[j] = 0;
+        for (int j = 0; j < (MAX_EDICTS >> 6); j++) bv.blockedMask[j] = 0;
     }
 }
 
