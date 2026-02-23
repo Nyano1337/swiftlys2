@@ -601,6 +601,7 @@ internal sealed class MenuAPI : IMenuAPI, IDisposable
         if (keyExists)
         {
             NativePlayer.ClearCenterMenuRender(player.PlayerID);
+            core.Scheduler.NextTick(() => NativePlayer.ClearCenterMenuRender(player.PlayerID));
             _ = core.Scheduler.Delay(5, () => NativePlayer.ClearCenterMenuRender(player.PlayerID));
 
             // Remove viewer, pause animations if no viewers left
