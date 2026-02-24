@@ -190,6 +190,7 @@ void CSDKSchema::Load()
 
 void CSDKSchema::DumpEntitySystem()
 {
+#ifdef _WIN32
     auto logger = g_ifaceService.FetchInterface<ILogger>(LOGGER_INTERFACE_VERSION);
     json entitySystemJson;
 
@@ -210,6 +211,7 @@ void CSDKSchema::DumpEntitySystem()
 
     logger->Info("SDK", fmt::format("Mapped {} SDK classes to entity classnames.\n", entityClasses.size()));
     WriteJSON(g_SwiftlyCore.GetCorePath() + "gamedata/cs2/entitysystem.json", entitySystemJson);
+#endif
 }
 
 void CSDKSchema::SetStateChanged(void* pEntity, const char* sClassName, const char* sMemberName)
