@@ -327,7 +327,7 @@ internal class CoreCommandService
                 logger.LogInformation("The profiler has been disabled.");
                 break;
             case "status":
-                logger.LogInformation("Profiler is currently {Status}.", (profileService.IsEnabled() ? "enabled" : "disabled"));
+                logger.LogInformation("Profiler is currently {Status}.", profileService.IsEnabled() ? "enabled" : "disabled");
                 break;
             case "save":
                 var pluginId = args.Length >= 3 ? args[2] : "core";
@@ -363,16 +363,16 @@ internal class CoreCommandService
 
             foreach (var plugin in pluginManager.GetPlugins())
             {
-                var pluginId = plugin.Metadata?.Id ?? "<Unknown>";
-                var version = plugin.Metadata?.Version is { } v ? $" {v}" : string.Empty;
+                var pluginId = Markup.Escape(plugin.Metadata?.Id ?? "<Unknown>");
+                var version = Markup.Escape(plugin.Metadata?.Version is { } v ? $" {v}" : string.Empty);
                 var statusText = GetColoredStatus(plugin.Status);
 
                 _ = table.AddRow(
                     statusText,
                     $"{pluginId}{version}",
-                    plugin.Metadata?.Author ?? "Anonymous",
-                    plugin.Metadata?.Website ?? string.Empty,
-                    plugin.PluginDirectory is { } dir ? Path.Join("(swRoot)", Path.GetRelativePath(rootDirService.GetRoot(), dir)) : string.Empty);
+                    Markup.Escape(plugin.Metadata?.Author ?? "Anonymous"),
+                    Markup.Escape(plugin.Metadata?.Website ?? string.Empty),
+                    Markup.Escape(plugin.PluginDirectory is { } dir ? Path.Join("(swRoot)", Path.GetRelativePath(rootDirService.GetRoot(), dir)) : string.Empty));
             }
 
             AnsiConsole.Write(table);
