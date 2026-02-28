@@ -13,7 +13,7 @@ public struct CUtlVector<T> : IEnumerable<T>
     private int _size;
     private CUtlMemory<T> _memory;
 
-    public int ElementSize => SchemaSize.Get<T>();
+    public int ElementSize => SchemaInfo.Get<T>();
 
     /// <summary>
     /// Please use <see cref="ManagedCUtlVector{T}"/> instead to construct it.
@@ -243,7 +243,7 @@ public struct CUtlVector<T> : IEnumerable<T>
 
     public IEnumerator<T> GetEnumerator()
     {
-        for (int i = 0; i < _size; i++)
+        for (var i = 0; i < _size; i++)
         {
             yield return this[i];
         }

@@ -307,4 +307,28 @@ internal static class NativePlayer
         var ret = _GetUserID(playerid);
         return ret;
     }
+
+    private unsafe static delegate* unmanaged<int, ulong> _GetSessionID;
+
+    public unsafe static ulong GetSessionID(int playerid)
+    {
+        var ret = _GetSessionID(playerid);
+        return ret;
+    }
+
+    private unsafe static delegate* unmanaged<byte*, int, int> _GetName;
+
+    public unsafe static string GetName(int playerid)
+    {
+        var ret = _GetName(null, playerid);
+        var pool = ArrayPool<byte>.Shared;
+        var retBuffer = pool.Rent(ret + 1);
+        fixed (byte* retBufferPtr = retBuffer)
+        {
+            ret = _GetName(retBufferPtr, playerid);
+            var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
+            pool.Return(retBuffer);
+            return retString;
+        }
+    }
 }

@@ -1,15 +1,12 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Spectre.Console;
-using SwiftlyS2.Shared.Natives;
 
 namespace SwiftlyS2.Core.Natives;
 
 internal class NativeBinding
 {
-    public static int MainThreadID { get; private set; }
-
-    public static bool IsMainThread => Environment.CurrentManagedThreadId == MainThreadID;
+    public static bool IsMainThread => NativeCore.IsMainThread();
 
     public static void ThrowIfNonMainThread()
     {
@@ -21,15 +18,13 @@ internal class NativeBinding
 
     public static void BindNatives( IntPtr nativeTable, int nativeTableSize )
     {
-        MainThreadID = Environment.CurrentManagedThreadId;
         unsafe
         {
             try
             {
                 var pNativeTables = (NativeFunction*)nativeTable;
 
-
-                for (int i = 0; i < nativeTableSize; i++)
+                for (var i = 0; i < nativeTableSize; i++)
                 {
                     var name = Marshal.PtrToStringUTF8(pNativeTables[i].Name)!;
 

@@ -42,7 +42,7 @@ enum MessageType : uint8_t
 
 struct BlockedTransmitInfo
 {
-    uint64_t blockedMask[MAX_EDICTS / 64] = { 0 };
+    uint64_t blockedMask[MAX_EDICTS >> 6] = { 0 };
     std::vector<uint8_t> activeMasks;
 };
 
@@ -98,6 +98,9 @@ public:
 
     virtual bool IsFirstSpawn() = 0;
     virtual void SetFirstSpawn(bool state) = 0;
+
+    virtual uint64_t GetSessionID() = 0;
+    virtual const char* GetName() = 0;
 };
 
 #endif

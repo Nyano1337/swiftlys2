@@ -125,6 +125,11 @@ public interface IEventSubscriber
     public event EventDelegates.OnWeaponServicesCanUseHook? OnWeaponServicesCanUseHook;
 
     /// <summary>
+    /// Called when a weapon services drop weapon hook is triggered.
+    /// </summary>
+    public event EventDelegates.OnWeaponServicesDropWeaponHook? OnWeaponServicesDropWeaponHook;
+
+    /// <summary>
     /// Called when the game outputs a console message.
     /// </summary>
     public event EventDelegates.OnConsoleOutput? OnConsoleOutput;
@@ -133,9 +138,6 @@ public interface IEventSubscriber
     /// Called when a server command (ConCommand) is executed.
     /// </summary>
     public event EventDelegates.OnCommandExecuteHook? OnCommandExecuteHook;
-
-    [Obsolete("OnEntityTouchHook is deprecated. Use OnEntityStartTouch, OnEntityTouch, or OnEntityEndTouch instead.")]
-    public event EventDelegates.OnEntityTouchHook? OnEntityTouchHook;
 
     /// <summary>
     /// Called when an entity starts touching another entity.
@@ -176,4 +178,9 @@ public interface IEventSubscriber
     /// Called when the server is started.
     /// </summary>
     public event EventDelegates.OnStartupServer? OnStartupServer;
+
+    /// <summary>
+    /// Called when a client sends a voice packet.
+    /// </summary>
+    public event EventDelegates.OnClientVoice? OnClientVoice;
 }

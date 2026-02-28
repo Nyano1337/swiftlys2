@@ -32,7 +32,7 @@ int Bridge_Commands_HandleCommandForPlayer(int playerid, const char* command)
     return servercommands->HandleCommand(playerid, command, false);
 }
 
-uint64_t Bridge_Commands_RegisterCommand(const char* commandName, void* callback, bool registerRaw)
+uint64_t Bridge_Commands_RegisterCommand(const char* commandName, void* callback, bool registerRaw, const char* helpText)
 {
     auto servercommands = g_ifaceService.FetchInterface<IServerCommands>(SERVERCOMMANDS_INTERFACE_VERSION);
     if (!servercommands)
@@ -56,7 +56,8 @@ uint64_t Bridge_Commands_RegisterCommand(const char* commandName, void* callback
 
             reinterpret_cast<void (*)(int, const char*, const char*, const char*, uint8_t)>(callback)(playerid, imploded_args.c_str(), original_name.c_str(), selected_prefix.c_str(), isSilentCommand == true ? 1 : 0);
         },
-        registerRaw);
+        registerRaw,
+        helpText);
 }
 
 void Bridge_Commands_UnregisterCommand(uint64_t callbackID)

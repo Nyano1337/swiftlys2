@@ -26,7 +26,7 @@ internal class CoreCommandService
         this.pluginManager = pluginManager;
         this.rootDirService = rootDirService;
         this.profileService = profileService;
-        _ = core.Command.RegisterCommand("sw", OnCommand, true);
+        _ = core.Command.RegisterCommand("sw", OnCommand, true, helpText: "SwiftlyS2 Core Command");
     }
 
     private void OnCommand( ICommandContext context )
@@ -151,6 +151,9 @@ internal class CoreCommandService
                 case "confilter" when RequireConsoleAccess():
                     ConfilterCommand(context);
                     break;
+                case "translations" when RequireConsoleAccess():
+                    TranslationsCommand(context);
+                    break;
                 default:
                     ShowHelp(context);
                     break;
@@ -180,10 +183,47 @@ internal class CoreCommandService
                 .AddRow("confilter", "Console Filter Menu")
                 .AddRow("plugins", "Plugin Management Menu")
                 .AddRow("gc", "Show garbage collection information on managed")
-                .AddRow("profiler", "Profiler Menu");
+                .AddRow("profiler", "Profiler Menu")
+                .AddRow("translations", "Translations Menu");
         }
         _ = table.AddRow("version", "Display Swiftly version");
         AnsiConsole.Write(table);
+    }
+
+    private void TranslationsCommand( ICommandContext context )
+    {
+        void ShowTranslationsHelp()
+        {
+            var table = new Table()
+                .AddColumn("Command")
+                .AddColumn("Description")
+                .AddRow("reload", "Reload all translations");
+            AnsiConsole.Write(table);
+        }
+
+        void ReloadTranslations()
+        {
+            pluginManager.RegenerateTranslations();
+
+            logger.LogInformation("Succesfully reloaded the translations");
+        }
+
+        var args = context.Args;
+        if (args.Length == 1)
+        {
+            ShowTranslationsHelp();
+            return;
+        }
+
+        switch (args[1].Trim().ToLower())
+        {
+            case "reload":
+                ReloadTranslations();
+                break;
+            default:
+                logger.LogWarning("Unknown command");
+                break;
+        }
     }
 
     private void ConfilterCommand( ICommandContext context )
@@ -287,7 +327,7 @@ internal class CoreCommandService
                 logger.LogInformation("The profiler has been disabled.");
                 break;
             case "status":
-                logger.LogInformation("Profiler is currently {Status}.", (profileService.IsEnabled() ? "enabled" : "disabled"));
+                logger.LogInformation("Profiler is currently {Status}.", profileService.IsEnabled() ? "enabled" : "disabled");
                 break;
             case "save":
                 var pluginId = args.Length >= 3 ? args[2] : "core";
@@ -323,19 +363,31 @@ internal class CoreCommandService
 
             foreach (var plugin in pluginManager.GetPlugins())
             {
-                var pluginId = plugin.Metadata?.Id ?? "<Unknown>";
-                var version = plugin.Metadata?.Version is { } v ? $" {v}" : string.Empty;
+                var pluginId = Markup.Escape(plugin.Metadata?.Id ?? "<Unknown>");
+                var version = Markup.Escape(plugin.Metadata?.Version is { } v ? $" {v}" : string.Empty);
                 var statusText = GetColoredStatus(plugin.Status);
 
                 _ = table.AddRow(
                     statusText,
                     $"{pluginId}{version}",
-                    plugin.Metadata?.Author ?? "Anonymous",
-                    plugin.Metadata?.Website ?? string.Empty,
-                    plugin.PluginDirectory is { } dir ? Path.Join("(swRoot)", Path.GetRelativePath(rootDirService.GetRoot(), dir)) : string.Empty);
+                    Markup.Escape(plugin.Metadata?.Author ?? "Anonymous"),
+                    Markup.Escape(plugin.Metadata?.Website ?? string.Empty),
+                    Markup.Escape(plugin.PluginDirectory is { } dir ? Path.Join("(swRoot)", Path.GetRelativePath(rootDirService.GetRoot(), dir)) : string.Empty));
             }
 
             AnsiConsole.Write(table);
+
+            var loadErrors = pluginManager.GetPluginLoadErrors();
+            if (loadErrors.Count > 0)
+            {
+                Console.WriteLine("\n");
+                var errorString = "Plugin Load Errors:";
+                foreach (var error in loadErrors)
+                {
+                    errorString += $"\n  {error.Key}: {error.Value}";
+                }
+                logger.LogWarning(errorString);
+            }
         }
 
         void ShowPluginHelp()
@@ -390,6 +442,13 @@ internal class CoreCommandService
                 if (ValidatePluginId(args, "load", "<dllName>"))
                 {
                     Console.WriteLine("\n");
+                    if (pluginManager.GetPluginStatusByDllName(args[2]) == PluginStatus.Loaded)
+                    {
+                        logger.LogWarning("Plugin is already loaded: {Format}", args[2]);
+                        Console.WriteLine("\n");
+                        break;
+                    }
+
                     if (pluginManager.LoadPluginByDllName(args[2], true))
                     {
                         logger.LogInformation("Loaded plugin: {Format}", args[2]);
@@ -402,10 +461,10 @@ internal class CoreCommandService
                 }
                 break;
             case "unload":
-                if (ValidatePluginId(args, "unload", "<pluginId|dllName>"))
+                if (ValidatePluginId(args, "unload", "<dllName>"))
                 {
                     Console.WriteLine("\n");
-                    if (pluginManager.UnloadPluginById(args[2], true) || pluginManager.UnloadPluginByDllName(args[2], true))
+                    if (pluginManager.UnloadPluginByDllName(args[2], true))
                     {
                         logger.LogInformation("Unloaded plugin: {Format}", args[2]);
                     }
@@ -417,10 +476,10 @@ internal class CoreCommandService
                 }
                 break;
             case "reload":
-                if (ValidatePluginId(args, "reload", "<pluginId|dllName>"))
+                if (ValidatePluginId(args, "reload", "<dllName>"))
                 {
                     Console.WriteLine("\n");
-                    if (pluginManager.ReloadPluginById(args[2], true) || pluginManager.ReloadPluginByDllName(args[2], true))
+                    if (pluginManager.ReloadPluginByDllName(args[2], true))
                     {
                         logger.LogInformation("Reloaded plugin: {Format}", args[2]);
                     }

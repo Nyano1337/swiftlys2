@@ -114,9 +114,6 @@ public class EventDelegates
     /// </summary>
     public delegate void OnPrecacheResource( IOnPrecacheResourceEvent @event );
 
-    [Obsolete("OnEntityTouchHook is deprecated. Use OnEntityStartTouch, OnEntityTouch, or OnEntityEndTouch instead.")]
-    public delegate void OnEntityTouchHook( IOnEntityTouchHookEvent @event );
-
     /// <summary>
     /// Called when an entity starts touching another entity.
     /// </summary>
@@ -141,6 +138,16 @@ public class EventDelegates
     /// Called when a weapon services can use hook is triggered.
     /// </summary>
     public delegate void OnWeaponServicesCanUseHook( IOnWeaponServicesCanUseHookEvent @event );
+
+    /// <summary>
+    /// Called when a weapon services drop weapon hook is triggered.
+    /// </summary>
+    public delegate void OnWeaponServicesDropWeaponHook( IOnWeaponServicesDropWeaponHook @event );
+
+    /// <summary>
+    /// Called when a client sends a voice packet.
+    /// </summary>
+    public delegate void OnClientVoice( IOnClientVoiceEvent @event );
 
     /// <summary>
     /// Called when a console output is received.

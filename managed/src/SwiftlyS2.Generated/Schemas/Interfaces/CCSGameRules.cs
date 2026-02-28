@@ -293,9 +293,9 @@ public partial interface CCSGameRules : CTeamplayRules, ISchemaClass<CCSGameRule
 
     public ref Vector MainCTSpawnPos { get; }
 
-    public ref CUtlVector<PointerTo<SpawnPoint>> CTSpawnPointsMasterList { get; }
+    public ref CUtlVector<CHandle<SpawnPoint>> CTSpawnPointsMasterList { get; }
 
-    public ref CUtlVector<PointerTo<SpawnPoint>> TerroristSpawnPointsMasterList { get; }
+    public ref CUtlVector<CHandle<SpawnPoint>> TerroristSpawnPointsMasterList { get; }
 
     public ref bool RespawningAllRespawnablePlayers { get; }
 
@@ -307,9 +307,9 @@ public partial interface CCSGameRules : CTeamplayRules, ISchemaClass<CCSGameRule
 
     public ref float TerroristSpawnPointUsedTime { get; }
 
-    public ref CUtlVector<PointerTo<SpawnPoint>> CTSpawnPoints { get; }
+    public ref CUtlVector<CHandle<SpawnPoint>> CTSpawnPoints { get; }
 
-    public ref CUtlVector<PointerTo<SpawnPoint>> TerroristSpawnPoints { get; }
+    public ref CUtlVector<CHandle<SpawnPoint>> TerroristSpawnPoints { get; }
 
     public ref bool IsUnreservedGameServer { get; }
 

@@ -49,12 +49,12 @@ internal class EventSubscriber : IEventSubscriber, IDisposable
     public event EventDelegates.OnConVarCreated? OnConVarCreated;
     public event EventDelegates.OnEntityTakeDamage? OnEntityTakeDamage;
     public event EventDelegates.OnPrecacheResource? OnPrecacheResource;
-    public event EventDelegates.OnEntityTouchHook? OnEntityTouchHook;
     public event EventDelegates.OnEntityStartTouch? OnEntityStartTouch;
     public event EventDelegates.OnEntityTouch? OnEntityTouch;
     public event EventDelegates.OnEntityEndTouch? OnEntityEndTouch;
     public event EventDelegates.OnItemServicesCanAcquireHook? OnItemServicesCanAcquireHook;
     public event EventDelegates.OnWeaponServicesCanUseHook? OnWeaponServicesCanUseHook;
+    public event EventDelegates.OnWeaponServicesDropWeaponHook? OnWeaponServicesDropWeaponHook;
     public event EventDelegates.OnConsoleOutput? OnConsoleOutput;
     public event EventDelegates.OnCommandExecuteHook? OnCommandExecuteHook;
     public event EventDelegates.OnSteamAPIActivated? OnSteamAPIActivated;
@@ -63,6 +63,7 @@ internal class EventSubscriber : IEventSubscriber, IDisposable
     public event EventDelegates.OnEntityIdentityAcceptInputHook? OnEntityIdentityAcceptInputHook;
     public event EventDelegates.OnEntityFireOutputHookEvent? OnEntityFireOutputHook;
     public event EventDelegates.OnStartupServer? OnStartupServer;
+    public event EventDelegates.OnClientVoice? OnClientVoice;
 
     public void Dispose()
     {
@@ -292,6 +293,30 @@ internal class EventSubscriber : IEventSubscriber, IDisposable
         }
     }
 
+    public void InvokeOnClientVoice( OnClientVoiceEvent @event )
+    {
+        try
+        {
+            if (OnClientVoice == null)
+            {
+                return;
+            }
+            profiler.StartRecording("Event::OnClientVoice");
+            OnClientVoice?.Invoke(@event);
+        }
+        catch (Exception e)
+        {
+            if (GlobalExceptionHandler.Handle(e))
+            {
+                logger.LogError(e, "Error invoking OnClientVoice.");
+            }
+        }
+        finally
+        {
+            profiler.StopRecording("Event::OnClientVoice");
+        }
+    }
+
     public void InvokeOnEntityDeleted( OnEntityDeletedEvent @event )
     {
         try
@@ -481,31 +506,6 @@ internal class EventSubscriber : IEventSubscriber, IDisposable
         finally
         {
             profiler.StopRecording("Event::OnPrecacheResource");
-        }
-    }
-
-    [Obsolete("InvokeOnEntityTouchHook is deprecated. Use InvokeOnEntityStartTouch, InvokeOnEntityTouch, or InvokeOnEntityEndTouch instead.")]
-    public void InvokeOnEntityTouchHook( OnEntityTouchHookEvent @event )
-    {
-        try
-        {
-            if (OnEntityTouchHook == null)
-            {
-                return;
-            }
-            profiler.StartRecording("Event::OnEntityTouchHook");
-            OnEntityTouchHook?.Invoke(@event);
-        }
-        catch (Exception e)
-        {
-            if (GlobalExceptionHandler.Handle(e))
-            {
-                logger.LogError(e, "Error invoking OnEntityTouchHook.");
-            }
-        }
-        finally
-        {
-            profiler.StopRecording("Event::OnEntityTouchHook");
         }
     }
 
@@ -842,6 +842,30 @@ internal class EventSubscriber : IEventSubscriber, IDisposable
         finally
         {
             profiler.StopRecording("Event::OnEntityIdentityAcceptInput");
+        }
+    }
+
+    public void InvokeOnWeaponServicesDropWeaponHook( OnWeaponServicesDropWeaponHook @event )
+    {
+        try
+        {
+            if (OnWeaponServicesDropWeaponHook == null)
+            {
+                return;
+            }
+            profiler.StartRecording("Event::OnWeaponServicesDropWeaponHook");
+            OnWeaponServicesDropWeaponHook?.Invoke(@event);
+        }
+        catch (Exception e)
+        {
+            if (GlobalExceptionHandler.Handle(e))
+            {
+                logger.LogError(e, "Error invoking OnWeaponServicesDropWeaponHook.");
+            }
+        }
+        finally
+        {
+            profiler.StopRecording("Event::OnWeaponServicesDropWeaponHook");
         }
     }
 

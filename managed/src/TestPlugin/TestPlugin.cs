@@ -27,6 +27,7 @@ using BenchmarkDotNet.Loggers;
 using SwiftlyS2.Shared.Menus;
 using SwiftlyS2.Shared.SteamAPI;
 using SwiftlyS2.Core.Menus.OptionsBase;
+using System.Diagnostics;
 
 namespace TestPlugin;
 
@@ -137,7 +138,7 @@ public class InProcessConfig : ManualConfig
     }
 }
 
-[PluginMetadata(Id = "sw2.testplugin", Version = "1.0.0")]
+[PluginMetadata(Id = "sw2.testplugin", Version = "1.0.0", MinimumAPIVersion = "1.1.6")]
 public class TestPlugin : BasePlugin
 {
     public TestPlugin( ISwiftlyCore core ) : base(core)
@@ -149,6 +150,8 @@ public class TestPlugin : BasePlugin
         {
             // Console.WriteLine($"WeaponServicesCanUse: {@event.Weapon.WeaponBaseVData.AttackMovespeedFactor} {@event.OriginalResult}");
         };
+
+        // throw new InvalidOperationException("TestPlugin constructor exception");
     }
 
     [Command("selfmute")]
@@ -169,7 +172,13 @@ public class TestPlugin : BasePlugin
     [CommandAlias("cat", true)]
     public void CommandAliasTest( ICommandContext context )
     {
-        context.Reply("CommandAliasTest\n");
+        foreach (var player in Core.PlayerManager.GetAllPlayers())
+        {
+            var controller = player.Controller;
+            if (controller is null) continue;
+
+            Console.WriteLine($"PawnIsAlive: {controller.PawnIsAlive}");
+        }
     }
 
     [Command("dbtest")]
@@ -196,6 +205,22 @@ public class TestPlugin : BasePlugin
         {
             Core.Logger.LogError(ex, "[Database] Connection failed: {Message}", ex.Message);
         }
+    }
+
+    [GameEventHandler(HookMode.Pre)]
+    public HookResult OnPlayerDeath( EventPlayerDeath @event )
+    {
+        Console.WriteLine($"Is main thread?: {Core.IsGameThread}");
+        if (@event.AttackerPlayer == null) return HookResult.Continue;
+        if (@event.AttackerPlayer.Controller == null) return HookResult.Continue;
+        if (@event.AttackerPlayer.Controller.DamageServices == null) return HookResult.Continue;
+
+        foreach (var record in @event.AttackerPlayer.Controller.DamageServices.DamageList)
+        {
+            Console.WriteLine($"Damage service: {record.Damage} {record.DamagerXuid} {record.PlayerDamagerName}");
+        }
+
+        return HookResult.Continue;
     }
 
     [GameEventHandler(HookMode.Pre)]
@@ -676,6 +701,7 @@ public class TestPlugin : BasePlugin
     public void TestCommand33( ICommandContext context )
     {
         var ent = Core.EntitySystem.CreateEntity<CPhysicsPropOverride>();
+        Console.WriteLine($"addr: {ent.Address:X}");
         using CEntityKeyValues kv = new();
         kv.Set<uint>("m_spawnflags", 256);
         ent.DispatchSpawn(kv);
@@ -777,10 +803,16 @@ public class TestPlugin : BasePlugin
     }
 
     [GameEventHandler(HookMode.Pre)]
-    public HookResult TestGameEventHandler( EventPlayerJump @e )
+    public HookResult HandleRoundStart( EventRoundStart @event )
     {
-        Console.WriteLine(@e.UserIdController.PlayerName);
+        Core.Logger.LogInformation("EventRoundStart fired");
         return HookResult.Continue;
+    }
+
+    [EventListener<EventDelegates.OnClientVoice>]
+    public void OnClientVoice( IOnClientVoiceEvent @event )
+    {
+        Console.WriteLine($"OnClientVoice: {@event.PlayerId}");
     }
 
     [ServerNetMessageInternalHandler]
@@ -796,6 +828,29 @@ public class TestPlugin : BasePlugin
     {
         Console.WriteLine("FIRED");
         return HookResult.Continue;
+    }
+
+    [Command("dw")]
+    public void DropWeaponTest( ICommandContext context )
+    {
+        Console.WriteLine(Core.Localizer["test"]);
+    }
+
+    [Command("stats")]
+    public void StatsCommand( ICommandContext context )
+    {
+        var player = context.Sender!;
+        var name = player.Name;
+        context.Reply($"Your name is {name} and you ran the stats command!");
+    }
+
+    [Command("kurotest", registerRaw: true)]
+    public void Command_kurotest( ICommandContext context )
+    {
+        foreach (var client in Core.PlayerManager.GetAllPlayers())
+        {
+            Console.WriteLine($"{client.Name}");
+        }
     }
 
     private Callback<GCMessageAvailable_t>? _authTicketResponse;
@@ -822,6 +877,13 @@ public class TestPlugin : BasePlugin
     public void AuthResponse( GCMessageAvailable_t param )
     {
         Console.WriteLine($"AuthResponse {param.m_nMessageSize}");
+    }
+
+    [EventListener<EventDelegates.OnWeaponServicesDropWeaponHook>]
+    public void OnWeaponServicesDropWeapon( IOnWeaponServicesDropWeaponHook @event )
+    {
+        Console.WriteLine($"OnWeaponServicesDropWeapon: {@event.WeaponServices.Address:X}, {(@event.Weapon != null ? @event.Weapon.DesignerName : "no weapon")}, {@event.SwappingWeapon}");
+        @event.Result = HookResult.Stop;
     }
 
     [Command("getip")]
@@ -1379,7 +1441,11 @@ public class TestPlugin : BasePlugin
     [CommandAlias("cmat")]
     public void CommandTestCommand( ICommandContext context )
     {
-        Console.WriteLine(context);
+        Console.WriteLine("start");
+        var sw = Stopwatch.StartNew();
+        _ = Core.EntitySystem.GetAllEntities().Where(e => e.IsValid);
+        sw.Stop();
+        Console.WriteLine($"end - elapsed: {sw.ElapsedMilliseconds} ms");
     }
 
     [Command("ecwb")]

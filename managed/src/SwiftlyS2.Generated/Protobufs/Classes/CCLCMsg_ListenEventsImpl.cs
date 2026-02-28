@@ -1,4 +1,3 @@
-
 using SwiftlyS2.Core.Natives;
 using SwiftlyS2.Core.NetMessages;
 using SwiftlyS2.Shared.Natives;
@@ -9,12 +8,10 @@ namespace SwiftlyS2.Core.ProtobufDefinitions;
 
 internal class CCLCMsg_ListenEventsImpl : TypedProtobuf<CCLCMsg_ListenEvents>, CCLCMsg_ListenEvents
 {
-  public CCLCMsg_ListenEventsImpl(nint handle, bool isManuallyAllocated): base(handle)
-  {
-  }
+    public CCLCMsg_ListenEventsImpl(nint handle, bool isManuallyAllocated) : base(handle)
+    {
+    }
 
-
-  public IProtobufRepeatedFieldValueType<uint> EventMask
-  { get => new ProtobufRepeatedFieldValueType<uint>(Accessor, "event_mask"); }
-
+    public IProtobufRepeatedFieldValueType<uint> EventMask
+    { get => new ProtobufRepeatedFieldValueType<uint>(Accessor, "event_mask"); }
 }

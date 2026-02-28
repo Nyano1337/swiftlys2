@@ -50,9 +50,11 @@
 #include <public/steam/steam_gameserver.h>
 
 #include <public/tier1/convar.h>
+#include <thread>
 
 SwiftlyCore g_SwiftlyCore;
 InterfacesManager g_ifaceService;
+std::thread::id g_mainThreadId;
 
 INetworkMessages* networkMessages = nullptr;
 
@@ -60,16 +62,6 @@ IVFunctionHook* g_pGameServerSteamAPIActivated = nullptr;
 IVFunctionHook* g_pGameServerSteamAPIDeactivated = nullptr;
 
 IVFunctionHook* g_pLoopInitHook = nullptr;
-
-// // Simple benchmark function for P/Invoke testing
-// #ifdef _WIN32
-// extern "C" __declspec(dllexport) int32_t SwiftlyS2_Benchmark_PInvoke()
-// #else
-// extern "C" __attribute__((visibility("default"))) int32_t SwiftlyS2_Benchmark_PInvoke()
-// #endif
-// {
-//     return 1337;
-// }
 
 #ifdef _WIN32
 #include <regex>
@@ -84,14 +76,10 @@ bool LoopInitHook(void* _this, KeyValues* pKeyValues, void* pRegistry);
 
 extern ICvar* g_pCVar;
 
-CON_COMMAND(sw_crash, "")
-{
-    int* ptr = nullptr;
-    *ptr = 0;
-}
-
 bool SwiftlyCore::Load(BridgeKind_t kind)
 {
+    g_mainThreadId = std::this_thread::get_id();
+
     m_iKind = kind;
     SetupConsoleColors();
 
@@ -105,6 +93,7 @@ bool SwiftlyCore::Load(BridgeKind_t kind)
     {
         m_sLogPath += WIN_LINUX("\\", "/");
     }
+    m_sLogPath = replace(m_sLogPath, WIN_LINUX("addons\\swiftlys2", "addons/swiftlys2"), m_sCorePath);
 
     auto crashreporter = g_ifaceService.FetchInterface<ICrashReporter>(CRASHREPORTER_INTERFACE_VERSION);
     crashreporter->Init();
@@ -144,6 +133,16 @@ bool SwiftlyCore::Load(BridgeKind_t kind)
         _putenv_s("SWIFTLY_LOG_LEVEL", logLevel);
 #else
         setenv("SWIFTLY_LOG_LEVEL", logLevel, 1);
+#endif
+    }
+
+    const char* hideLogInConsole = CommandLine()->ParmValue(CUtlStringToken("-sw_hide_logs_in_console"));
+    if (hideLogInConsole)
+    {
+#ifdef _WIN32
+        _putenv_s("SWIFTLY_HIDE_LOG_IN_CONSOLE", hideLogInConsole);
+#else
+        setenv("SWIFTLY_HIDE_LOG_IN_CONSOLE", hideLogInConsole, 1);
 #endif
     }
 

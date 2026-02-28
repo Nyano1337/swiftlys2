@@ -192,17 +192,9 @@ internal class GameService : IGameService
             }
         }
 
-        if (match->TerroristScoreTotal > match->CTScoreTotal)
-        {
-            return (int)Team.T;
-        }
-
-        if (match->TerroristScoreTotal < match->CTScoreTotal)
-        {
-            return (int)Team.CT;
-        }
-
-        return (int)Team.None;
+        return match->TerroristScoreTotal > match->CTScoreTotal
+            ? (int)Team.T
+            : match->TerroristScoreTotal < match->CTScoreTotal ? (int)Team.CT : (int)Team.None;
     }
 
     private unsafe void UpdateTeamScores()
@@ -221,6 +213,8 @@ internal class GameService : IGameService
                 case (int)Team.CT:
                     UpdateTeamEntity(team, match->CTScoreTotal, match->CTScoreFirstHalf, match->CTScoreSecondHalf, match->CTScoreOvertime);
                     break;
+                default:
+                    break;
             }
         }
     }
@@ -228,11 +222,7 @@ internal class GameService : IGameService
     private CCSGameRules GetGameRules()
     {
         var gameRules = entitySystemService.GetGameRules();
-        if (gameRules?.IsValid ?? false)
-        {
-            return gameRules;
-        }
-        throw new InvalidOperationException("GameRules not found");
+        return gameRules?.IsValid ?? false ? gameRules : throw new InvalidOperationException("GameRules not found");
     }
 
     private unsafe CCSMatch* GetCCSMatchPtr()

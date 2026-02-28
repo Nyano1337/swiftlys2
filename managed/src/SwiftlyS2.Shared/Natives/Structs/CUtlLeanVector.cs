@@ -2,7 +2,6 @@ using System.Collections;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using SwiftlyS2.Core.Extensions;
 using SwiftlyS2.Core.Natives;
 using SwiftlyS2.Shared.Misc;
 using SwiftlyS2.Shared.Schemas;
@@ -39,7 +38,7 @@ public struct CUtlLeanVector<T, I>
         }
     }
 
-    public int ElementSize => SchemaSize.Get<T>();
+    public int ElementSize => SchemaInfo.Get<T>();
 
     private I ExternalBufferMarker => I.One << ((Marshal.SizeOf<I>() * 8) - 1);
 

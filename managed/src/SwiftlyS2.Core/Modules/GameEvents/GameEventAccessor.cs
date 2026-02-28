@@ -26,6 +26,7 @@ internal class GameEventAccessor : NativeHandle, IGameEventAccessor, IDisposable
     private void CheckIsValid()
     {
         if (!_IsValid) throw new InvalidOperationException("The event is already disposed.");
+        if (Address == 0) throw new InvalidOperationException("The event is invalid.");
     }
 
     public void SetBool( string key, bool value )
@@ -141,7 +142,7 @@ internal class GameEventAccessor : NativeHandle, IGameEventAccessor, IDisposable
         CheckIsValid();
 
         var playerid = GetInt32(key);
-        return !NativePlayerManager.IsPlayerOnline(playerid) ? null : PlayerManagerService.PlayerObjects[playerid];
+        return PlayerManagerService.PlayerObjects.TryGetValue(playerid, out var player) ? player : null;
     }
 
     public void SetPtr( string key, nint value )

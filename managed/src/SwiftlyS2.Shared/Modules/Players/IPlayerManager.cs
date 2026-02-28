@@ -310,4 +310,29 @@ public interface IPlayerManagerService
     /// <returns>A collection of players matching the search criteria.</returns>
     public IEnumerable<IPlayer> FindTargettedPlayers( IPlayer player, string target, TargetSearchMode searchMode,
         StringComparison nameComparison = StringComparison.OrdinalIgnoreCase );
+
+    /// <summary>
+    /// Checks whether a specific session ID is valid.
+    /// Session id will be invalid when the player associated is disconnected or doesn't exist.
+    /// </summary>
+    /// <param name="sessionId">The session ID to check.</param>
+    /// <returns>True if the session ID is valid, false otherwise.</returns>
+    public bool IsSessionIdValid( ulong sessionId );
+
+    /// <summary>
+    /// Retrieves the player associated with the specified session ID.
+    /// </summary>
+    /// <param name="sessionId">The session ID to retrieve the player from.</param>
+    /// <returns>An <see cref="IPlayer"/> instance representing the player with the specified session ID, or <c>null</c> if sessionid is disposed or invalid.
+    /// player exists.</returns>
+    public IPlayer? GetPlayerFromSessionId( ulong sessionId );
+
+    /// <summary>
+    /// Retrieves the player associated with the specified Steam ID.
+    /// </summary>
+    /// <param name="steamId">The Steam ID to retrieve the player from.</param>
+    /// <param name="allowUnauthorized">Whether to allow unauthorized players.</param>
+    /// <returns>An <see cref="IPlayer"/> instance representing the player with the specified Steam ID, or <c>null</c> if no such
+    /// player exists.</returns>
+    public IPlayer? GetPlayerFromSteamId( ulong steamId, bool allowUnauthorized = true );
 }

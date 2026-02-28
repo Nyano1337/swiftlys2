@@ -1,4 +1,3 @@
-using SwiftlyS2.Core.EntitySystem;
 using SwiftlyS2.Shared.EntitySystem;
 using SwiftlyS2.Shared.Misc;
 
@@ -6,7 +5,10 @@ namespace SwiftlyS2.Shared.SchemaDefinitions;
 
 public partial interface CEntityInstance : IEquatable<CEntityInstance>
 {
-
+  /// <summary>
+  /// Whether the entity instance is valid.
+  /// </summary>
+  public new bool IsValid { get; }
 
   /// <summary>
   /// The index of the entity.

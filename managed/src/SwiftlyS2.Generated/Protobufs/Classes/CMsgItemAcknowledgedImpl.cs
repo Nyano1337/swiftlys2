@@ -1,4 +1,3 @@
-
 using SwiftlyS2.Core.Natives;
 using SwiftlyS2.Core.NetMessages;
 using SwiftlyS2.Shared.Natives;
@@ -9,12 +8,10 @@ namespace SwiftlyS2.Core.ProtobufDefinitions;
 
 internal class CMsgItemAcknowledgedImpl : TypedProtobuf<CMsgItemAcknowledged>, CMsgItemAcknowledged
 {
-  public CMsgItemAcknowledgedImpl(nint handle, bool isManuallyAllocated): base(handle)
-  {
-  }
+    public CMsgItemAcknowledgedImpl(nint handle, bool isManuallyAllocated) : base(handle)
+    {
+    }
 
-
-  public CEconItemPreviewDataBlock Iteminfo
-  { get => new CEconItemPreviewDataBlockImpl(NativeNetMessages.GetNestedMessage(Address, "iteminfo"), false); }
-
+    public CEconItemPreviewDataBlock Iteminfo
+    { get => new CEconItemPreviewDataBlockImpl(NativeNetMessages.GetNestedMessage(Address, "iteminfo"), false); }
 }

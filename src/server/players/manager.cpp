@@ -215,10 +215,6 @@ void CheckTransmitHook(void* _this, CCheckTransmitInfo** ppInfoList, int infoCou
     {
         auto& pInfo = ppInfoList[i];
         int playerid = pInfo->m_nPlayerSlot.Get();
-        if (!playermanager->IsPlayerOnline(playerid))
-        {
-            continue;
-        }
 
         auto player = playermanager->GetPlayer(playerid);
         if (!player)
@@ -227,6 +223,8 @@ void CheckTransmitHook(void* _this, CCheckTransmitInfo** ppInfoList, int infoCou
         }
 
         auto& blockedBits = player->GetBlockedTransmittingBits();
+        if (blockedBits.activeMasks.empty()) continue;
+
         uint64_t* base = reinterpret_cast<uint64_t*>(pInfo->m_pTransmitEntity->Base());
         auto& activeMasks = blockedBits.activeMasks;
 
@@ -267,15 +265,13 @@ void OnGameFramePlayerHook(void* _this, bool simulate, bool first, bool last)
         reinterpret_cast<void (*)(bool, bool, bool)>(g_pOnGameTickCallback)(simulate, first, last);
 
     for (int i = 0; i < 64; i++)
-        if (playermanager->IsPlayerOnline(i))
-        {
-            auto player = playermanager->GetPlayer(i);
-            if (!player)
-                continue;
-            player->Think();
-        }
+    {
+        auto player = playermanager->GetPlayer(i);
+        if (player) player->Think();
+    }
 
-    vgui->Update();
+    // Disabled due to not being used
+    // vgui->Update();
 }
 
 extern void* g_pOnClientConnectCallback;
@@ -309,12 +305,31 @@ bool ClientConnectHook(void* _this, CPlayerSlot slot, const char* pszName, uint6
 void OnClientConnectedHook(void* _this, CPlayerSlot slot, const char* pszName, uint64 xuid, const char* pszNetworkID, const char* pszAddress, bool bFakePlayer)
 {
     static auto playermanager = g_ifaceService.FetchInterface<IPlayerManager>(PLAYERMANAGER_INTERFACE_VERSION);
+    static auto engine = g_ifaceService.FetchInterface<IVEngineServer2>(INTERFACEVERSION_VENGINESERVER);
     auto playerid = slot.Get();
+
     if (bFakePlayer)
     {
         auto player = playermanager->RegisterPlayer(playerid);
         player->SetFakeClient(true);
-        // player->Initialize(playerid);
+
+        if (g_pOnClientConnectCallback)
+        {
+            if (reinterpret_cast<bool (*)(int)>(g_pOnClientConnectCallback)(playerid) == false)
+            {
+                player->Kick("Connection rejected by plugin.", 0);
+                return;
+            }
+        }
+    }
+    else
+    {
+        if (engine->IsClientFullyAuthenticated(slot))
+        {
+            auto player = playermanager->GetPlayer(playerid);
+            if (player)
+                player->ChangeAuthorizationState(true);
+        }
     }
 
     reinterpret_cast<decltype(&OnClientConnectedHook)>(g_pOnClientConnectedHook->GetOriginal())(_this, slot, pszName, xuid, pszNetworkID, pszAddress, bFakePlayer);
@@ -362,7 +377,7 @@ void CPlayerManager::UnregisterPlayer(int playerid)
     auto player = g_Players[playerid];
     g_Players[playerid] = nullptr;
 
-    vgui->UnregisterForPlayer(player);
+    // vgui->UnregisterForPlayer(player);
 
     player->Shutdown();
     delete player;
@@ -381,6 +396,7 @@ bool CPlayerManager::IsPlayerOnline(int playerid)
 {
     if (playerid < 0 || playerid >= g_SwiftlyCore.GetMaxGameClients())
         return false;
+
     static auto engine = g_ifaceService.FetchInterface<IVEngineServer2>(INTERFACEVERSION_VENGINESERVER);
     return (engine->GetClientSteamID(playerid) != nullptr);
 }

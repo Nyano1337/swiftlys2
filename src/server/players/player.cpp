@@ -28,6 +28,8 @@
 #include <public/const.h>
 
 #include "usermessages.pb.h"
+#include <api/sdk/serversideclient.h>
+#include <public/iserver.h>
 
 #define CBaseEntity_m_iTeamNum 0x9DC483B8A5BFEFB3
 #define CBaseEntity_m_fFlags 0x9DC483B8A4A37590
@@ -106,6 +108,18 @@ static const std::vector<std::string> g_vButtons = {
     "unknown_key_63",
 };
 
+uint64_t sessionId = 1000;
+
+CServerSideClient* GetServerSideClient(int playerid)
+{
+    static auto offset = g_ifaceService.FetchInterface<IGameDataManager>(GAMEDATA_INTERFACE_VERSION)->GetOffsets()->Fetch("CNetworkGameServer::m_Clients");
+
+    auto gameserver = g_ifaceService.FetchInterface<INetworkServerService>(NETWORKSERVERSERVICE_INTERFACE_VERSION)->GetIGameServer();
+
+    auto clients = ((CUtlVector<CServerSideClient*>*)((uintptr_t)gameserver + offset));
+    return clients->Element(playerid);
+}
+
 void CPlayer::Initialize(int playerid)
 {
     m_iPlayerId = playerid;
@@ -113,6 +127,7 @@ void CPlayer::Initialize(int playerid)
 
     m_uConnectedTimeStart = std::chrono::high_resolution_clock::now();
     m_bvBlockedTransmittingEntities.activeMasks.reserve(256);
+    m_uSessionId = sessionId++;
 }
 
 void CPlayer::Shutdown()
@@ -166,7 +181,10 @@ void CPlayer::SendMsg(MessageType type, const std::string& message, int duration
                 if (!schema)
                     return;
 
-                msg = ProcessColor(message, *(int*)(schema->GetPropPtr(GetController(), CBaseEntity_m_iTeamNum)));
+                auto controller = GetController();
+                if (!controller)
+                    return;
+                msg = ProcessColor(message, *(int*)(schema->GetPropPtr(controller, CBaseEntity_m_iTeamNum)));
 
                 if (startsWithColor)
                     msg = " " + msg;
@@ -533,3 +551,14 @@ bool CPlayer::HasMenuShown()
 {
     return !centerMenuText.empty();
 }
+
+uint64_t CPlayer::GetSessionID()
+{
+    return m_uSessionId;
+}
+
+const char* CPlayer::GetName()
+{
+    return GetServerSideClient(m_iPlayerId)->GetClientName();
+}
+

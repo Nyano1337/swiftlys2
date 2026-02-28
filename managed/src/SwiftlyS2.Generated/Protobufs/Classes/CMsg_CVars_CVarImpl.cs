@@ -1,4 +1,3 @@
-
 using SwiftlyS2.Core.Natives;
 using SwiftlyS2.Core.NetMessages;
 using SwiftlyS2.Shared.Natives;
@@ -9,16 +8,12 @@ namespace SwiftlyS2.Core.ProtobufDefinitions;
 
 internal class CMsg_CVars_CVarImpl : TypedProtobuf<CMsg_CVars_CVar>, CMsg_CVars_CVar
 {
-  public CMsg_CVars_CVarImpl(nint handle, bool isManuallyAllocated): base(handle)
-  {
-  }
+    public CMsg_CVars_CVarImpl(nint handle, bool isManuallyAllocated) : base(handle)
+    {
+    }
 
-
-  public string Name
-  { get => Accessor.GetString("name"); set => Accessor.SetString("name", value); }
-
-
-  public string Value
-  { get => Accessor.GetString("value"); set => Accessor.SetString("value", value); }
-
+    public string Name
+    { get => Accessor.GetString("name"); set => Accessor.SetString("name", value); }
+    public string Value
+    { get => Accessor.GetString("value"); set => Accessor.SetString("value", value); }
 }

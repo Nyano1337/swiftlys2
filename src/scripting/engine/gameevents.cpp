@@ -28,26 +28,31 @@ typedef IGameEventListener2* (*GetLegacyGameEventListener)(CPlayerSlot slot);
 
 bool Bridge_GameEvents_GetBool(void* event, const char* key)
 {
+    if (!event) return false;
     return ((IGameEvent*)event)->GetBool(key);
 }
 
 int Bridge_GameEvents_GetInt(void* event, const char* key)
 {
+    if (!event) return 0;
     return ((IGameEvent*)event)->GetInt(key);
 }
 
 uint64_t Bridge_GameEvents_GetUint64(void* event, const char* key)
 {
+    if (!event) return 0;
     return ((IGameEvent*)event)->GetUint64(key);
 }
 
 float Bridge_GameEvents_GetFloat(void* event, const char* key)
 {
+    if (!event) return 0.0f;
     return ((IGameEvent*)event)->GetFloat(key);
 }
 
 int Bridge_GameEvents_GetString(char* out, void* event, const char* key)
 {
+    if (!event) return 1;
     static std::string s;
     s = ((IGameEvent*)event)->GetString(key);
 
@@ -58,106 +63,127 @@ int Bridge_GameEvents_GetString(char* out, void* event, const char* key)
 
 void* Bridge_GameEvents_GetPtr(void* event, const char* key)
 {
+    if (!event) return nullptr;
     return ((IGameEvent*)event)->GetPtr(key);
 }
 
 void* Bridge_GameEvents_GetEHandle(void* event, const char* key)
 {
+    if (!event) return nullptr;
     return ((IGameEvent*)event)->GetEHandle(key).Get();
 }
 
 void* Bridge_GameEvents_GetEntity(void* event, const char* key)
 {
+    if (!event) return nullptr;
     return ((IGameEvent*)event)->GetEntity(key);
 }
 
 int Bridge_GameEvents_GetEntityIndex(void* event, const char* key)
 {
+    if (!event) return -1;
     return ((IGameEvent*)event)->GetEntityIndex(key).Get();
 }
 
 int Bridge_GameEvents_GetPlayerSlot(void* event, const char* key)
 {
+    if (!event) return -1;
     return ((IGameEvent*)event)->GetPlayerSlot(key).Get();
 }
 
 void* Bridge_GameEvents_GetPlayerController(void* event, const char* key)
 {
+    if (!event) return nullptr;
     return ((IGameEvent*)event)->GetPlayerController(key);
 }
 
 void* Bridge_GameEvents_GetPlayerPawn(void* event, const char* key)
 {
+    if (!event) return nullptr;
     return ((IGameEvent*)event)->GetPlayerPawn(key);
 }
 
 void* Bridge_GameEvents_GetPawnEHandle(void* event, const char* key)
 {
+    if (!event) return nullptr;
     return ((IGameEvent*)event)->GetPawnEHandle(key).Get();
 }
 
 int Bridge_GameEvents_GetPawnEntityIndex(void* event, const char* key)
 {
+    if (!event) return -1;
     return ((IGameEvent*)event)->GetPawnEntityIndex(key).Get();
 }
 
 void Bridge_GameEvents_SetBool(void* event, const char* key, bool value)
 {
+    if (!event) return;
     ((IGameEvent*)event)->SetBool(key, value);
 }
 
 void Bridge_GameEvents_SetInt(void* event, const char* key, int value)
 {
+    if (!event) return;
     ((IGameEvent*)event)->SetInt(key, value);
 }
 
 void Bridge_GameEvents_SetUint64(void* event, const char* key, uint64_t value)
 {
+    if (!event) return;
     ((IGameEvent*)event)->SetUint64(key, value);
 }
 
 void Bridge_GameEvents_SetFloat(void* event, const char* key, float value)
 {
+    if (!event) return;
     ((IGameEvent*)event)->SetFloat(key, value);
 }
 
 void Bridge_GameEvents_SetString(void* event, const char* key, const char* value)
 {
+    if (!event) return;
     ((IGameEvent*)event)->SetString(key, value);
 }
 
 void Bridge_GameEvents_SetPtr(void* event, const char* key, void* value)
 {
+    if (!event) return;
     ((IGameEvent*)event)->SetPtr(key, value);
 }
 
 void Bridge_GameEvents_SetEntity(void* event, const char* key, void* value)
 {
+    if (!event) return;
     ((IGameEvent*)event)->SetEntity(key, (CEntityInstance*)value);
 }
 
 void Bridge_GameEvents_SetEntityIndex(void* event, const char* key, int value)
 {
+    if (!event) return;
     ((IGameEvent*)event)->SetEntity(key, CEntityIndex(value));
 }
 
 void Bridge_GameEvents_SetPlayerSlot(void* event, const char* key, int value)
 {
+    if (!event) return;
     ((IGameEvent*)event)->SetPlayer(key, CPlayerSlot(value));
 }
 
 bool Bridge_GameEvents_HasKey(void* event, const char* key)
 {
+    if (!event) return false;
     return ((IGameEvent*)event)->HasKey(key);
 }
 
 bool Bridge_GameEvents_IsReliable(void* event)
 {
+    if (!event) return false;
     return ((IGameEvent*)event)->IsReliable();
 }
 
 bool Bridge_GameEvents_IsLocal(void* event)
 {
+    if (!event) return false;
     return ((IGameEvent*)event)->IsLocal();
 }
 
@@ -217,12 +243,16 @@ void Bridge_GameEvents_FreeEvent(void* event)
 
 void Bridge_GameEvents_FireEvent(void* event, bool dontBroadcast)
 {
+    if (!event) return;
+
     static auto eventmanager = g_ifaceService.FetchInterface<IEventManager>(GAMEEVENTMANAGER_INTERFACE_VERSION);
     eventmanager->GetGameEventManager()->FireEvent((IGameEvent*)event, dontBroadcast);
 }
 
 void Bridge_GameEvents_FireEventToClient(void* event, int playerid)
 {
+    if (!event) return;
+
     static auto gamedata = g_ifaceService.FetchInterface<IGameDataManager>(GAMEDATA_INTERFACE_VERSION);
     static auto eventmanager = g_ifaceService.FetchInterface<IEventManager>(GAMEEVENTMANAGER_INTERFACE_VERSION);
     static auto crashreporter = g_ifaceService.FetchInterface<ICrashReporter>(CRASHREPORTER_INTERFACE_VERSION);

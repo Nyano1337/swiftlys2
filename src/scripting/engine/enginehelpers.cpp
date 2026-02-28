@@ -34,6 +34,8 @@
 
 #include <fmt/format.h>
 
+#include <api/sdk/recipientfilter.h>
+
 struct CBaseGameSystemFactory_t : public IGameSystemFactory {
     CBaseGameSystemFactory_t* m_pNext;
     const char* m_pName;
@@ -198,6 +200,14 @@ int Bridge_EngineHelpers_GetWorkshopId(char* out)
     return workshop_map.size();
 }
 
+void Bridge_EngineHelpers_DispatchParticleEffect(const char* particleName, uint attachmentType, void* entity, byte attachmentPoint, const char* attachmentName, bool resetAllParticlesOnEntity, int splitScreenSlot, uint64_t filtermask)
+{
+    auto gamedata = g_ifaceService.FetchInterface<IGameDataManager>(GAMEDATA_INTERFACE_VERSION);
+    auto func = gamedata->GetSignatures()->Fetch("DispatchParticleEffect");
+    CRecipientFilter a;
+    *(uint64_t*)(a.GetRecipients().Base()) = filtermask;
+    reinterpret_cast<void(*)(const char*, uint, void*, byte, CUtlSymbolLarge, bool, int, CRecipientFilter, byte)>(func)(particleName, attachmentType, entity, attachmentPoint, CUtlSymbolLarge(attachmentName), resetAllParticlesOnEntity, splitScreenSlot, a, 0);
+}
 DEFINE_NATIVE("EngineHelpers.GetIP", Bridge_EngineHelpers_GetIP);
 DEFINE_NATIVE("EngineHelpers.IsMapValid", Bridge_EngineHelpers_IsMapValid);
 DEFINE_NATIVE("EngineHelpers.ExecuteCommand", Bridge_EngineHelpers_ExecuteCommand);
@@ -212,3 +222,4 @@ DEFINE_NATIVE("EngineHelpers.GetCSGODirectoryPath", Bridge_EngineHelpers_GetCSGO
 DEFINE_NATIVE("EngineHelpers.GetGameDirectoryPath", Bridge_EngineHelpers_GetGameDirectoryPath);
 DEFINE_NATIVE("EngineHelpers.GetWorkshopId", Bridge_EngineHelpers_GetWorkshopId);
 DEFINE_NATIVE("EngineHelpers.GetNetworkGameServer", Bridge_EngineHelpers_GetNetworkGameServer);
+DEFINE_NATIVE("EngineHelpers.DispatchParticleEffect", Bridge_EngineHelpers_DispatchParticleEffect);

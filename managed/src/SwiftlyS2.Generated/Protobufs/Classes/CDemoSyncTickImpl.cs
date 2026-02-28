@@ -1,4 +1,3 @@
-
 using SwiftlyS2.Core.Natives;
 using SwiftlyS2.Core.NetMessages;
 using SwiftlyS2.Shared.Natives;
@@ -9,9 +8,8 @@ namespace SwiftlyS2.Core.ProtobufDefinitions;
 
 internal class CDemoSyncTickImpl : TypedProtobuf<CDemoSyncTick>, CDemoSyncTick
 {
-  public CDemoSyncTickImpl(nint handle, bool isManuallyAllocated): base(handle)
-  {
-  }
-
+    public CDemoSyncTickImpl(nint handle, bool isManuallyAllocated) : base(handle)
+    {
+    }
 
 }

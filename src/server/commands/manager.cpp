@@ -194,18 +194,21 @@ int CServerCommands::HandleCommand(int playerid, const std::string& text, bool d
         }
 
         commandName.erase(0, selectedPrefix.size());
+
         std::transform(commandName.begin(), commandName.end(), commandName.begin(), ::tolower);
         std::string originalCommandName = commandName;
+
         if (!commandHandlers.contains(commandName))
         {
             commandName = "sw_" + commandName;
         }
+
         if (!commandHandlers.contains(commandName))
         {
             return 0;
         }
 
-        commandHandlers[commandName](playerid, cmdString, originalCommandName, selectedPrefix, isSilentCommand);
+        if (!dryrun) commandHandlers[commandName](playerid, cmdString, originalCommandName, selectedPrefix, isSilentCommand);
     }
 
     if (isCommand)
@@ -258,7 +261,7 @@ bool CServerCommands::HandleClientChat(int playerid, const std::string& text, bo
     return true;
 }
 
-uint64_t CServerCommands::RegisterCommand(std::string commandName, std::function<void(int, std::vector<std::string>, std::string, std::string, bool)> handler, bool registerRaw)
+uint64_t CServerCommands::RegisterCommand(std::string commandName, std::function<void(int, std::vector<std::string>, std::string, std::string, bool)> handler, bool registerRaw, std::string helpText)
 {
     std::transform(commandName.begin(), commandName.end(), commandName.begin(), ::tolower);
 
@@ -274,8 +277,7 @@ uint64_t CServerCommands::RegisterCommand(std::string commandName, std::function
     static uint64_t commandId = 0;
     if (!conCommandCreated.contains(commandName))
     {
-        // printf("RegisterCommand -> commandName: %s, handler: %p, registerRaw: %d\n", commandName.c_str(), handler, registerRaw);
-        conCommandCreated[commandName] = new ConCommand(commandName.c_str(), CommandsCallback, "SwiftlyS2 registered command", FCVAR_CLIENT_CAN_EXECUTE | FCVAR_LINKED_CONCOMMAND);
+        conCommandCreated[commandName] = new ConCommand(commandName.c_str(), CommandsCallback, strdup(helpText.c_str()), FCVAR_CLIENT_CAN_EXECUTE | FCVAR_LINKED_CONCOMMAND);
         conCommandMapping[++commandId] = commandName;
         commandHandlers[commandName] = handler;
         conCommandCreated[commandName]->RemoveFlags(FCVAR_SERVER_CAN_EXECUTE);
@@ -347,7 +349,7 @@ uint64_t CServerCommands::RegisterAlias(std::string aliasCommand, std::string co
             return 0;
         }
     }
-    return RegisterCommand(aliasCommand, commandHandlers[commandName], registerRaw);
+    return RegisterCommand(aliasCommand, commandHandlers[commandName], registerRaw, conCommandCreated[commandName]->GetHelpText());
 }
 
 void CServerCommands::UnregisterAlias(uint64_t aliasId)
@@ -396,6 +398,9 @@ void DispatchConCommand(void* thisPtr, ConCommandRef cmd, const CCommandContext&
     static auto playermanager = g_ifaceService.FetchInterface<IPlayerManager>(PLAYERMANAGER_INTERFACE_VERSION);
     static auto eventmanager = g_ifaceService.FetchInterface<IEventManager>(GAMEEVENTMANAGER_INTERFACE_VERSION);
 
+    std::string gameText = "";
+    bool shouldSend = true;
+
     if (slot.Get() != -1)
     {
         if (!servercommands->HandleClientCommand(slot.Get(), args.GetCommandString()))
@@ -432,13 +437,17 @@ void DispatchConCommand(void* thisPtr, ConCommandRef cmd, const CCommandContext&
                 }
             }
 
-            int handleCommandReturn = servercommands->HandleCommand(slot.Get(), text, false);
-            if (handleCommandReturn == 2 || !servercommands->HandleClientChat(slot.Get(), text, teamonly))
+            gameText = text;
+            shouldSend = (servercommands->HandleCommand(slot.Get(), text, true) != 2);
+
+            if (shouldSend && !servercommands->HandleClientChat(slot.Get(), text, teamonly))
             {
-                return;
+                shouldSend = false;
             }
         }
     }
 
-    return reinterpret_cast<decltype(&DispatchConCommand)>(dispatchConCommandHook->GetOriginal())(thisPtr, cmd, ctx, args);
+    if (shouldSend) reinterpret_cast<decltype(&DispatchConCommand)>(dispatchConCommandHook->GetOriginal())(thisPtr, cmd, ctx, args);
+
+    if (gameText != "") servercommands->HandleCommand(slot.Get(), gameText, false);
 }

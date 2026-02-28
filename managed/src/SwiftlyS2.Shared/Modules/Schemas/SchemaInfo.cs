@@ -1,12 +1,12 @@
 using System.Collections.Concurrent;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace SwiftlyS2.Shared.Schemas;
 
-public static class SchemaSize
+public static class SchemaInfo
 {
     private static readonly ConcurrentDictionary<Type, int> _sizeCache = new();
+    private static readonly ConcurrentDictionary<Type, bool> _isSchemaClassCache = new();
 
     public static int GetSize<T>() where T : ISchemaClass<T>
     {
@@ -23,7 +23,7 @@ public static class SchemaSize
                     iface.GetGenericTypeDefinition() == typeof(ISchemaClass<>) &&
                     iface.GetGenericArguments()[0] == type)
                 {
-                    var method = typeof(SchemaSize).GetMethod(nameof(GetSize))?.MakeGenericMethod(type);
+                    var method = typeof(SchemaInfo).GetMethod(nameof(GetSize))?.MakeGenericMethod(type);
                     if (method != null)
                     {
                         return (int)method.Invoke(null, null)!;
@@ -33,4 +33,24 @@ public static class SchemaSize
 
             return Unsafe.SizeOf<T>();
         });
-    }}
+    }
+
+    public static bool IsSchemaClass<T>()
+    {
+        return _isSchemaClassCache.GetOrAdd(typeof(T), static type =>
+        {
+            var interfaces = type.GetInterfaces();
+            foreach (var iface in interfaces)
+            {
+                if (iface.IsGenericType &&
+                    iface.GetGenericTypeDefinition() == typeof(ISchemaClass<>) &&
+                    iface.GetGenericArguments()[0] == type)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+    }
+}

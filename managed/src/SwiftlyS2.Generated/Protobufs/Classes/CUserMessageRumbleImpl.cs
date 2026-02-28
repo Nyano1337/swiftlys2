@@ -1,4 +1,3 @@
-
 using SwiftlyS2.Core.Natives;
 using SwiftlyS2.Core.NetMessages;
 using SwiftlyS2.Shared.Natives;
@@ -9,20 +8,14 @@ namespace SwiftlyS2.Core.ProtobufDefinitions;
 
 internal class CUserMessageRumbleImpl : NetMessage<CUserMessageRumble>, CUserMessageRumble
 {
-  public CUserMessageRumbleImpl(nint handle, bool isManuallyAllocated): base(handle, isManuallyAllocated)
-  {
-  }
+    public CUserMessageRumbleImpl(nint handle, bool isManuallyAllocated) : base(handle, isManuallyAllocated)
+    {
+    }
 
-
-  public int Index
-  { get => Accessor.GetInt32("index"); set => Accessor.SetInt32("index", value); }
-
-
-  public int Data
-  { get => Accessor.GetInt32("data"); set => Accessor.SetInt32("data", value); }
-
-
-  public int Flags
-  { get => Accessor.GetInt32("flags"); set => Accessor.SetInt32("flags", value); }
-
+    public int Index
+    { get => Accessor.GetInt32("index"); set => Accessor.SetInt32("index", value); }
+    public int Data
+    { get => Accessor.GetInt32("data"); set => Accessor.SetInt32("data", value); }
+    public int Flags
+    { get => Accessor.GetInt32("flags"); set => Accessor.SetInt32("flags", value); }
 }

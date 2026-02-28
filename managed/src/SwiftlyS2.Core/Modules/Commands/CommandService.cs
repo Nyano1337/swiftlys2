@@ -32,9 +32,14 @@ internal class CommandService : ICommandService, IDisposable
         }
     }
 
-    public Guid RegisterCommand( string commandName, ICommandService.CommandListener handler, bool registerRaw = false, string permission = "" )
+    public Guid RegisterCommand( string commandName, ICommandService.CommandListener handler, bool registerRaw, string permission )
     {
-        var callback = new CommandCallback(commandName, registerRaw, handler, permission, playerManagerService, permissionManager, loggerFactory, profiler);
+        return RegisterCommand(commandName, handler, registerRaw, permission, "SwiftlyS2 registered command");
+    }
+
+    public Guid RegisterCommand( string commandName, ICommandService.CommandListener handler, bool registerRaw = false, string permission = "", string helpText = "SwiftlyS2 registered command" )
+    {
+        var callback = new CommandCallback(commandName, registerRaw, handler, permission, helpText, playerManagerService, permissionManager, loggerFactory, profiler);
         lock (commandLock)
         {
             commandCallbacks.Add(callback);

@@ -11,12 +11,6 @@ public interface IEngineService
     public string? ServerIP { get; }
 
     /// <summary>
-    /// Gets the map that the server is running
-    /// </summary>
-    [Obsolete("Use GlobalVars.MapName instead.")]
-    public string Map { get; }
-
-    /// <summary>
     /// Gets the Workshop ID of the current map.
     /// </summary>
     public string WorkshopId { get; }
@@ -32,12 +26,6 @@ public interface IEngineService
     /// <param name="map">The map string to validate. It also supports Workshop ID.</param>
     /// <returns>true if the map is valid; otherwise, false.</returns>
     public bool IsMapValid( string map );
-
-    /// <summary>
-    /// Gets the maximum number of players allowed in the game.
-    /// </summary>
-    [Obsolete("Use GlobalVars.MaxClients instead.")]
-    public int MaxPlayers { get; }
 
     /// <summary>
     /// Executes the specified command string in the current context.
@@ -64,18 +52,6 @@ public interface IEngineService
     /// <param name="command">The command to execute. Cannot be null or empty.</param>
     /// <param name="bufferCallback">The callback to receive the output of the command.</param>
     public Task ExecuteCommandWithBufferAsync( string command, Action<string> bufferCallback );
-
-    /// <summary>
-    /// The time since the server started.
-    /// </summary>
-    [Obsolete("Use GlobalVars.CurrentTime instead.")]
-    public float CurrentTime { get; }
-
-    /// <summary>
-    /// The number of simulation ticks that have occurred since the server started.
-    /// </summary>
-    [Obsolete("Use GlobalVars.TickCount instead.")]
-    public int TickCount { get; }
 
     /// <summary>
     /// Find a game system by name.

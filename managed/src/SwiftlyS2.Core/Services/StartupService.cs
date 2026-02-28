@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Hosting;
 using SwiftlyS2.Core.Misc;
 using SwiftlyS2.Core.Hosting;
+using SwiftlyS2.Core.SchemaDefinitions;
 
 namespace SwiftlyS2.Core.Services;
 
@@ -10,6 +11,9 @@ internal class StartupService : IHostedService
 
     public StartupService( IServiceProvider provider )
     {
+        // JIT warmup
+        var _ = ClassConvertor.ConvertEntityByDesignerName(0, "abc");
+        
         // this.provider = provider;
         provider.UseCoreHookService();
         provider.UsePermissionManager();

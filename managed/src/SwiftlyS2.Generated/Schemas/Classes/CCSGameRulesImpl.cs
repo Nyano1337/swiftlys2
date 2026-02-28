@@ -1100,18 +1100,18 @@ internal partial class CCSGameRulesImpl : CTeamplayRulesImpl, CCSGameRules
     }
     private static nint? _CTSpawnPointsMasterListOffset;
 
-    public ref CUtlVector<PointerTo<SpawnPoint>> CTSpawnPointsMasterList {
+    public ref CUtlVector<CHandle<SpawnPoint>> CTSpawnPointsMasterList {
         get {
             _CTSpawnPointsMasterListOffset = _CTSpawnPointsMasterListOffset ?? Schema.GetOffset(0x6295CF6582901578);
-            return ref _Handle.AsRef<CUtlVector<PointerTo<SpawnPoint>>>(_CTSpawnPointsMasterListOffset!.Value);
+            return ref _Handle.AsRef<CUtlVector<CHandle<SpawnPoint>>>(_CTSpawnPointsMasterListOffset!.Value);
         }
     }
     private static nint? _TerroristSpawnPointsMasterListOffset;
 
-    public ref CUtlVector<PointerTo<SpawnPoint>> TerroristSpawnPointsMasterList {
+    public ref CUtlVector<CHandle<SpawnPoint>> TerroristSpawnPointsMasterList {
         get {
             _TerroristSpawnPointsMasterListOffset = _TerroristSpawnPointsMasterListOffset ?? Schema.GetOffset(0x6295CF65EC3D3B5D);
-            return ref _Handle.AsRef<CUtlVector<PointerTo<SpawnPoint>>>(_TerroristSpawnPointsMasterListOffset!.Value);
+            return ref _Handle.AsRef<CUtlVector<CHandle<SpawnPoint>>>(_TerroristSpawnPointsMasterListOffset!.Value);
         }
     }
     private static nint? _RespawningAllRespawnablePlayersOffset;
@@ -1156,18 +1156,18 @@ internal partial class CCSGameRulesImpl : CTeamplayRulesImpl, CCSGameRules
     }
     private static nint? _CTSpawnPointsOffset;
 
-    public ref CUtlVector<PointerTo<SpawnPoint>> CTSpawnPoints {
+    public ref CUtlVector<CHandle<SpawnPoint>> CTSpawnPoints {
         get {
             _CTSpawnPointsOffset = _CTSpawnPointsOffset ?? Schema.GetOffset(0x6295CF6537BA1FB2);
-            return ref _Handle.AsRef<CUtlVector<PointerTo<SpawnPoint>>>(_CTSpawnPointsOffset!.Value);
+            return ref _Handle.AsRef<CUtlVector<CHandle<SpawnPoint>>>(_CTSpawnPointsOffset!.Value);
         }
     }
     private static nint? _TerroristSpawnPointsOffset;
 
-    public ref CUtlVector<PointerTo<SpawnPoint>> TerroristSpawnPoints {
+    public ref CUtlVector<CHandle<SpawnPoint>> TerroristSpawnPoints {
         get {
             _TerroristSpawnPointsOffset = _TerroristSpawnPointsOffset ?? Schema.GetOffset(0x6295CF6506BE8E93);
-            return ref _Handle.AsRef<CUtlVector<PointerTo<SpawnPoint>>>(_TerroristSpawnPointsOffset!.Value);
+            return ref _Handle.AsRef<CUtlVector<CHandle<SpawnPoint>>>(_TerroristSpawnPointsOffset!.Value);
         }
     }
     private static nint? _IsUnreservedGameServerOffset;

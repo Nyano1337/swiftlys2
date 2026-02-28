@@ -7,7 +7,7 @@ namespace SwiftlyS2.Shared.Natives;
 [StructLayout(LayoutKind.Sequential, Size = 8)]
 public struct CUtlSymbolLarge {
 
-  private nint _pString;
+  internal nint _pString;
 
   public string Value {
     get {

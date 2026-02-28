@@ -18,6 +18,9 @@
 
 #include <scripting/scripting.h>
 #include <api/interfaces/manager.h>
+#include <thread>
+
+extern std::thread::id g_mainThreadId;
 
 uint8_t Bridge_Core_PluginManualLoadState()
 {
@@ -50,6 +53,12 @@ uint8_t Bridge_Core_EnableProfilerByDefault()
     return 0;
 }
 
+uint8_t Bridge_Core_IsMainThread()
+{
+    return std::this_thread::get_id() == g_mainThreadId ? 1 : 0;
+}
+
 DEFINE_NATIVE("Core.PluginManualLoadState", Bridge_Core_PluginManualLoadState);
 DEFINE_NATIVE("Core.PluginLoadOrder", Bridge_Core_PluginLoadOrder);
 DEFINE_NATIVE("Core.EnableProfilerByDefault", Bridge_Core_EnableProfilerByDefault);
+DEFINE_NATIVE("Core.IsMainThread", Bridge_Core_IsMainThread);

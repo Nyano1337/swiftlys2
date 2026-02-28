@@ -29,6 +29,7 @@ public abstract partial class MenuOptionBase : IMenuOption, IDisposable
     protected MenuOptionBase()
     {
         disposed = false;
+        Comment = "";
     }
 
     /// <summary>
@@ -44,16 +45,17 @@ public abstract partial class MenuOptionBase : IMenuOption, IDisposable
     protected MenuOptionBase( int updateIntervalMs, int pauseIntervalMs )
     {
         disposed = false;
+        Comment = "";
 
         if (updateIntervalMs < (int)(1 / 64f * 1000))
         {
-            Spectre.Console.AnsiConsole.WriteException(new ArgumentOutOfRangeException(nameof(updateIntervalMs),
+            AnsiConsole.WriteException(new ArgumentOutOfRangeException(nameof(updateIntervalMs),
                 $"updateIntervalMs: value {updateIntervalMs} is out of range."));
         }
 
         if (pauseIntervalMs < (int)(1 / 64f * 1000))
         {
-            Spectre.Console.AnsiConsole.WriteException(new ArgumentOutOfRangeException(nameof(pauseIntervalMs),
+            AnsiConsole.WriteException(new ArgumentOutOfRangeException(nameof(pauseIntervalMs),
                 $"pauseIntervalMs: value {pauseIntervalMs} is out of range."));
         }
 
@@ -241,7 +243,7 @@ public abstract partial class MenuOptionBase : IMenuOption, IDisposable
 
             if (value < 1f)
             {
-                Spectre.Console.AnsiConsole.WriteException(new ArgumentOutOfRangeException(nameof(MaxWidth),
+                AnsiConsole.WriteException(new ArgumentOutOfRangeException(nameof(MaxWidth),
                     $"MaxWidth: value {value:F3} is out of range."));
             }
 

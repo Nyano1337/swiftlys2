@@ -41,6 +41,11 @@ public interface IPlayer : IEquatable<IPlayer>
     public int PlayerID { get; }
 
     /// <summary>
+    /// Gets the session ID for the player.
+    /// </summary>
+    public ulong SessionId { get; }
+
+    /// <summary>
     /// Gets the user ID for the player.
     /// </summary>
     public int UserID { get; }
@@ -49,6 +54,11 @@ public interface IPlayer : IEquatable<IPlayer>
     /// Gets the slot of the player. Equals to the player ID.
     /// </summary>
     public int Slot { get; }
+
+    /// <summary>
+    /// Gets the name of the player.
+    /// </summary>
+    public string Name { get; }
 
     /// <summary>
     /// Sends a message of the specified type to the player.

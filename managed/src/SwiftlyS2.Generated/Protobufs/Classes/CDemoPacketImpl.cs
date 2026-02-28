@@ -1,4 +1,3 @@
-
 using SwiftlyS2.Core.Natives;
 using SwiftlyS2.Core.NetMessages;
 using SwiftlyS2.Shared.Natives;
@@ -9,12 +8,10 @@ namespace SwiftlyS2.Core.ProtobufDefinitions;
 
 internal class CDemoPacketImpl : TypedProtobuf<CDemoPacket>, CDemoPacket
 {
-  public CDemoPacketImpl(nint handle, bool isManuallyAllocated): base(handle)
-  {
-  }
+    public CDemoPacketImpl(nint handle, bool isManuallyAllocated) : base(handle)
+    {
+    }
 
-
-  public byte[] Data
-  { get => Accessor.GetBytes("data"); set => Accessor.SetBytes("data", value); }
-
+    public byte[] Data
+    { get => Accessor.GetBytes("data"); set => Accessor.SetBytes("data", value); }
 }

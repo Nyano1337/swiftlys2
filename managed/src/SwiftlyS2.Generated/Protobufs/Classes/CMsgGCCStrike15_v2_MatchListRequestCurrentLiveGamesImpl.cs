@@ -1,4 +1,3 @@
-
 using SwiftlyS2.Core.Natives;
 using SwiftlyS2.Core.NetMessages;
 using SwiftlyS2.Shared.Natives;
@@ -9,9 +8,8 @@ namespace SwiftlyS2.Core.ProtobufDefinitions;
 
 internal class CMsgGCCStrike15_v2_MatchListRequestCurrentLiveGamesImpl : TypedProtobuf<CMsgGCCStrike15_v2_MatchListRequestCurrentLiveGames>, CMsgGCCStrike15_v2_MatchListRequestCurrentLiveGames
 {
-  public CMsgGCCStrike15_v2_MatchListRequestCurrentLiveGamesImpl(nint handle, bool isManuallyAllocated): base(handle)
-  {
-  }
-
+    public CMsgGCCStrike15_v2_MatchListRequestCurrentLiveGamesImpl(nint handle, bool isManuallyAllocated) : base(handle)
+    {
+    }
 
 }

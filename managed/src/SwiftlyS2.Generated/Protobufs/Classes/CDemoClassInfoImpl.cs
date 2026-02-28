@@ -1,4 +1,3 @@
-
 using SwiftlyS2.Core.Natives;
 using SwiftlyS2.Core.NetMessages;
 using SwiftlyS2.Shared.Natives;
@@ -9,12 +8,10 @@ namespace SwiftlyS2.Core.ProtobufDefinitions;
 
 internal class CDemoClassInfoImpl : TypedProtobuf<CDemoClassInfo>, CDemoClassInfo
 {
-  public CDemoClassInfoImpl(nint handle, bool isManuallyAllocated): base(handle)
-  {
-  }
+    public CDemoClassInfoImpl(nint handle, bool isManuallyAllocated) : base(handle)
+    {
+    }
 
-
-  public IProtobufRepeatedFieldSubMessageType<CDemoClassInfo_class_t> Classes
-  { get => new ProtobufRepeatedFieldSubMessageType<CDemoClassInfo_class_t>(Accessor, "classes"); }
-
+    public IProtobufRepeatedFieldSubMessageType<CDemoClassInfo_class_t> Classes
+    { get => new ProtobufRepeatedFieldSubMessageType<CDemoClassInfo_class_t>(Accessor, "classes"); }
 }

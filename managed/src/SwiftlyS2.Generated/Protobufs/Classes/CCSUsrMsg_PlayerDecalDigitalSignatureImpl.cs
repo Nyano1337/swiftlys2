@@ -1,4 +1,3 @@
-
 using SwiftlyS2.Core.Natives;
 using SwiftlyS2.Core.NetMessages;
 using SwiftlyS2.Shared.Natives;
@@ -9,12 +8,10 @@ namespace SwiftlyS2.Core.ProtobufDefinitions;
 
 internal class CCSUsrMsg_PlayerDecalDigitalSignatureImpl : NetMessage<CCSUsrMsg_PlayerDecalDigitalSignature>, CCSUsrMsg_PlayerDecalDigitalSignature
 {
-  public CCSUsrMsg_PlayerDecalDigitalSignatureImpl(nint handle, bool isManuallyAllocated): base(handle, isManuallyAllocated)
-  {
-  }
+    public CCSUsrMsg_PlayerDecalDigitalSignatureImpl(nint handle, bool isManuallyAllocated) : base(handle, isManuallyAllocated)
+    {
+    }
 
-
-  public PlayerDecalDigitalSignature Data
-  { get => new PlayerDecalDigitalSignatureImpl(NativeNetMessages.GetNestedMessage(Address, "data"), false); }
-
+    public PlayerDecalDigitalSignature Data
+    { get => new PlayerDecalDigitalSignatureImpl(NativeNetMessages.GetNestedMessage(Address, "data"), false); }
 }

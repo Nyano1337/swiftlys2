@@ -6,14 +6,14 @@ using SwiftlyS2.Shared.Events;
 using SwiftlyS2.Core.Scheduler;
 using SwiftlyS2.Core.SchemaDefinitions;
 using SwiftlyS2.Core.ProtobufDefinitions;
-using SwiftlyS2.Shared.SchemaDefinitions;
 using SwiftlyS2.Shared.ProtobufDefinitions;
+using SwiftlyS2.Core.Players;
+using SwiftlyS2.Core.EntitySystem;
 
 namespace SwiftlyS2.Core.Events;
 
 internal static class EventPublisher
 {
-    internal static event Action? InternalOnMapLoad;
     private static readonly List<EventSubscriber> subscribers = [];
     private static readonly Lock subscribersLock = new();
 
@@ -55,6 +55,7 @@ internal static class EventPublisher
             NativeEvents.RegisterOnEntityTakeDamageCallback((nint)(delegate* unmanaged< nint, nint, nint, byte >)&OnEntityTakeDamage);
             NativeEvents.RegisterOnPrecacheResourceCallback((nint)(delegate* unmanaged< nint, void >)&OnPrecacheResource);
             NativeEvents.RegisterOnStartupServerCallback((nint)(delegate* unmanaged< void >)&OnStartupServer);
+            NativeEvents.RegisterOnClientVoiceCallback((nint)(delegate* unmanaged< int, void >)&OnClientVoice);
             _ = NativeConvars.AddConvarCreatedListener((nint)(delegate* unmanaged< nint, void >)&OnConVarCreated);
             _ = NativeConvars.AddConCommandCreatedListener((nint)(delegate* unmanaged< nint, void >)&OnConCommandCreated);
             _ = NativeConvars.AddGlobalChangeListener((nint)(delegate* unmanaged< nint, int, nint, nint, void >)&OnConVarValueChanged);
@@ -203,6 +204,7 @@ internal static class EventPublisher
     [UnmanagedCallersOnly]
     public static byte OnClientConnected( int playerId )
     {
+        PlayerManagerService.RegisterPlayerObject(playerId);
         if (subscribers.Count == 0)
         {
             return 1;
@@ -222,6 +224,7 @@ internal static class EventPublisher
 
                 if (@event.Result == HookResult.Stop)
                 {
+                    PlayerManagerService.UnregisterPlayerObject(playerId);
                     return 0;
                 }
             }
@@ -257,13 +260,19 @@ internal static class EventPublisher
             {
                 subscriber.InvokeOnClientDisconnected(@event);
             }
+
+            PlayerManagerService.UnregisterPlayerObject(playerId);
+
         }
         catch (Exception e)
         {
             if (!GlobalExceptionHandler.Handle(e))
             {
+                PlayerManagerService.UnregisterPlayerObject(playerId);
                 return;
             }
+
+            PlayerManagerService.UnregisterPlayerObject(playerId);
             AnsiConsole.WriteException(e);
         }
     }
@@ -305,6 +314,8 @@ internal static class EventPublisher
         {
             return;
         }
+
+        if (clientKind == (int)ClientKind.Bot) PlayerManagerService.RegisterPlayerObject(playerId);
 
         try
         {
@@ -382,6 +393,7 @@ internal static class EventPublisher
     [UnmanagedCallersOnly]
     public static void OnEntityCreated( nint entityPtr )
     {
+        var entity = EntityManager.OnEntityCreated(entityPtr);
         if (subscribers.Count == 0)
         {
             return;
@@ -389,7 +401,7 @@ internal static class EventPublisher
 
         try
         {
-            OnEntityCreatedEvent @event = new() { Entity = new CEntityInstanceImpl(entityPtr) };
+            OnEntityCreatedEvent @event = new() { Entity = entity };
             foreach (var subscriber in subscribers)
             {
                 subscriber.InvokeOnEntityCreated(@event);
@@ -410,12 +422,15 @@ internal static class EventPublisher
     {
         if (subscribers.Count == 0)
         {
+            EntityManager.OnEntityDeleted(entityPtr);
             return;
         }
 
+        var entity = EntityManager.GetEntityByAddress(entityPtr);
+
         try
         {
-            OnEntityDeletedEvent @event = new() { Entity = new CEntityInstanceImpl(entityPtr) };
+            OnEntityDeletedEvent @event = new() { Entity = entity! };
             foreach (var subscriber in subscribers)
             {
                 subscriber.InvokeOnEntityDeleted(@event);
@@ -428,6 +443,10 @@ internal static class EventPublisher
                 return;
             }
             AnsiConsole.WriteException(e);
+        }
+        finally
+        {
+            EntityManager.OnEntityDeleted(entityPtr);
         }
     }
 
@@ -496,7 +515,11 @@ internal static class EventPublisher
 
         try
         {
-            InternalOnMapLoad?.Invoke(); // calls before all plugins.
+            OnMapLoadEvent @event = new() { MapName = Marshal.PtrToStringUTF8(mapNamePtr) ?? string.Empty };
+            foreach (var subscriber in subscribers)
+            {
+                subscriber.InvokeOnMapLoad(@event);
+            }
         }
         catch (Exception e)
         {
@@ -506,13 +529,22 @@ internal static class EventPublisher
             }
             AnsiConsole.WriteException(e);
         }
+    }
+
+    [UnmanagedCallersOnly]
+    public static void OnClientVoice( int playerId )
+    {
+        if (subscribers.Count == 0)
+        {
+            return;
+        }
 
         try
         {
-            OnMapLoadEvent @event = new() { MapName = Marshal.PtrToStringUTF8(mapNamePtr) ?? string.Empty };
+            OnClientVoiceEvent @event = new() { PlayerId = playerId };
             foreach (var subscriber in subscribers)
             {
-                subscriber.InvokeOnMapLoad(@event);
+                subscriber.InvokeOnClientVoice(@event);
             }
         }
         catch (Exception e)
@@ -677,31 +709,6 @@ internal static class EventPublisher
             foreach (var subscriber in subscribers)
             {
                 subscriber.InvokeOnStartupServer();
-            }
-        }
-        catch (Exception e)
-        {
-            if (!GlobalExceptionHandler.Handle(e))
-            {
-                return;
-            }
-            AnsiConsole.WriteException(e);
-        }
-    }
-
-    [Obsolete("InvokeOnEntityTouchHook is deprecated. Use InvokeOnEntityStartTouch, InvokeOnEntityTouch, or InvokeOnEntityEndTouch instead.")]
-    public static void InvokeOnEntityTouchHook( OnEntityTouchHookEvent @event )
-    {
-        if (subscribers.Count == 0)
-        {
-            return;
-        }
-
-        try
-        {
-            foreach (var subscriber in subscribers)
-            {
-                subscriber.InvokeOnEntityTouchHook(@event);
             }
         }
         catch (Exception e)
@@ -972,6 +979,30 @@ internal static class EventPublisher
             foreach (var subscriber in subscribers)
             {
                 subscriber.InvokeOnEntityIdentityAcceptInputHook(@event);
+            }
+        }
+        catch (Exception e)
+        {
+            if (!GlobalExceptionHandler.Handle(e))
+            {
+                return;
+            }
+            AnsiConsole.WriteException(e);
+        }
+    }
+
+    public static void InvokeOnWeaponServicesDropWeaponHook( OnWeaponServicesDropWeaponHook @event )
+    {
+        if (subscribers.Count == 0)
+        {
+            return;
+        }
+
+        try
+        {
+            foreach (var subscriber in subscribers)
+            {
+                subscriber.InvokeOnWeaponServicesDropWeaponHook(@event);
             }
         }
         catch (Exception e)

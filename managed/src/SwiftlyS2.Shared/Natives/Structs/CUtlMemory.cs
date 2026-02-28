@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using SwiftlyS2.Core.Extensions;
 using SwiftlyS2.Core.Natives;
 using SwiftlyS2.Shared.Misc;
+using SwiftlyS2.Shared.SchemaDefinitions;
 using SwiftlyS2.Shared.Schemas;
 
 namespace SwiftlyS2.Shared.Natives;
@@ -20,7 +21,7 @@ public struct CUtlMemory<T>
     private uint _allocationCount;
     private uint _growSize;
 
-    public int ElementSize => SchemaSize.Get<T>();
+    public int ElementSize => SchemaInfo.Get<T>();
 
     /// <summary>
     /// Please use <see cref="ManagedCUtlMemory{T}"/> instead to construct it.
@@ -191,10 +192,26 @@ public struct CUtlMemory<T>
         get {
             unsafe
             {
-                return ref Unsafe.AsRef<T>((byte*)_memory + int.CreateChecked(index * ElementSize));
+                if (SchemaInfo.IsSchemaClass<T>())
+                {
+                    var address = (nint)((byte*)_memory + int.CreateChecked(index * ElementSize));
+                    var tType = typeof(T);
+
+                    var schemaClassType = $"SwiftlyS2.Core.SchemaDefinitions.{tType.Name}Impl";
+                    var implType = tType.Assembly.GetType(schemaClassType);
+                    if (implType == null) throw new InvalidOperationException($"Could not find implementation type {schemaClassType} for schema class {tType.FullName}");
+
+                    var obj = (T)Activator.CreateInstance(implType, [address])!;
+                    return ref obj;
+                }
+                else
+                {
+                    return ref Unsafe.AsRef<T>((byte*)_memory + int.CreateChecked(index * ElementSize));
+                }
             }
         }
     }
+
     public bool ExternallyAllocated => (_growSize & (int)(BufferMarkers.ExternalBufferMarker | BufferMarkers.ExternalConstBufferMarker)) != 0;
     public bool IsReadOnly => (_growSize & (int)BufferMarkers.ExternalConstBufferMarker) != 0;
     public nint Base => _memory;

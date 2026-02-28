@@ -173,7 +173,7 @@ void Bridge_Player_ShouldBlockTransmitEntity(int playerid, int entityidx, bool s
 
     auto& bv = player->GetBlockedTransmittingBits();
 
-    auto dword = entityidx / 64;
+    auto dword = entityidx >> 6;
     if (shouldBlockTransmit)
     {
         bool wasEmpty = (bv.blockedMask[dword] == 0);
@@ -212,7 +212,7 @@ bool Bridge_Player_IsTransmitEntityBlocked(int playerid, int entityidx)
     }
 
     auto& bv = player->GetBlockedTransmittingBits();
-    return (bv.blockedMask[entityidx / 64] & (1ULL << (entityidx % 64))) != 0;
+    return (bv.blockedMask[entityidx >> 6] & (1ULL << (entityidx % 64))) != 0;
 }
 
 void Bridge_Player_ClearTransmitEntityBlocked(int playerid)
@@ -361,6 +361,33 @@ int Bridge_Player_GetUserID(int playerid)
     return engine->GetPlayerUserId(CPlayerSlot(playerid)).Get();
 }
 
+uint64_t Bridge_Player_GetSessionID(int playerid)
+{
+    static auto playerManager = g_ifaceService.FetchInterface<IPlayerManager>(PLAYERMANAGER_INTERFACE_VERSION);
+    auto player = playerManager->GetPlayer(playerid);
+    if (!player)
+        return 0;
+
+    return player->GetSessionID();
+}
+
+int Bridge_Player_GetName(char* out, int playerid)
+{
+    static auto playerManager = g_ifaceService.FetchInterface<IPlayerManager>(PLAYERMANAGER_INTERFACE_VERSION);
+    auto player = playerManager->GetPlayer(playerid);
+    if (!player)
+        return 0;
+
+    static std::string s;
+    s = player->GetName();
+
+    if (out != nullptr)
+        strcpy(out, s.c_str());
+
+    return s.size();
+
+}
+
 DEFINE_NATIVE("Player.SendMessage", Bridge_Player_SendMessage);
 DEFINE_NATIVE("Player.IsFakeClient", Bridge_Player_IsFakeClient);
 DEFINE_NATIVE("Player.IsAuthorized", Bridge_Player_IsAuthorized);
@@ -388,3 +415,5 @@ DEFINE_NATIVE("Player.HasMenuShown", Bridge_Player_HasMenuShown);
 DEFINE_NATIVE("Player.ExecuteCommand", Bridge_Player_ExecuteCommand);
 DEFINE_NATIVE("Player.IsFirstSpawn", Bridge_Player_IsFirstSpawn);
 DEFINE_NATIVE("Player.GetUserID", Bridge_Player_GetUserID);
+DEFINE_NATIVE("Player.GetSessionID", Bridge_Player_GetSessionID);
+DEFINE_NATIVE("Player.GetName", Bridge_Player_GetName);

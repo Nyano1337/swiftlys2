@@ -80,13 +80,7 @@ internal class TestService
     public void Test2()
     {
         _ = core.Command.RegisterCommand("abc", (ctx) => {
-            var coords = ctx.Sender!.Pawn!.AbsOrigin;
-            var ps = core.PlayerManager.GetAllPlayers().Where(p => p.PlayerID != ctx.Sender!.PlayerID).ToList();
-            var randomPlayer = ps.OrderBy(p => Guid.NewGuid()).FirstOrDefault();
-            var trace = new CGameTrace();
-            core.Trace.SimpleTrace(coords!.Value, randomPlayer!.PlayerPawn.EyePosition!.Value, RayType_t.RAY_TYPE_LINE, RnQueryObjectSet.AllGameEntities, MaskTrace.Player | MaskTrace.Solid, MaskTrace.Empty, MaskTrace.Player, CollisionGroup.Player, ref trace);
-            Console.WriteLine("Fraction: "+trace.Fraction);
-            Console.WriteLine("Distance: " + trace.Distance);
+            ctx.Reply(ctx.Sender!.Name);
         });
 
 

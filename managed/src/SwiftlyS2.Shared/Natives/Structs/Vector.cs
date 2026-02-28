@@ -244,5 +244,52 @@ public struct Vector
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly float Distance2D( Vector other )
+    {
+        return MathF.Sqrt((X - other.X) * (X - other.X) + (Y - other.Y) * (Y - other.Y));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly float Distance2DSquared( Vector other )
+    {
+        return (X - other.X) * (X - other.X) + (Y - other.Y) * (Y - other.Y);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly float Length2D()
+    {
+        return MathF.Sqrt(X * X + Y * Y);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly float Length2DSquared()
+    {
+        return X * X + Y * Y;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Normalize2D()
+    {
+        var len = Length2D();
+        if (len > 0f)
+        {
+            var inv = 1.0f / len;
+            X *= inv;
+            Y *= inv;
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly Vector Normalized2D()
+    {
+        var len = Length2D();
+        if (len > 0f)
+        {
+            var inv = 1.0f / len;
+            return new(X * inv, Y * inv, Z);
+        }
+        return new Vector(0f, 0f, Z);
+    }
 
 }

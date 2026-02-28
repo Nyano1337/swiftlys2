@@ -80,6 +80,14 @@ internal partial class CCSPlayerModernJumpImpl : SchemaClass, CCSPlayerModernJum
             return ref _Handle.AsRef<float>(_LastLandedVelocityYOffset!.Value);
         }
     }
+    private static nint? _LastLandedVelocityZOffset;
+
+    public ref float LastLandedVelocityZ {
+        get {
+            _LastLandedVelocityZOffset = _LastLandedVelocityZOffset ?? Schema.GetOffset(0x8CD8CF82B92D3EBA);
+            return ref _Handle.AsRef<float>(_LastLandedVelocityZOffset!.Value);
+        }
+    }
 
     public void LastActualJumpPressTickUpdated() => Schema.Update(_Handle, 0x8CD8CF82BF93929F);
     public void LastActualJumpPressFracUpdated() => Schema.Update(_Handle, 0x8CD8CF82EFA846D4);
@@ -89,4 +97,5 @@ internal partial class CCSPlayerModernJumpImpl : SchemaClass, CCSPlayerModernJum
     public void LastLandedFracUpdated() => Schema.Update(_Handle, 0x8CD8CF8276080263);
     public void LastLandedVelocityXUpdated() => Schema.Update(_Handle, 0x8CD8CF82B72D3B94);
     public void LastLandedVelocityYUpdated() => Schema.Update(_Handle, 0x8CD8CF82B82D3D27);
+    public void LastLandedVelocityZUpdated() => Schema.Update(_Handle, 0x8CD8CF82B92D3EBA);
 }

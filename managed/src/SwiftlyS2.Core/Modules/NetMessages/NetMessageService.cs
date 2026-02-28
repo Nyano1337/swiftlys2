@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using SwiftlyS2.Core.Natives;
-using SwiftlyS2.Shared.Natives;
 using SwiftlyS2.Shared.NetMessages;
 using SwiftlyS2.Shared.Profiler;
 
@@ -10,7 +9,7 @@ namespace SwiftlyS2.Core.NetMessages;
 internal class NetMessageService : INetMessageService, IDisposable
 {
 
-  private List<NetMessageHookCallback> _callbacks = new();
+  private List<NetMessageHookCallback> _callbacks = [];
   private ILoggerFactory _loggerFactory;
   private IContextedProfilerService _profiler;
   private Lock _lock = new();
@@ -56,7 +55,7 @@ internal class NetMessageService : INetMessageService, IDisposable
   {
     lock (_lock)
     {
-      _callbacks.RemoveAll(callback =>
+      _ = _callbacks.RemoveAll(callback =>
       {
         if (callback.Guid == guid)
         {
@@ -72,7 +71,7 @@ internal class NetMessageService : INetMessageService, IDisposable
   {
     lock (_lock)
     {
-      _callbacks.RemoveAll(callback =>
+      _ = _callbacks.RemoveAll(callback =>
       {
         if (callback is NetMessageClientHookCallback<T> clientHook)
         {
@@ -88,7 +87,7 @@ internal class NetMessageService : INetMessageService, IDisposable
   {
     lock (_lock)
     {
-      _callbacks.RemoveAll(callback =>
+      _ = _callbacks.RemoveAll(callback =>
       {
         if (callback is NetMessageServerHookCallback<T> serverHook)
         {
@@ -104,7 +103,7 @@ internal class NetMessageService : INetMessageService, IDisposable
   {
     lock (_lock)
     {
-      _callbacks.RemoveAll(callback =>
+      _ = _callbacks.RemoveAll(callback =>
       {
         if (callback is NetMessageServerInternalHookCallback<T> serverInternalHook)
         {
@@ -119,8 +118,9 @@ internal class NetMessageService : INetMessageService, IDisposable
   private nint AllocateNetMessage( int msgId )
   {
     var handle = NativeNetMessages.AllocateNetMessageByID(msgId);
-    if (handle == 0) throw new InvalidOperationException("Failed to allocate net message. This is possibly caused by the message ID is already deprecated not supported in game.");
-    return handle;
+    return handle == 0
+    ? throw new InvalidOperationException("Failed to allocate net message. This is possibly caused by the message ID is already deprecated not supported in game.")
+    : handle;
   }
 
   public T Create<T>() where T : ITypedProtobuf<T>, INetMessage<T>, IDisposable

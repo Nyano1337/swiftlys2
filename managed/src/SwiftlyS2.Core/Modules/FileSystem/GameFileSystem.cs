@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using SwiftlyS2.Core.Natives;
 using SwiftlyS2.Shared.FileSystem;
 using SwiftlyS2.Shared.Natives;
@@ -69,10 +68,12 @@ internal class GameFileSystem : IGameFileSystem
 
     public List<string> FindFileAbsoluteList( string wildcard, string pathId )
     {
-        List<string> results = new();
+        List<string> results = [];
         ManagedCUtlVector<CUtlString> files = new();
-        unsafe {
-            fixed (void* filesPtr = &files.Value) {
+        unsafe
+        {
+            fixed (void* filesPtr = &files.Value)
+            {
                 NativeFileSystem.FindFileAbsoluteList(new IntPtr(filesPtr), wildcard, pathId);
             }
 

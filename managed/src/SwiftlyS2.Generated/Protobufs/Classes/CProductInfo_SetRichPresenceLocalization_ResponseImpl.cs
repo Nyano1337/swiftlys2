@@ -1,4 +1,3 @@
-
 using SwiftlyS2.Core.Natives;
 using SwiftlyS2.Core.NetMessages;
 using SwiftlyS2.Shared.Natives;
@@ -9,9 +8,8 @@ namespace SwiftlyS2.Core.ProtobufDefinitions;
 
 internal class CProductInfo_SetRichPresenceLocalization_ResponseImpl : TypedProtobuf<CProductInfo_SetRichPresenceLocalization_Response>, CProductInfo_SetRichPresenceLocalization_Response
 {
-  public CProductInfo_SetRichPresenceLocalization_ResponseImpl(nint handle, bool isManuallyAllocated): base(handle)
-  {
-  }
-
+    public CProductInfo_SetRichPresenceLocalization_ResponseImpl(nint handle, bool isManuallyAllocated) : base(handle)
+    {
+    }
 
 }

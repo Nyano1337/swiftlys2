@@ -72,7 +72,7 @@ DatabaseConnection CDatabaseManager::ParseUri(const std::string& uri)
         // not an absolute path
         if (rest.find('/') == std::string::npos)
         {
-            conn.database = Files::GeneratePath("addons/swiftlys2/data/" + rest);
+            conn.database = Files::GeneratePath(g_SwiftlyCore.GetCorePath() + "data/" + rest);
         }
         // relative path from `game/{GAME_NAME}`
         else if (GetRelativePath(rest) == rest)

@@ -33,7 +33,7 @@ public:
     virtual bool HandleClientChat(int playerid, const std::string& text, bool teamonly) override;
 
     // playerid, args, command_name, prefix, silent
-    virtual uint64_t RegisterCommand(std::string command_name, std::function<void(int, std::vector<std::string>, std::string, std::string, bool)> handler, bool registerRaw) override;
+    virtual uint64_t RegisterCommand(std::string command_name, std::function<void(int, std::vector<std::string>, std::string, std::string, bool)> handler, bool registerRaw, std::string helpText) override;
     virtual void UnregisterCommand(uint64_t command_id) override;
     virtual bool IsCommandRegistered(std::string command_name) override;
 

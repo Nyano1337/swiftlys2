@@ -131,6 +131,10 @@
         "windows": 17,
         "linux": 17
     },
+    "IServerGameClients::ClientVoice": {
+        "windows": 27,
+        "linux": 27
+    },
     "IServerGameClients::ClientConnect": {
         "windows": 12,
         "linux": 12
@@ -189,5 +193,9 @@
     "CGameRules::GetViewVectors": {
         "windows": 32,
         "linux": 33
+    },
+    "CNetworkGameServer::m_Clients": {
+        "windows": 592,
+        "linux": 592
     }
 }

@@ -14,7 +14,7 @@ internal static class GameFunctions
     public static unsafe delegate* unmanaged< nint, CTakeDamageInfo*, CTakeDamageResult*, void > pTakeDamage;
     public static unsafe delegate* unmanaged< nint, Ray_t*, Vector*, Vector*, CTraceFilter*, CGameTrace*, void > pTraceShape;
     public static unsafe delegate* unmanaged< Vector*, Vector*, BBox_t*, CTraceFilter*, CGameTrace*, void > pTracePlayerBBox;
-    public static unsafe delegate* unmanaged< nint, IntPtr, void > pSetModel;
+    public static unsafe delegate* unmanaged< nint, IntPtr, nint > pSetModel;
     public static unsafe delegate* unmanaged< nint, nint, byte, byte, byte, byte, void > pSetPlayerControllerPawn;
     public static unsafe delegate* unmanaged< nint, nint, float, void > pSetOrAddAttribute;
     public static unsafe delegate* unmanaged< int, nint, nint > pGetWeaponCSDataFromKey;
@@ -77,7 +77,7 @@ internal static class GameFunctions
             pTakeDamage = (delegate* unmanaged< nint, CTakeDamageInfo*, CTakeDamageResult*, void >)NativeSignatures.Fetch("CBaseEntity::TakeDamage");
             pTraceShape = (delegate* unmanaged< nint, Ray_t*, Vector*, Vector*, CTraceFilter*, CGameTrace*, void >)NativeSignatures.Fetch("TraceShape");
             pTracePlayerBBox = (delegate* unmanaged< Vector*, Vector*, BBox_t*, CTraceFilter*, CGameTrace*, void >)NativeSignatures.Fetch("TracePlayerBBox");
-            pSetModel = (delegate* unmanaged< nint, IntPtr, void >)NativeSignatures.Fetch("CBaseModelEntity::SetModel");
+            pSetModel = (delegate* unmanaged< nint, IntPtr, nint >)NativeSignatures.Fetch("CBaseModelEntity::SetModel");
             pSetPlayerControllerPawn = (delegate* unmanaged< nint, nint, byte, byte, byte, byte, void >)NativeSignatures.Fetch("CBasePlayerController::SetPawn");
             pSetOrAddAttribute = (delegate* unmanaged< nint, IntPtr, float, void >)NativeSignatures.Fetch("CAttributeList::SetOrAddAttributeValueByName");
             pGetWeaponCSDataFromKey = (delegate* unmanaged< int, nint, nint >)NativeSignatures.Fetch("GetWeaponCSDataFromKey");
@@ -109,19 +109,7 @@ internal static class GameFunctions
     {
         try
         {
-            unsafe
-            {
-                var pool = ArrayPool<byte>.Shared;
-                var nameLength = Encoding.UTF8.GetByteCount(particleName);
-                var nameBuffer = pool.Rent(nameLength + 1);
-                _ = Encoding.UTF8.GetBytes(particleName, nameBuffer);
-                nameBuffer[nameLength] = 0;
-                fixed (byte* pParticleName = nameBuffer)
-                {
-                    pDispatchParticleEffect((nint)pParticleName, attachmentType, entity, attachmentPoint, attachmentName, (byte)(resetAllParticlesOnEntity ? 1 : 0), splitScreenSlot, (nint)(&filter), IntPtr.Zero);
-                    pool.Return(nameBuffer);
-                }
-            }
+            NativeEngineHelpers.DispatchParticleEffect(particleName, attachmentType, entity, attachmentPoint, attachmentName._pString, resetAllParticlesOnEntity, splitScreenSlot, filter.ToMask());
         }
         catch (Exception e)
         {
@@ -262,7 +250,7 @@ internal static class GameFunctions
                 modelBuffer[modelLength] = 0;
                 fixed (byte* pModel = modelBuffer)
                 {
-                    pSetModel(pEntity, (IntPtr)pModel);
+                    _ = pSetModel(pEntity, (IntPtr)pModel);
                     pool.Return(modelBuffer);
                 }
             }
@@ -475,7 +463,7 @@ internal static class GameFunctions
         }
     }
 
-    public static void CCSPlayer_WeaponServices_DropWeapon( nint pThis, nint pWeapon )
+    public static unsafe void CCSPlayer_WeaponServices_DropWeapon( nint pThis, nint pWeapon, Vector* momentum )
     {
         try
         {
@@ -483,8 +471,8 @@ internal static class GameFunctions
             {
                 CheckPtr(pThis, nameof(pThis));
                 CheckPtr(pWeapon, nameof(pWeapon));
-                var pDropWeapon = (delegate* unmanaged< nint, nint, nint, nint, void >)GetVirtualFunction(pThis, DropWeaponOffset);
-                pDropWeapon(pThis, pWeapon, 0, 0);
+                var pDropWeapon = (delegate* unmanaged< nint, nint, nint, Vector*, void >)GetVirtualFunction(pThis, DropWeaponOffset);
+                pDropWeapon(pThis, pWeapon, 0, momentum);
             }
         }
         catch (Exception e)

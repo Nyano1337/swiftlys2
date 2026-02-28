@@ -302,10 +302,8 @@ std::vector<std::string> TokenizeCommand(std::string cmd)
         }
 
         if (std::isspace(c) && !single_quote && !double_quote) {
-            if (!tmp_token.empty()) {
-                tokens.push_back(tmp_token);
-                tmp_token.clear();
-            }
+            tokens.push_back(tmp_token);
+            tmp_token.clear();
         }
         else {
             tmp_token += c;

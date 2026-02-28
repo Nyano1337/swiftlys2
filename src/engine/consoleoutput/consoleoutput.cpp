@@ -39,6 +39,9 @@ IFunctionHook* g_CLoggingSystem_LogDirect_Hook = nullptr;
 
 int CLoggingSystem_LogDirectHook(void* loggingSystem, int channel, int severity, LeafCodeInfo_t* leafCode, char const* str, va_list* args)
 {
+    if (!str)
+        return reinterpret_cast<decltype(&CLoggingSystem_LogDirectHook)>(g_CLoggingSystem_LogDirect_Hook->GetOriginal())(loggingSystem, channel, severity, leafCode, str, args);
+
     char buf[MAX_LOGGING_MESSAGE_LENGTH];
     if (args) {
         va_list cpargs;

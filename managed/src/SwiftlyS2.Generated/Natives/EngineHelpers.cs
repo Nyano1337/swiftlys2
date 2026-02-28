@@ -219,4 +219,20 @@ internal static class NativeEngineHelpers
             return retString;
         }
     }
+
+    private unsafe static delegate* unmanaged<byte*, uint, nint, byte, nint, byte, int, ulong, void> _DispatchParticleEffect;
+
+    public unsafe static void DispatchParticleEffect(string particleName, uint attachmentType, nint entity, byte attachmentPoint, nint attachmentName, bool resetAllParticlesOnEntity, int splitScreenSlot, ulong filtermask)
+    {
+        var pool = ArrayPool<byte>.Shared;
+        var particleNameLength = Encoding.UTF8.GetByteCount(particleName);
+        var particleNameBuffer = pool.Rent(particleNameLength + 1);
+        Encoding.UTF8.GetBytes(particleName, particleNameBuffer);
+        particleNameBuffer[particleNameLength] = 0;
+        fixed (byte* particleNameBufferPtr = particleNameBuffer)
+        {
+            _DispatchParticleEffect(particleNameBufferPtr, attachmentType, entity, attachmentPoint, attachmentName, resetAllParticlesOnEntity ? (byte)1 : (byte)0, splitScreenSlot, filtermask);
+            pool.Return(particleNameBuffer);
+        }
+    }
 }

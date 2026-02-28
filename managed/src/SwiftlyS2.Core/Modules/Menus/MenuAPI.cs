@@ -45,15 +45,11 @@ internal sealed class MenuAPI : IMenuAPI, IDisposable
     public IMenuBuilderAPI? Builder { get; init; }
 
     /// <summary>
-    /// Gets or sets the default comment text to use when a menu option's Comment is not set.
-    /// </summary>
-    [Obsolete("Use Configuration.DefaultComment instead.")]
-    public string DefaultComment { get; set; } = string.Empty;
-
-    /// <summary>
     /// Gets or sets an object that contains data about this menu.
     /// </summary>
     public object? Tag { get; set; }
+
+    private bool WasFrozen { get; set; } = false;
 
     /// <summary>
     /// The parent hierarchy information in a hierarchical menu structure.
@@ -290,9 +286,11 @@ internal sealed class MenuAPI : IMenuAPI, IDisposable
             { }
         }
 
-        var playerStates = core.PlayerManager
-            .GetAllPlayers()
-            .Where(player => player.IsValid && !player.IsFakeClient)
+        try
+        {
+            var playerStates = core.PlayerManager
+            .GetAllValidPlayers()
+            .Where(player => !player.IsFakeClient)
             .Select(player => (
                 Player: player,
                 DesiredIndex: desiredOptionIndex.TryGetValue(player.PlayerID, out var desired) ? desired : -1,
@@ -301,16 +299,18 @@ internal sealed class MenuAPI : IMenuAPI, IDisposable
             .Where(state => state.DesiredIndex >= 0 && state.SelectedIndex >= 0)
             .ToList();
 
-        var baseMaxVisibleItems = Configuration.MaxVisibleItems < 1 ? core.MenusAPI.Configuration.ItemsPerPage : Configuration.MaxVisibleItems;
-        var maxVisibleItems = Configuration.AutoIncreaseVisibleItems
-            ? Math.Clamp(baseMaxVisibleItems + (Configuration.HideTitle ? 1 : 0) + (Configuration.HideFooter ? 1 : 0), 1, 7)
-            : Math.Clamp(baseMaxVisibleItems, 1, 5);
-        var halfVisible = maxVisibleItems / 2;
+            var baseMaxVisibleItems = Configuration.MaxVisibleItems < 1 ? core.MenusAPI.Configuration.ItemsPerPage : Configuration.MaxVisibleItems;
+            var maxVisibleItems = Configuration.AutoIncreaseVisibleItems
+                ? Math.Clamp(baseMaxVisibleItems + (Configuration.HideTitle ? 1 : 0) + (Configuration.HideFooter ? 1 : 0), 1, 7)
+                : Math.Clamp(baseMaxVisibleItems, 1, 5);
+            var halfVisible = maxVisibleItems / 2;
 
-        foreach (var (player, desiredIndex, selectedIndex) in playerStates)
-        {
-            ProcessPlayerMenu(player, desiredIndex, selectedIndex, maxOptions, maxVisibleItems, halfVisible);
+            foreach (var (player, desiredIndex, selectedIndex) in playerStates)
+            {
+                ProcessPlayerMenu(player, desiredIndex, selectedIndex, maxOptions, maxVisibleItems, halfVisible);
+            }
         }
+        catch { }
     }
 
     private void ProcessPlayerMenu( IPlayer player, int desiredIndex, int selectedIndex, int maxOptions, int maxVisibleItems, int halfVisible )
@@ -459,9 +459,9 @@ internal sealed class MenuAPI : IMenuAPI, IDisposable
                 "<br>",
                 guideLine,
                 "<br>",
-                Configuration.HideComment
+                Configuration.HideComment || string.IsNullOrWhiteSpace(Configuration.DefaultComment)
                     ? string.Empty
-                    : string.IsNullOrWhiteSpace(Configuration.DefaultComment) ? $"<font class='fontSize-s'>\u00A0\u00A0\u00A0 </font><br>" : $"<font class='fontSize-s'>{Configuration.DefaultComment}</font><br>"
+                    : $"<font class='fontSize-s'>{Configuration.DefaultComment}</font><br>"
             );
 
         var claimInfo = optionBase?.InputClaimInfo ?? MenuInputClaimInfo.Empty;
@@ -602,6 +602,7 @@ internal sealed class MenuAPI : IMenuAPI, IDisposable
         {
             NativePlayer.ClearCenterMenuRender(player.PlayerID);
             core.Scheduler.NextTick(() => NativePlayer.ClearCenterMenuRender(player.PlayerID));
+            _ = core.Scheduler.Delay(5, () => NativePlayer.ClearCenterMenuRender(player.PlayerID));
 
             // Remove viewer, pause animations if no viewers left
             lock (viewersLock)
@@ -765,10 +766,22 @@ internal sealed class MenuAPI : IMenuAPI, IDisposable
 
         core.Scheduler.NextTick(() =>
         {
-            var moveType = freeze ? MoveType_t.MOVETYPE_NONE : MoveType_t.MOVETYPE_WALK;
-            player.PlayerPawn.MoveType = moveType;
-            player.PlayerPawn.ActualMoveType = moveType;
-            player.PlayerPawn.MoveTypeUpdated();
+            if (freeze)
+            {
+                var moveType = MoveType_t.MOVETYPE_NONE;
+                player.PlayerPawn.MoveType = moveType;
+                player.PlayerPawn.ActualMoveType = moveType;
+                player.PlayerPawn.MoveTypeUpdated();
+                WasFrozen = true;
+            }
+            else if (WasFrozen && !freeze)
+            {
+                var moveType = MoveType_t.MOVETYPE_WALK;
+                player.PlayerPawn.MoveType = moveType;
+                player.PlayerPawn.ActualMoveType = moveType;
+                player.PlayerPawn.MoveTypeUpdated();
+                WasFrozen = false;
+            }
         });
     }
 

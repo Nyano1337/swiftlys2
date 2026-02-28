@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using SwiftlyS2.Core.Hooks;
 using SwiftlyS2.Core.Natives;
@@ -14,8 +13,8 @@ internal class MemoryService : IMemoryService, IDisposable
   private readonly ILogger<MemoryService> _Logger;
   private readonly HookManager _HookManager;
   private readonly ILoggerFactory _LoggerFactory;
-  private readonly Dictionary<nint, UnmanagedFunction> _UnmanagedFunctions = new();
-  private readonly Dictionary<nint, UnmanagedMemory> _UnmanagedMemories = new();
+  private readonly Dictionary<nint, UnmanagedFunction> _UnmanagedFunctions = [];
+  private readonly Dictionary<nint, UnmanagedMemory> _UnmanagedMemories = [];
 
   public MemoryService( ILogger<MemoryService> logger, HookManager hookManager, ILoggerFactory loggerFactory )
   {
@@ -110,15 +109,17 @@ internal class MemoryService : IMemoryService, IDisposable
     if (classes.Length == 1)
     {
       ptr = NativeMemoryHelpers.GetVirtualTableAddress(library, vtableName);
-    } 
+    }
     else if (classes.Length == 2)
     {
       ptr = NativeMemoryHelpers.GetVirtualTableAddressNested2(library, classes[0], classes[1]);
     }
-    else {
+    else
+    {
       throw new ArgumentException("Vtable has too many nested classes, which is not supported for now.");
     }
-    if (ptr == 0) {
+    if (ptr == 0)
+    {
       ptr = null;
     }
     return ptr;
@@ -151,17 +152,17 @@ internal class MemoryService : IMemoryService, IDisposable
     return T.From(address);
   }
 
-  public nint Alloc(ulong size)
+  public nint Alloc( ulong size )
   {
     return NativeAllocator.Alloc(size);
   }
 
-  public void Free(nint pointer)
+  public void Free( nint pointer )
   {
     NativeAllocator.Free(pointer);
   }
 
-  public nint Resize(nint pointer, ulong newSize)
+  public nint Resize( nint pointer, ulong newSize )
   {
     return NativeAllocator.Resize(pointer, newSize);
   }

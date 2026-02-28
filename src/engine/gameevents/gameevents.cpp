@@ -115,20 +115,21 @@ void CEventManager::Initialize(std::string game_name)
 
     RegisterGameEventListener("round_start");
     RegisterGameEventListener("player_spawn");
-    AddGameEventFireListener([](std::string event_name, IGameEvent* event, bool& dont_broadcast) -> int {
-        if (event_name == "round_start") {
-            static auto vgui = g_ifaceService.FetchInterface<IVGUI>(VGUI_INTERFACE_VERSION);
 
-            vgui->ResetStateOfScreenTexts();
+    // AddGameEventFireListener([](std::string event_name, IGameEvent* event, bool& dont_broadcast) -> int {
+    //     if (event_name == "round_start") {
+    //         static auto vgui = g_ifaceService.FetchInterface<IVGUI>(VGUI_INTERFACE_VERSION);
 
-            timeoutsArray.push_back({ GetTime() + 100, []() -> void {
-                vgui->RegenerateScreenTexts();
-            } });
+    //         vgui->ResetStateOfScreenTexts();
 
-            processingTimeouts = true;
-        }
-        return 0;
-        });
+    //         timeoutsArray.push_back({ GetTime() + 100, []() -> void {
+    //             vgui->RegenerateScreenTexts();
+    //         } });
+
+    //         processingTimeouts = true;
+    //     }
+    //     return 0;
+    //     });
 
     AddPostGameEventFireListener([](std::string event_name, IGameEvent* event, bool& dont_broadcast) -> int {
         if (event_name == "player_spawn") {

@@ -1,4 +1,3 @@
-
 using SwiftlyS2.Core.Natives;
 using SwiftlyS2.Core.NetMessages;
 using SwiftlyS2.Shared.Natives;
@@ -9,12 +8,10 @@ namespace SwiftlyS2.Core.ProtobufDefinitions;
 
 internal class CUIFontFilePackagePB_CUIEncryptedFontFilePBImpl : TypedProtobuf<CUIFontFilePackagePB_CUIEncryptedFontFilePB>, CUIFontFilePackagePB_CUIEncryptedFontFilePB
 {
-  public CUIFontFilePackagePB_CUIEncryptedFontFilePBImpl(nint handle, bool isManuallyAllocated): base(handle)
-  {
-  }
+    public CUIFontFilePackagePB_CUIEncryptedFontFilePBImpl(nint handle, bool isManuallyAllocated) : base(handle)
+    {
+    }
 
-
-  public byte[] EncryptedContents
-  { get => Accessor.GetBytes("encrypted_contents"); set => Accessor.SetBytes("encrypted_contents", value); }
-
+    public byte[] EncryptedContents
+    { get => Accessor.GetBytes("encrypted_contents"); set => Accessor.SetBytes("encrypted_contents", value); }
 }

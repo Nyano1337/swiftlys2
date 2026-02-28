@@ -1,13 +1,10 @@
 
 using System.Collections.Concurrent;
-using Microsoft.Extensions.Logging;
 using SwiftlyS2.Core.Natives;
 using SwiftlyS2.Shared.Events;
 using SwiftlyS2.Shared.Natives;
 using SwiftlyS2.Shared.Schemas;
 using SwiftlyS2.Core.Extensions;
-using SwiftlyS2.Shared.Profiler;
-using SwiftlyS2.Core.NetMessages;
 using SwiftlyS2.Shared.EntitySystem;
 using SwiftlyS2.Core.SchemaDefinitions;
 using SwiftlyS2.Shared.SchemaDefinitions;
@@ -16,21 +13,15 @@ namespace SwiftlyS2.Core.EntitySystem;
 
 internal class EntitySystemService : IEntitySystemService, IDisposable
 {
-    private readonly ILoggerFactory loggerFactory;
-    private readonly IContextedProfilerService profiler;
     private readonly IEventSubscriber eventSubscriber;
 
-    [Obsolete("Use outputHooks instead.")]
-    private readonly ConcurrentDictionary<Guid, EntityOutputHookCallback> outputCallbacks = new();
     private readonly ConcurrentDictionary<Guid, EventDelegates.OnEntityFireOutputHookEvent> outputHooks = new();
     private readonly ConcurrentDictionary<Guid, EventDelegates.OnEntityIdentityAcceptInputHook> inputHooks = new();
 
     private volatile bool disposed;
 
-    public EntitySystemService( IEventSubscriber eventSubscriber, ILoggerFactory loggerFactory, IContextedProfilerService profiler )
+    public EntitySystemService( IEventSubscriber eventSubscriber )
     {
-        this.loggerFactory = loggerFactory;
-        this.profiler = profiler;
         this.eventSubscriber = eventSubscriber;
         this.disposed = false;
     }
@@ -51,13 +42,20 @@ internal class EntitySystemService : IEntitySystemService, IDisposable
             : CreateEntityByDesignerName<T>(T.ClassName);
     }
 
-    public T CreateEntityByDesignerName<T>( string designerName ) where T : ISchemaClass<T>
+    public T CreateEntityByDesignerName<T>( string designerName ) where T : class, ISchemaClass<T>
+    {
+        return (CreateEntityByDesignerName(designerName) as T)!;
+    }
+
+    public CEntityInstance CreateEntityByDesignerName( string designerName )
     {
         ThrowIfEntitySystemInvalid();
         var handle = NativeEntitySystem.CreateEntityByName(designerName);
+        var entity = EntityManager.OnEntityCreated(handle);
+
         return handle == nint.Zero
             ? throw new ArgumentException($"Failed to create entity by designer name: {designerName}, probably invalid designer name.")
-            : T.From(handle);
+            : entity;
     }
 
     public CHandle<T> GetRefEHandle<T>( T entity ) where T : class, ISchemaClass<T>
@@ -75,45 +73,37 @@ internal class EntitySystemService : IEntitySystemService, IDisposable
 
     public IEnumerable<CEntityInstance> GetAllEntities()
     {
-        ThrowIfEntitySystemInvalid();
-        CEntityIdentity? pFirst = new CEntityIdentityImpl(NativeEntitySystem.GetFirstActiveEntity());
-
-        while (pFirst != null && pFirst.IsValid)
-        {
-            yield return new CEntityInstanceImpl(pFirst.Address.Read<nint>());
-            pFirst = pFirst.Next;
-        }
+        return EntityManager.GetAllEntities();
     }
 
     public IEnumerable<T> GetAllEntitiesByClass<T>() where T : class, ISchemaClass<T>
     {
-        ThrowIfEntitySystemInvalid();
-        return string.IsNullOrWhiteSpace(T.ClassName)
-            ? throw new ArgumentException($"Can't get entities with class {typeof(T).Name}, which doesn't have a designer name")
-            : GetAllEntities().Where(( entity ) => entity.Entity?.DesignerName == T.ClassName).Select(( entity ) => T.From(entity.Address));
+        return GetAllEntities().OfType<T>();
     }
 
     public IEnumerable<T> GetAllEntitiesByDesignerName<T>( string designerName ) where T : class, ISchemaClass<T>
     {
-        ThrowIfEntitySystemInvalid();
         return GetAllEntities()
             .Where(entity => entity.Entity?.DesignerName == designerName)
-            .Select(entity => T.From(entity.Address));
+            .Select(entity => (entity as T)!);
     }
 
     public T? GetEntityByIndex<T>( uint index ) where T : class, ISchemaClass<T>
     {
-        ThrowIfEntitySystemInvalid();
-        var handle = NativeEntitySystem.GetEntityByIndex(index);
-        return handle == nint.Zero ? null : T.From(handle);
+        var ent = GetEntityByIndex(index);
+        if (ent is null)
+        {
+            return null;
+        }
+
+        return ent is T e
+            ? e
+            : throw new InvalidOperationException($"Invalid entity type. Requested: {typeof(T).Name}, Actual: {ent!.GetType().Name}.");
     }
 
-    [Obsolete("Use HookEntityOutput(string outputName, Action<IOnEntityFireOutputHookEvent> callback) instead.")]
-    public Guid HookEntityOutput<T>( string outputName, IEntitySystemService.EntityOutputHandler callback ) where T : class, ISchemaClass<T>
+    public CEntityInstance? GetEntityByIndex( uint index )
     {
-        var hook = new EntityOutputHookCallback(T.ClassName ?? throw new ArgumentException($"Can't hook entity output with class {typeof(T).Name}, which doesn't have a designer name"), outputName, callback, loggerFactory, profiler);
-        _ = outputCallbacks.TryAdd(hook.Guid, hook);
-        return hook.Guid;
+        return EntityManager.GetEntityByIndex(index);
     }
 
     public Guid HookEntityOutput<T>( string outputName, IEntitySystemService.EntityOutputEventHandler callback ) where T : class, ISchemaClass<T>
@@ -242,12 +232,7 @@ internal class EntitySystemService : IEntitySystemService, IDisposable
 
     public bool UnhookEntityOutput( Guid guid )
     {
-        if (outputCallbacks.TryRemove(guid, out var callback))
-        {
-            callback.Dispose();
-            return true;
-        }
-        else if (outputHooks.TryRemove(guid, out var handler))
+        if (outputHooks.TryRemove(guid, out var handler))
         {
             eventSubscriber.OnEntityFireOutputHook -= handler;
             return true;
@@ -273,12 +258,6 @@ internal class EntitySystemService : IEntitySystemService, IDisposable
         }
         disposed = true;
 
-        foreach (var callback in outputCallbacks.Values)
-        {
-            callback.Dispose();
-        }
-        outputCallbacks.Clear();
-
         foreach (var handler in outputHooks.Values)
         {
             eventSubscriber.OnEntityFireOutputHook -= handler;
@@ -292,6 +271,28 @@ internal class EntitySystemService : IEntitySystemService, IDisposable
         inputHooks.Clear();
 
         GC.SuppressFinalize(this);
+    }
+
+    public T? GetEntityByAddress<T>( nint address ) where T : class, ISchemaClass<T>
+    {
+        var ent = GetEntityByAddress(address);
+        if (ent is null)
+        {
+            return null;
+        }
+        if (ent is T e)
+        {
+            return e;
+        }
+        else
+        {
+            throw new InvalidOperationException($"Invalid entity type. Requested: {typeof(T).Name}, Actual: {ent!.GetType().Name}.");
+        }
+    }
+
+    public CEntityInstance? GetEntityByAddress( nint address )
+    {
+        return EntityManager.GetEntityByAddress(address);
     }
 
     ~EntitySystemService()

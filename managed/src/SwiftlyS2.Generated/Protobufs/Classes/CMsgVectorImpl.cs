@@ -1,4 +1,3 @@
-
 using SwiftlyS2.Core.Natives;
 using SwiftlyS2.Core.NetMessages;
 using SwiftlyS2.Shared.Natives;
@@ -9,24 +8,16 @@ namespace SwiftlyS2.Core.ProtobufDefinitions;
 
 internal class CMsgVectorImpl : TypedProtobuf<CMsgVector>, CMsgVector
 {
-  public CMsgVectorImpl(nint handle, bool isManuallyAllocated): base(handle)
-  {
-  }
+    public CMsgVectorImpl(nint handle, bool isManuallyAllocated) : base(handle)
+    {
+    }
 
-
-  public float X
-  { get => Accessor.GetFloat("x"); set => Accessor.SetFloat("x", value); }
-
-
-  public float Y
-  { get => Accessor.GetFloat("y"); set => Accessor.SetFloat("y", value); }
-
-
-  public float Z
-  { get => Accessor.GetFloat("z"); set => Accessor.SetFloat("z", value); }
-
-
-  public float W
-  { get => Accessor.GetFloat("w"); set => Accessor.SetFloat("w", value); }
-
+    public float X
+    { get => Accessor.GetFloat("x"); set => Accessor.SetFloat("x", value); }
+    public float Y
+    { get => Accessor.GetFloat("y"); set => Accessor.SetFloat("y", value); }
+    public float Z
+    { get => Accessor.GetFloat("z"); set => Accessor.SetFloat("z", value); }
+    public float W
+    { get => Accessor.GetFloat("w"); set => Accessor.SetFloat("w", value); }
 }

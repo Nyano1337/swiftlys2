@@ -1,4 +1,3 @@
-
 using SwiftlyS2.Core.Natives;
 using SwiftlyS2.Core.NetMessages;
 using SwiftlyS2.Shared.Natives;
@@ -9,12 +8,10 @@ namespace SwiftlyS2.Core.ProtobufDefinitions;
 
 internal class CMsgGCToGCBannedWordListBroadcastImpl : TypedProtobuf<CMsgGCToGCBannedWordListBroadcast>, CMsgGCToGCBannedWordListBroadcast
 {
-  public CMsgGCToGCBannedWordListBroadcastImpl(nint handle, bool isManuallyAllocated): base(handle)
-  {
-  }
+    public CMsgGCToGCBannedWordListBroadcastImpl(nint handle, bool isManuallyAllocated) : base(handle)
+    {
+    }
 
-
-  public CMsgGCBannedWordListResponse Broadcast
-  { get => new CMsgGCBannedWordListResponseImpl(NativeNetMessages.GetNestedMessage(Address, "broadcast"), false); }
-
+    public CMsgGCBannedWordListResponse Broadcast
+    { get => new CMsgGCBannedWordListResponseImpl(NativeNetMessages.GetNestedMessage(Address, "broadcast"), false); }
 }

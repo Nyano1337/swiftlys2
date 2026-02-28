@@ -1,7 +1,7 @@
-﻿using SwiftlyS2.Core.Natives;
+﻿using System.Collections.Concurrent;
+using SwiftlyS2.Core.Natives;
 using SwiftlyS2.Core.Scheduler;
 using SwiftlyS2.Core.SchemaDefinitions;
-using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Players;
 using SwiftlyS2.Shared.SchemaDefinitions;
 using SwiftlyS2.Shared.SteamAPI;
@@ -11,12 +11,32 @@ namespace SwiftlyS2.Core.Players;
 
 internal class PlayerManagerService : IPlayerManagerService
 {
-    private ITranslationService _translationService;
-    public static List<IPlayer> PlayerObjects = Enumerable.Range(0, NativePlayerManager.GetPlayerCap()).Select(i => new Player(i) as IPlayer).ToList();
+    private readonly ITranslationService _translationService;
+    public static ConcurrentDictionary<int, IPlayer> PlayerObjects { get; } = new();
+    public static ConcurrentDictionary<ulong, IPlayer> SessionIdToPlayerObjects { get; } = new();
 
     public PlayerManagerService( ITranslationService translationService )
     {
         _translationService = translationService;
+    }
+
+    public static void RegisterPlayerObject( int playerid )
+    {
+        UnregisterPlayerObject(playerid);
+        var player = new Player(playerid);
+        _ = PlayerObjects.TryAdd(playerid, player);
+        _ = SessionIdToPlayerObjects.TryAdd(player.SessionId, player);
+    }
+
+    public static void UnregisterPlayerObject( int playerid )
+    {
+        if (PlayerObjects.TryGetValue(playerid, out var player))
+        {
+            var p = (Player)player;
+            _ = SessionIdToPlayerObjects.TryRemove(p.SessionId, out var _);
+            p.Dispose();
+            _ = PlayerObjects.TryRemove(playerid, out var _);
+        }
     }
 
     public int PlayerCount => NativePlayerManager.GetPlayerCount();
@@ -30,7 +50,7 @@ internal class PlayerManagerService : IPlayerManagerService
 
     public IPlayer? GetPlayer( int playerid )
     {
-        return !IsPlayerOnline(playerid) ? null : PlayerObjects[playerid];
+        return PlayerObjects.TryGetValue(playerid, out var player) ? player : null;
     }
 
     public IPlayer? GetPlayerFromController( CBasePlayerController controller )
@@ -45,7 +65,7 @@ internal class PlayerManagerService : IPlayerManagerService
 
     public bool IsPlayerOnline( int playerid )
     {
-        return NativePlayerManager.IsPlayerOnline(playerid);
+        return PlayerObjects.ContainsKey(playerid);
     }
 
     public void SendMessage( MessageType kind, string message )
@@ -65,8 +85,7 @@ internal class PlayerManagerService : IPlayerManagerService
 
     public IEnumerable<IPlayer> GetAllPlayers()
     {
-        return PlayerObjects
-            .Where(( p ) => IsPlayerOnline(p.PlayerID));
+        return PlayerObjects.Values;
     }
 
     public IEnumerable<IPlayer> GetAllValidPlayers()
@@ -79,7 +98,7 @@ internal class PlayerManagerService : IPlayerManagerService
     {
         IEnumerable<IPlayer> allPlayers = [];
 
-        var players = GetAllPlayers();
+        var players = GetAllValidPlayers();
         foreach (var targetPlayer in players)
         {
             if (searchMode.HasFlag(TargetSearchMode.NoBots) && targetPlayer.IsFakeClient)
@@ -159,7 +178,7 @@ internal class PlayerManagerService : IPlayerManagerService
             }
             else if (target.StartsWith('#'))
             {
-                if (int.TryParse(target[1..], out int id) && targetPlayer.PlayerID == id)
+                if (int.TryParse(target[1..], out var id) && targetPlayer.PlayerID == id)
                 {
                     allPlayers = allPlayers.Append(targetPlayer);
                 }
@@ -328,5 +347,32 @@ internal class PlayerManagerService : IPlayerManagerService
     public Task SendMessageAsync( MessageType kind, Func<IPlayer, ILocalizer, string> messageCallback, int htmlDuration = 5000 )
     {
         return SchedulerManager.QueueOrNow(() => SendMessage(kind, messageCallback, htmlDuration));
+    }
+
+    public IPlayer? GetPlayerFromSteamId( ulong steamId, bool allowUnauthorized = true )
+    {
+        return PlayerObjects.Values.FirstOrDefault(p =>
+        {
+            if (allowUnauthorized)
+            {
+                if (p.SteamID == steamId) return true;
+                if (p.UnauthorizedSteamID == steamId) return true;
+            }
+            else
+            {
+                if (p.SteamID == steamId && p.IsAuthorized) return true;
+            }
+            return false;
+        });
+    }
+
+    public bool IsSessionIdValid( ulong sessionId )
+    {
+        return SessionIdToPlayerObjects.ContainsKey(sessionId);
+    }
+
+    public IPlayer? GetPlayerFromSessionId( ulong sessionId )
+    {
+        return SessionIdToPlayerObjects.TryGetValue(sessionId, out var player) ? player : null;
     }
 }

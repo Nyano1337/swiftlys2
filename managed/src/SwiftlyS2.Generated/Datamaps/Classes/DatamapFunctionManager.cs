@@ -8,431 +8,218 @@ internal partial class DatamapFunctionManager
     public HookManager HookManager { get; }
 
     public BaseDatamapFunction<CBaseDoor, DHookCBaseDoorDoorTouch> CBaseDoorDoorTouch { get; init; }
-
     public BaseDatamapFunction<CBaseDoor, DHookCBaseDoorDoorGoUp> CBaseDoorDoorGoUp { get; init; }
-
     public BaseDatamapFunction<CBaseDoor, DHookCBaseDoorDoorGoDown> CBaseDoorDoorGoDown { get; init; }
-
     public BaseDatamapFunction<CBaseDoor, DHookCBaseDoorDoorHitTop> CBaseDoorDoorHitTop { get; init; }
-
     public BaseDatamapFunction<CBaseDoor, DHookCBaseDoorDoorHitBottom> CBaseDoorDoorHitBottom { get; init; }
-
     public BaseDatamapFunction<CBaseDoor, DHookCBaseDoorMovingSoundThink> CBaseDoorMovingSoundThink { get; init; }
-
     public BaseDatamapFunction<CBaseDoor, DHookCBaseDoorCloseAreaPortalsThink> CBaseDoorCloseAreaPortalsThink { get; init; }
-
     public BaseDatamapFunction<CGunTarget, DHookCGunTargetNext> CGunTargetNext { get; init; }
-
     public BaseDatamapFunction<CGunTarget, DHookCGunTargetStart> CGunTargetStart { get; init; }
-
     public BaseDatamapFunction<CGunTarget, DHookCGunTargetWait> CGunTargetWait { get; init; }
-
     public BaseDatamapFunction<CDynamicLight, DHookCDynamicLightDynamicLightThink> CDynamicLightDynamicLightThink { get; init; }
-
     public BaseDatamapFunction<CBarnLight, DHookCBarnLightThink_SetNextQueuedLightStyle> CBarnLightThink_SetNextQueuedLightStyle { get; init; }
-
     public BaseDatamapFunction<CBarnLight, DHookCBarnLightThink_ApplyLightStylesToTargets> CBarnLightThink_ApplyLightStylesToTargets { get; init; }
-
     public BaseDatamapFunction<CBarnLight, DHookCBarnLightThink_LightStyleEvent> CBarnLightThink_LightStyleEvent { get; init; }
-
     public BaseDatamapFunction<CEnvLaser, DHookCEnvLaserStrikeThink> CEnvLaserStrikeThink { get; init; }
-
     public BaseDatamapFunction<CMultiSource, DHookCMultiSourceRegister> CMultiSourceRegister { get; init; }
-
     public BaseDatamapFunction<CPhysHinge, DHookCPhysHingeSoundThink> CPhysHingeSoundThink { get; init; }
-
     public BaseDatamapFunction<CPhysHinge, DHookCPhysHingeLimitThink> CPhysHingeLimitThink { get; init; }
-
     public BaseDatamapFunction<CPhysHinge, DHookCPhysHingeMoveThink> CPhysHingeMoveThink { get; init; }
-
     public BaseDatamapFunction<CSoundOpvarSetPointBase, DHookCSoundOpvarSetPointBaseSetOpvarThink> CSoundOpvarSetPointBaseSetOpvarThink { get; init; }
-
     public BaseDatamapFunction<CEnvEntityMaker, DHookCEnvEntityMakerCheckSpawnThink> CEnvEntityMakerCheckSpawnThink { get; init; }
-
     public BaseDatamapFunction<CPointHurt, DHookCPointHurtHurtThink> CPointHurtHurtThink { get; init; }
-
     public BaseDatamapFunction<CColorCorrection, DHookCColorCorrectionFadeInThink> CColorCorrectionFadeInThink { get; init; }
-
     public BaseDatamapFunction<CColorCorrection, DHookCColorCorrectionFadeOutThink> CColorCorrectionFadeOutThink { get; init; }
-
     public BaseDatamapFunction<CPhysicsProp, DHookCPhysicsPropClearFlagsThink> CPhysicsPropClearFlagsThink { get; init; }
-
     public BaseDatamapFunction<CInferno, DHookCInfernoInfernoThink> CInfernoInfernoThink { get; init; }
-
     public BaseDatamapFunction<CFuncTrain, DHookCFuncTrainWait> CFuncTrainWait { get; init; }
-
     public BaseDatamapFunction<CFuncTrain, DHookCFuncTrainNext> CFuncTrainNext { get; init; }
-
     public BaseDatamapFunction<CBasePropDoor, DHookCBasePropDoorDoorOpenMoveDone> CBasePropDoorDoorOpenMoveDone { get; init; }
-
     public BaseDatamapFunction<CBasePropDoor, DHookCBasePropDoorDoorCloseMoveDone> CBasePropDoorDoorCloseMoveDone { get; init; }
-
     public BaseDatamapFunction<CBasePropDoor, DHookCBasePropDoorDoorAutoCloseThink> CBasePropDoorDoorAutoCloseThink { get; init; }
-
     public BaseDatamapFunction<CBasePropDoor, DHookCBasePropDoorDisableAreaPortalThink> CBasePropDoorDisableAreaPortalThink { get; init; }
-
     public BaseDatamapFunction<CInfoSpawnGroupLoadUnload, DHookCInfoSpawnGroupLoadUnloadSpawnGroupLoadingThink> CInfoSpawnGroupLoadUnloadSpawnGroupLoadingThink { get; init; }
-
     public BaseDatamapFunction<CInfoSpawnGroupLoadUnload, DHookCInfoSpawnGroupLoadUnloadSpawnGroupUnloadingThink> CInfoSpawnGroupLoadUnloadSpawnGroupUnloadingThink { get; init; }
-
     public BaseDatamapFunction<CItemDefuser, DHookCItemDefuserActivateThink> CItemDefuserActivateThink { get; init; }
-
     public BaseDatamapFunction<CItemDefuser, DHookCItemDefuserDefuserTouch> CItemDefuserDefuserTouch { get; init; }
-
     public BaseDatamapFunction<CEnvSpark, DHookCEnvSparkSparkThink> CEnvSparkSparkThink { get; init; }
-
     public BaseDatamapFunction<CBaseGrenade, DHookCBaseGrenadeSmoke> CBaseGrenadeSmoke { get; init; }
-
     public BaseDatamapFunction<CBaseGrenade, DHookCBaseGrenadeBounceTouch> CBaseGrenadeBounceTouch { get; init; }
-
     public BaseDatamapFunction<CBaseGrenade, DHookCBaseGrenadeSlideTouch> CBaseGrenadeSlideTouch { get; init; }
-
     public BaseDatamapFunction<CBaseGrenade, DHookCBaseGrenadeExplodeTouch> CBaseGrenadeExplodeTouch { get; init; }
-
     public BaseDatamapFunction<CBaseGrenade, DHookCBaseGrenadeDetonateUse> CBaseGrenadeDetonateUse { get; init; }
-
     public BaseDatamapFunction<CBaseGrenade, DHookCBaseGrenadeDangerSoundThink> CBaseGrenadeDangerSoundThink { get; init; }
-
     public BaseDatamapFunction<CBaseGrenade, DHookCBaseGrenadePreDetonate> CBaseGrenadePreDetonate { get; init; }
-
     public BaseDatamapFunction<CBaseGrenade, DHookCBaseGrenadeDetonate> CBaseGrenadeDetonate { get; init; }
-
     public BaseDatamapFunction<CBaseGrenade, DHookCBaseGrenadeTumbleThink> CBaseGrenadeTumbleThink { get; init; }
-
     public BaseDatamapFunction<CSprite, DHookCSpriteAnimateThink> CSpriteAnimateThink { get; init; }
-
     public BaseDatamapFunction<CSprite, DHookCSpriteExpandThink> CSpriteExpandThink { get; init; }
-
     public BaseDatamapFunction<CSprite, DHookCSpriteAnimateUntilDead> CSpriteAnimateUntilDead { get; init; }
-
     public BaseDatamapFunction<CSprite, DHookCSpriteBeginFadeOutThink> CSpriteBeginFadeOutThink { get; init; }
-
     public BaseDatamapFunction<CPhysSlideConstraint, DHookCPhysSlideConstraintSoundThink> CPhysSlideConstraintSoundThink { get; init; }
-
     public BaseDatamapFunction<CEntityFlame, DHookCEntityFlameFlameThink> CEntityFlameFlameThink { get; init; }
-
     public BaseDatamapFunction<CSoundEventConeEntity, DHookCSoundEventConeEntitySoundEventConeThink> CSoundEventConeEntitySoundEventConeThink { get; init; }
-
     public BaseDatamapFunction<CFuncMoveLinear, DHookCFuncMoveLinearNavObstacleThink> CFuncMoveLinearNavObstacleThink { get; init; }
-
     public BaseDatamapFunction<CFuncMoveLinear, DHookCFuncMoveLinearNavMovableThink> CFuncMoveLinearNavMovableThink { get; init; }
-
     public BaseDatamapFunction<CFuncMoveLinear, DHookCFuncMoveLinearStopMoveSound> CFuncMoveLinearStopMoveSound { get; init; }
-
     public BaseDatamapFunction<CHostage, DHookCHostageHostageUse> CHostageHostageUse { get; init; }
-
     public BaseDatamapFunction<CHostage, DHookCHostageHostageThink> CHostageHostageThink { get; init; }
-
     public BaseDatamapFunction<CLogicDistanceAutosave, DHookCLogicDistanceAutosaveSaveThink> CLogicDistanceAutosaveSaveThink { get; init; }
-
     public BaseDatamapFunction<CSoundOpvarSetOBBWindEntity, DHookCSoundOpvarSetOBBWindEntitySetOpvarThink> CSoundOpvarSetOBBWindEntitySetOpvarThink { get; init; }
-
     public BaseDatamapFunction<CSmokeGrenadeProjectile, DHookCSmokeGrenadeProjectileThink_Detonate> CSmokeGrenadeProjectileThink_Detonate { get; init; }
-
     public BaseDatamapFunction<CSmokeGrenadeProjectile, DHookCSmokeGrenadeProjectileThink_Update> CSmokeGrenadeProjectileThink_Update { get; init; }
-
     public BaseDatamapFunction<CSmokeGrenadeProjectile, DHookCSmokeGrenadeProjectileThink_Remove> CSmokeGrenadeProjectileThink_Remove { get; init; }
-
     public BaseDatamapFunction<CSmokeGrenadeProjectile, DHookCSmokeGrenadeProjectileThink_BuildingSmokeVolume> CSmokeGrenadeProjectileThink_BuildingSmokeVolume { get; init; }
-
     public BaseDatamapFunction<CLogicNPCCounter, DHookCLogicNPCCounterSetNPCCounterThink> CLogicNPCCounterSetNPCCounterThink { get; init; }
-
     public BaseDatamapFunction<CFuncShatterglass, DHookCFuncShatterglassGlassThink> CFuncShatterglassGlassThink { get; init; }
-
     public BaseDatamapFunction<CSoundOpvarSetAutoRoomEntity, DHookCSoundOpvarSetAutoRoomEntitySetOpvarThink> CSoundOpvarSetAutoRoomEntitySetOpvarThink { get; init; }
-
     public BaseDatamapFunction<CTriggerGravity, DHookCTriggerGravityGravityTouch> CTriggerGravityGravityTouch { get; init; }
-
     public BaseDatamapFunction<CSoundEventPathCornerEntity, DHookCSoundEventPathCornerEntitySoundEventPathCornerThink> CSoundEventPathCornerEntitySoundEventPathCornerThink { get; init; }
-
     public BaseDatamapFunction<CItem, DHookCItemItemTouch> CItemItemTouch { get; init; }
-
     public BaseDatamapFunction<CItem, DHookCItemMaterialize> CItemMaterialize { get; init; }
-
     public BaseDatamapFunction<CItem, DHookCItemComeToRest> CItemComeToRest { get; init; }
-
     public BaseDatamapFunction<CBaseCSGrenadeProjectile, DHookCBaseCSGrenadeProjectileDangerSoundThink> CBaseCSGrenadeProjectileDangerSoundThink { get; init; }
-
     public BaseDatamapFunction<CSoundOpvarSetPathCornerEntity, DHookCSoundOpvarSetPathCornerEntitySetOpvarThink> CSoundOpvarSetPathCornerEntitySetOpvarThink { get; init; }
-
     public BaseDatamapFunction<CBaseButton, DHookCBaseButtonButtonTouch> CBaseButtonButtonTouch { get; init; }
-
     public BaseDatamapFunction<CBaseButton, DHookCBaseButtonButtonSpark> CBaseButtonButtonSpark { get; init; }
-
     public BaseDatamapFunction<CBaseButton, DHookCBaseButtonTriggerAndWait> CBaseButtonTriggerAndWait { get; init; }
-
     public BaseDatamapFunction<CBaseButton, DHookCBaseButtonButtonReturn> CBaseButtonButtonReturn { get; init; }
-
     public BaseDatamapFunction<CBaseButton, DHookCBaseButtonButtonBackHome> CBaseButtonButtonBackHome { get; init; }
-
     public BaseDatamapFunction<CBaseButton, DHookCBaseButtonButtonUse> CBaseButtonButtonUse { get; init; }
-
     public BaseDatamapFunction<CBaseButton, DHookCBaseButtonActivateTouch> CBaseButtonActivateTouch { get; init; }
-
     public BaseDatamapFunction<CRevertSaved, DHookCRevertSavedLoadThink> CRevertSavedLoadThink { get; init; }
-
     public BaseDatamapFunction<CSoundEventOBBEntity, DHookCSoundEventOBBEntitySoundEventOBBThink> CSoundEventOBBEntitySoundEventOBBThink { get; init; }
-
     public BaseDatamapFunction<CSplineConstraint, DHookCSplineConstraintTransitionThink> CSplineConstraintTransitionThink { get; init; }
-
     public BaseDatamapFunction<CCSWeaponBase, DHookCCSWeaponBaseDefaultTouch> CCSWeaponBaseDefaultTouch { get; init; }
-
     public BaseDatamapFunction<CCSWeaponBase, DHookCCSWeaponBaseRemoveUnownedWeaponThink> CCSWeaponBaseRemoveUnownedWeaponThink { get; init; }
-
     public BaseDatamapFunction<CChicken, DHookCChickenChickenTouch> CChickenChickenTouch { get; init; }
-
     public BaseDatamapFunction<CChicken, DHookCChickenChickenThink> CChickenChickenThink { get; init; }
-
     public BaseDatamapFunction<CChicken, DHookCChickenChickenUse> CChickenChickenUse { get; init; }
-
     public BaseDatamapFunction<CBaseAnimGraph, DHookCBaseAnimGraphChoreoServicesThink> CBaseAnimGraphChoreoServicesThink { get; init; }
-
     public BaseDatamapFunction<CParticleSystem, DHookCParticleSystemStartParticleSystemThink> CParticleSystemStartParticleSystemThink { get; init; }
-
     public BaseDatamapFunction<CBaseFlex, DHookCBaseFlexProcessSceneEventsThink> CBaseFlexProcessSceneEventsThink { get; init; }
-
     public BaseDatamapFunction<CTriggerProximity, DHookCTriggerProximityMeasureThink> CTriggerProximityMeasureThink { get; init; }
-
     public BaseDatamapFunction<CRagdollProp, DHookCRagdollPropSetDebrisThink> CRagdollPropSetDebrisThink { get; init; }
-
     public BaseDatamapFunction<CRagdollProp, DHookCRagdollPropClearFlagsThink> CRagdollPropClearFlagsThink { get; init; }
-
     public BaseDatamapFunction<CRagdollProp, DHookCRagdollPropFadeOutThink> CRagdollPropFadeOutThink { get; init; }
-
     public BaseDatamapFunction<CRagdollProp, DHookCRagdollPropSettleThink> CRagdollPropSettleThink { get; init; }
-
     public BaseDatamapFunction<CRagdollProp, DHookCRagdollPropAttachedItemsThink> CRagdollPropAttachedItemsThink { get; init; }
-
     public BaseDatamapFunction<CPointValueRemapper, DHookCPointValueRemapperUpdateThink> CPointValueRemapperUpdateThink { get; init; }
-
     public BaseDatamapFunction<CBreakableProp, DHookCBreakablePropBreakThink> CBreakablePropBreakThink { get; init; }
-
     public BaseDatamapFunction<CBreakableProp, DHookCBreakablePropRampToDefaultFadeScale> CBreakablePropRampToDefaultFadeScale { get; init; }
-
     public BaseDatamapFunction<CGenericConstraint, DHookCGenericConstraintUpdateThink> CGenericConstraintUpdateThink { get; init; }
-
     public BaseDatamapFunction<CItemSoda, DHookCItemSodaCanThink> CItemSodaCanThink { get; init; }
-
     public BaseDatamapFunction<CFuncMover, DHookCFuncMoverLerpToNewPosition> CFuncMoverLerpToNewPosition { get; init; }
-
     public BaseDatamapFunction<CEnvWind, DHookCEnvWindWindThink> CEnvWindWindThink { get; init; }
-
     public BaseDatamapFunction<CCSPlayerController, DHookCCSPlayerControllerPlayerForceTeamThink> CCSPlayerControllerPlayerForceTeamThink { get; init; }
-
     public BaseDatamapFunction<CCSPlayerController, DHookCCSPlayerControllerResetForceTeamThink> CCSPlayerControllerResetForceTeamThink { get; init; }
-
     public BaseDatamapFunction<CCSPlayerController, DHookCCSPlayerControllerResourceDataThink> CCSPlayerControllerResourceDataThink { get; init; }
-
     public BaseDatamapFunction<CCSPlayerController, DHookCCSPlayerControllerInventoryUpdateThink> CCSPlayerControllerInventoryUpdateThink { get; init; }
-
     public BaseDatamapFunction<CLogicActiveAutosave, DHookCLogicActiveAutosaveSaveThink> CLogicActiveAutosaveSaveThink { get; init; }
-
     public BaseDatamapFunction<CBaseEntity, DHookCBaseEntitySUB_Remove> CBaseEntitySUB_Remove { get; init; }
-
     public BaseDatamapFunction<CBaseEntity, DHookCBaseEntitySUB_RemoveIfUncarried> CBaseEntitySUB_RemoveIfUncarried { get; init; }
-
     public BaseDatamapFunction<CBaseEntity, DHookCBaseEntitySUB_DoNothing> CBaseEntitySUB_DoNothing { get; init; }
-
     public BaseDatamapFunction<CBaseEntity, DHookCBaseEntitySUB_Vanish> CBaseEntitySUB_Vanish { get; init; }
-
     public BaseDatamapFunction<CBaseEntity, DHookCBaseEntitySUB_CallUseToggle> CBaseEntitySUB_CallUseToggle { get; init; }
-
     public BaseDatamapFunction<CBaseEntity, DHookCBaseEntitySUB_KillSelf> CBaseEntitySUB_KillSelf { get; init; }
-
     public BaseDatamapFunction<CBaseEntity, DHookCBaseEntitySUB_KillSelfIfUncarried> CBaseEntitySUB_KillSelfIfUncarried { get; init; }
-
     public BaseDatamapFunction<CBaseEntity, DHookCBaseEntityFakeScriptThinkFunc> CBaseEntityFakeScriptThinkFunc { get; init; }
-
     public BaseDatamapFunction<CBaseEntity, DHookCBaseEntityClearNavIgnoreContentsThink> CBaseEntityClearNavIgnoreContentsThink { get; init; }
-
     public BaseDatamapFunction<CFuncRotator, DHookCFuncRotatorRotateThink> CFuncRotatorRotateThink { get; init; }
-
     public BaseDatamapFunction<CPointPush, DHookCPointPushPushThink> CPointPushPushThink { get; init; }
-
     public BaseDatamapFunction<CTriggerFan, DHookCTriggerFanPushThink> CTriggerFanPushThink { get; init; }
-
     public BaseDatamapFunction<CDynamicProp, DHookCDynamicPropAnimThink> CDynamicPropAnimThink { get; init; }
-
     public BaseDatamapFunction<CHostageRescueZone, DHookCHostageRescueZoneCHostageRescueZoneShim_Touch> CHostageRescueZoneCHostageRescueZoneShim_Touch { get; init; }
-
     public BaseDatamapFunction<CBombTarget, DHookCBombTargetCBombTargetShim_Touch> CBombTargetCBombTargetShim_Touch { get; init; }
-
     public BaseDatamapFunction<CBombTarget, DHookCBombTargetCBombTargetShim_BombTargetUse> CBombTargetCBombTargetShim_BombTargetUse { get; init; }
-
     public BaseDatamapFunction<CSoundEventEntity, DHookCSoundEventEntitySoundFinishedThink> CSoundEventEntitySoundFinishedThink { get; init; }
-
     public BaseDatamapFunction<CFuncTrackTrain, DHookCFuncTrackTrainNext> CFuncTrackTrainNext { get; init; }
-
     public BaseDatamapFunction<CFuncTrackTrain, DHookCFuncTrackTrainFind> CFuncTrackTrainFind { get; init; }
-
     public BaseDatamapFunction<CFuncTrackTrain, DHookCFuncTrackTrainNearestPath> CFuncTrackTrainNearestPath { get; init; }
-
     public BaseDatamapFunction<CFuncTrackTrain, DHookCFuncTrackTrainDeadEnd> CFuncTrackTrainDeadEnd { get; init; }
-
     public BaseDatamapFunction<CMomentaryRotButton, DHookCMomentaryRotButtonUseMoveDone> CMomentaryRotButtonUseMoveDone { get; init; }
-
     public BaseDatamapFunction<CMomentaryRotButton, DHookCMomentaryRotButtonReturnMoveDone> CMomentaryRotButtonReturnMoveDone { get; init; }
-
     public BaseDatamapFunction<CMomentaryRotButton, DHookCMomentaryRotButtonSetPositionMoveDone> CMomentaryRotButtonSetPositionMoveDone { get; init; }
-
     public BaseDatamapFunction<CMomentaryRotButton, DHookCMomentaryRotButtonUpdateThink> CMomentaryRotButtonUpdateThink { get; init; }
-
     public BaseDatamapFunction<CTriggerSndSosOpvar, DHookCTriggerSndSosOpvarSndSosTriggerOpvarWaitOver> CTriggerSndSosOpvarSndSosTriggerOpvarWaitOver { get; init; }
-
     public BaseDatamapFunction<CVoteController, DHookCVoteControllerVoteControllerThink> CVoteControllerVoteControllerThink { get; init; }
-
     public BaseDatamapFunction<CPhysForce, DHookCPhysForceForceOff> CPhysForceForceOff { get; init; }
-
     public BaseDatamapFunction<CPhysForce, DHookCPhysForceInitialThink> CPhysForceInitialThink { get; init; }
-
     public BaseDatamapFunction<CSoundOpvarSetPointEntity, DHookCSoundOpvarSetPointEntitySetOpvarThink> CSoundOpvarSetPointEntitySetOpvarThink { get; init; }
-
     public BaseDatamapFunction<CDecoyProjectile, DHookCDecoyProjectileThink_Detonate> CDecoyProjectileThink_Detonate { get; init; }
-
     public BaseDatamapFunction<CDecoyProjectile, DHookCDecoyProjectileGunfireThink> CDecoyProjectileGunfireThink { get; init; }
-
     public BaseDatamapFunction<CPlantedC4, DHookCPlantedC4C4Think> CPlantedC4C4Think { get; init; }
-
     public BaseDatamapFunction<CItemGenericTriggerHelper, DHookCItemGenericTriggerHelperItemGenericTriggerHelperTouch> CItemGenericTriggerHelperItemGenericTriggerHelperTouch { get; init; }
-
     public BaseDatamapFunction<CPointOrient, DHookCPointOrientReorientThink> CPointOrientReorientThink { get; init; }
-
     public BaseDatamapFunction<CMultiLightProxy, DHookCMultiLightProxyRestoreFlashlightThink> CMultiLightProxyRestoreFlashlightThink { get; init; }
-
     public BaseDatamapFunction<CMultiLightProxy, DHookCMultiLightProxyApproachBrightnessThink> CMultiLightProxyApproachBrightnessThink { get; init; }
-
     public BaseDatamapFunction<CAmbientGeneric, DHookCAmbientGenericRampThink> CAmbientGenericRampThink { get; init; }
-
     public BaseDatamapFunction<CSoundEventSphereEntity, DHookCSoundEventSphereEntitySoundEventSphereThink> CSoundEventSphereEntitySoundEventSphereThink { get; init; }
-
     public BaseDatamapFunction<CBreakable, DHookCBreakableDie> CBreakableDie { get; init; }
-
     public BaseDatamapFunction<CTriggerHurt, DHookCTriggerHurtRadiationThink> CTriggerHurtRadiationThink { get; init; }
-
     public BaseDatamapFunction<CTriggerHurt, DHookCTriggerHurtHurtThink> CTriggerHurtHurtThink { get; init; }
-
     public BaseDatamapFunction<CTriggerHurt, DHookCTriggerHurtNavThink> CTriggerHurtNavThink { get; init; }
-
     public BaseDatamapFunction<CScriptedSequence, DHookCScriptedSequenceScriptThink> CScriptedSequenceScriptThink { get; init; }
-
     public BaseDatamapFunction<CEnvWindController, DHookCEnvWindControllerWindThink> CEnvWindControllerWindThink { get; init; }
-
     public BaseDatamapFunction<CTriggerMultiple, DHookCTriggerMultipleMultiTouch> CTriggerMultipleMultiTouch { get; init; }
-
     public BaseDatamapFunction<CTriggerMultiple, DHookCTriggerMultipleMultiWaitOver> CTriggerMultipleMultiWaitOver { get; init; }
-
     public BaseDatamapFunction<CFuncRotating, DHookCFuncRotatingSpinUpMove> CFuncRotatingSpinUpMove { get; init; }
-
     public BaseDatamapFunction<CFuncRotating, DHookCFuncRotatingSpinDownMove> CFuncRotatingSpinDownMove { get; init; }
-
     public BaseDatamapFunction<CFuncRotating, DHookCFuncRotatingHurtTouch> CFuncRotatingHurtTouch { get; init; }
-
     public BaseDatamapFunction<CFuncRotating, DHookCFuncRotatingRotatingUse> CFuncRotatingRotatingUse { get; init; }
-
     public BaseDatamapFunction<CFuncRotating, DHookCFuncRotatingRotateMove> CFuncRotatingRotateMove { get; init; }
-
     public BaseDatamapFunction<CFuncRotating, DHookCFuncRotatingReverseMove> CFuncRotatingReverseMove { get; init; }
-
     public BaseDatamapFunction<CCSPlayerPawn, DHookCCSPlayerPawnCheckStuffThink> CCSPlayerPawnCheckStuffThink { get; init; }
-
     public BaseDatamapFunction<CCSPlayerPawn, DHookCCSPlayerPawnPushawayThink> CCSPlayerPawnPushawayThink { get; init; }
-
     public BaseDatamapFunction<CMapVetoPickController, DHookCMapVetoPickControllerVoteControllerThink> CMapVetoPickControllerVoteControllerThink { get; init; }
-
     public BaseDatamapFunction<CEntityDissolve, DHookCEntityDissolveDissolveThink> CEntityDissolveDissolveThink { get; init; }
-
     public BaseDatamapFunction<CEntityDissolve, DHookCEntityDissolveElectrocuteThink> CEntityDissolveElectrocuteThink { get; init; }
-
     public BaseDatamapFunction<CLogicMeasureMovement, DHookCLogicMeasureMovementMeasureThink> CLogicMeasureMovementMeasureThink { get; init; }
-
     public BaseDatamapFunction<CTriggerImpact, DHookCTriggerImpactDisable> CTriggerImpactDisable { get; init; }
-
     public BaseDatamapFunction<CEnvBeam, DHookCEnvBeamStrikeThink> CEnvBeamStrikeThink { get; init; }
-
     public BaseDatamapFunction<CEnvBeam, DHookCEnvBeamUpdateThink> CEnvBeamUpdateThink { get; init; }
-
     public BaseDatamapFunction<CCSPlayerResource, DHookCCSPlayerResourceResourceThink> CCSPlayerResourceResourceThink { get; init; }
-
     public BaseDatamapFunction<CBaseModelEntity, DHookCBaseModelEntitySUB_DissolveIfUncarried> CBaseModelEntitySUB_DissolveIfUncarried { get; init; }
-
     public BaseDatamapFunction<CBaseModelEntity, DHookCBaseModelEntitySUB_StartFadeOut> CBaseModelEntitySUB_StartFadeOut { get; init; }
-
     public BaseDatamapFunction<CBaseModelEntity, DHookCBaseModelEntitySUB_StartFadeOutInstant> CBaseModelEntitySUB_StartFadeOutInstant { get; init; }
-
     public BaseDatamapFunction<CBaseModelEntity, DHookCBaseModelEntitySUB_FadeOut> CBaseModelEntitySUB_FadeOut { get; init; }
-
     public BaseDatamapFunction<CBaseModelEntity, DHookCBaseModelEntitySUB_StartShadowFadeOut> CBaseModelEntitySUB_StartShadowFadeOut { get; init; }
-
     public BaseDatamapFunction<CBaseModelEntity, DHookCBaseModelEntitySUB_PerformShadowFadeOut> CBaseModelEntitySUB_PerformShadowFadeOut { get; init; }
-
     public BaseDatamapFunction<CBaseModelEntity, DHookCBaseModelEntitySUB_StartShadowFadeIn> CBaseModelEntitySUB_StartShadowFadeIn { get; init; }
-
     public BaseDatamapFunction<CBaseModelEntity, DHookCBaseModelEntitySUB_PerformShadowFadeIn> CBaseModelEntitySUB_PerformShadowFadeIn { get; init; }
-
     public BaseDatamapFunction<CBaseModelEntity, DHookCBaseModelEntitySUB_StopShadowFade> CBaseModelEntitySUB_StopShadowFade { get; init; }
-
     public BaseDatamapFunction<CSoundOpvarSetAABBEntity, DHookCSoundOpvarSetAABBEntitySetOpvarThink> CSoundOpvarSetAABBEntitySetOpvarThink { get; init; }
-
     public BaseDatamapFunction<CFuncTrainControls, DHookCFuncTrainControlsFind> CFuncTrainControlsFind { get; init; }
-
     public BaseDatamapFunction<CPhysicsPropRespawnable, DHookCPhysicsPropRespawnableMaterialize> CPhysicsPropRespawnableMaterialize { get; init; }
-
     public BaseDatamapFunction<CFishPool, DHookCFishPoolUpdate> CFishPoolUpdate { get; init; }
-
     public BaseDatamapFunction<CTriggerSoundscape, DHookCTriggerSoundscapePlayerUpdateThink> CTriggerSoundscapePlayerUpdateThink { get; init; }
-
     public BaseDatamapFunction<CItemGeneric, DHookCItemGenericItemGenericTouch> CItemGenericItemGenericTouch { get; init; }
-
     public BaseDatamapFunction<CTriggerActiveWeaponDetect, DHookCTriggerActiveWeaponDetectActiveWeaponThink> CTriggerActiveWeaponDetectActiveWeaponThink { get; init; }
-
     public BaseDatamapFunction<CFogController, DHookCFogControllerSetLerpValues> CFogControllerSetLerpValues { get; init; }
-
     public BaseDatamapFunction<CFuncTrackChange, DHookCFuncTrackChangeFind> CFuncTrackChangeFind { get; init; }
-
     public BaseDatamapFunction<CTriggerLook, DHookCTriggerLookTimeoutThink> CTriggerLookTimeoutThink { get; init; }
-
     public BaseDatamapFunction<CSoundOpvarSetOBBEntity, DHookCSoundOpvarSetOBBEntitySetOpvarThink> CSoundOpvarSetOBBEntitySetOpvarThink { get; init; }
-
     public BaseDatamapFunction<CColorCorrectionVolume, DHookCColorCorrectionVolumeThinkFunc> CColorCorrectionVolumeThinkFunc { get; init; }
-
     public BaseDatamapFunction<CWaterBullet, DHookCWaterBulletBulletThink> CWaterBulletBulletThink { get; init; }
-
     public BaseDatamapFunction<CFuncPlat, DHookCFuncPlatPlatUse> CFuncPlatPlatUse { get; init; }
-
     public BaseDatamapFunction<CFuncPlat, DHookCFuncPlatCallGoDown> CFuncPlatCallGoDown { get; init; }
-
     public BaseDatamapFunction<CFuncPlat, DHookCFuncPlatCallHitTop> CFuncPlatCallHitTop { get; init; }
-
     public BaseDatamapFunction<CFuncPlat, DHookCFuncPlatCallHitBottom> CFuncPlatCallHitBottom { get; init; }
-
     public BaseDatamapFunction<CPhysImpact, DHookCPhysImpactPointAtEntity> CPhysImpactPointAtEntity { get; init; }
-
     public BaseDatamapFunction<CTriggerLerpObject, DHookCTriggerLerpObjectLerpThink> CTriggerLerpObjectLerpThink { get; init; }
-
     public BaseDatamapFunction<CTriggerLerpObject, DHookCTriggerLerpObjectUnsetWaitForEntity> CTriggerLerpObjectUnsetWaitForEntity { get; init; }
-
     public BaseDatamapFunction<CTriggerLerpObject, DHookCTriggerLerpObjectAttachedEntityThink> CTriggerLerpObjectAttachedEntityThink { get; init; }
-
     public BaseDatamapFunction<CPathMoverEntitySpawner, DHookCPathMoverEntitySpawnerSpawnThink> CPathMoverEntitySpawnerSpawnThink { get; init; }
-
     public BaseDatamapFunction<CPointCommentaryNode, DHookCPointCommentaryNodeSpinThink> CPointCommentaryNodeSpinThink { get; init; }
-
     public BaseDatamapFunction<CPointCommentaryNode, DHookCPointCommentaryNodeUpdateViewThink> CPointCommentaryNodeUpdateViewThink { get; init; }
-
     public BaseDatamapFunction<CPointCommentaryNode, DHookCPointCommentaryNodeUpdateViewPostThink> CPointCommentaryNodeUpdateViewPostThink { get; init; }
-
     public BaseDatamapFunction<CPointCommentaryNode, DHookCPointCommentaryNodeAcculumatePlayTimeThink> CPointCommentaryNodeAcculumatePlayTimeThink { get; init; }
-
     public BaseDatamapFunction<CPathNode, DHookCPathNodeParentedMoveThink> CPathNodeParentedMoveThink { get; init; }
-
     public BaseDatamapFunction<CPhysicalButton, DHookCPhysicalButtonPhysicsThink> CPhysicalButtonPhysicsThink { get; init; }
-
     public BaseDatamapFunction<CPhysicalButton, DHookCPhysicalButtonButtonTouch> CPhysicalButtonButtonTouch { get; init; }
-
     public BaseDatamapFunction<CPhysicalButton, DHookCPhysicalButtonTriggerAndWait> CPhysicalButtonTriggerAndWait { get; init; }
-
     public BaseDatamapFunction<CPhysicalButton, DHookCPhysicalButtonButtonBackHome> CPhysicalButtonButtonBackHome { get; init; }
-
 
     public DatamapFunctionManager(HookManager hookManager)
     {

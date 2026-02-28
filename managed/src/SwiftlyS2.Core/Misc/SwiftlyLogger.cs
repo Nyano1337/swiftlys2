@@ -20,6 +20,7 @@ internal class SwiftlyLogger( string categoryName, string contextName ) : ILogge
         [LogLevel.Error] = ("Error", "red3"),
         [LogLevel.Critical] = ("Critical", "red3")
     };
+    private static readonly bool HideLogInConsole = ShouldHideLogToConsole();
 
     public IDisposable BeginScope<TState>( TState state ) where TState : notnull => NullScope.Instance;
 
@@ -37,15 +38,14 @@ internal class SwiftlyLogger( string categoryName, string contextName ) : ILogge
         var eventIdText = eventId.Id != 0 ? $"[{eventId.Id}]" : string.Empty;
         AnsiConsole.Profile.Width = 13337;
 
-        // Console output
-        AnsiConsole.MarkupLineInterpolated($"[lightsteelblue1 bold]{contextName}[/] [lightsteelblue]|[/] [grey42]{timestamp}[/] [lightsteelblue]|[/] [{color}]{levelText}[/] [lightsteelblue]|[/] [lightsteelblue]{categoryName}{eventIdText}[/]");
+        if (!HideLogInConsole || categoryName.Contains("Core") || categoryName.Contains("Shared")) AnsiConsole.MarkupLineInterpolated($"[lightsteelblue1 bold]{contextName}[/] [lightsteelblue]|[/] [grey42]{timestamp}[/] [lightsteelblue]|[/] [{color}]{levelText}[/] [lightsteelblue]|[/] [lightsteelblue]{categoryName}{eventIdText}[/]");
 
         // Message output
         var message = formatter?.Invoke(state, exception) ?? state?.ToString();
         if (!string.IsNullOrEmpty(message))
         {
             FileLogger.Log($"{contextName} | {timestamp} | {levelText} | {categoryName}{eventIdText} | {message}");
-            OutputMessageLines(message);
+            if (!HideLogInConsole || categoryName.Contains("Core") || categoryName.Contains("Shared")) OutputMessageLines(message);
         }
 
         // Exception output
@@ -81,6 +81,12 @@ internal class SwiftlyLogger( string categoryName, string contextName ) : ILogge
             "OFF" => LogLevel.None,
             _ => LogLevel.Information
         };
+    }
+
+    private static bool ShouldHideLogToConsole()
+    {
+        var output = Environment.GetEnvironmentVariable("SWIFTLY_HIDE_LOG_IN_CONSOLE")?.ToUpperInvariant();
+        return output == "1" || output == "TRUE" || output == "YES";
     }
 
     private sealed class NullScope : IDisposable

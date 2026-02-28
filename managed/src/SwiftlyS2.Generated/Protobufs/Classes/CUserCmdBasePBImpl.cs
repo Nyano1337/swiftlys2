@@ -1,4 +1,3 @@
-
 using SwiftlyS2.Core.Natives;
 using SwiftlyS2.Core.NetMessages;
 using SwiftlyS2.Shared.Natives;
@@ -9,12 +8,10 @@ namespace SwiftlyS2.Core.ProtobufDefinitions;
 
 internal class CUserCmdBasePBImpl : TypedProtobuf<CUserCmdBasePB>, CUserCmdBasePB
 {
-  public CUserCmdBasePBImpl(nint handle, bool isManuallyAllocated): base(handle)
-  {
-  }
+    public CUserCmdBasePBImpl(nint handle, bool isManuallyAllocated) : base(handle)
+    {
+    }
 
-
-  public CBaseUserCmdPB Base
-  { get => new CBaseUserCmdPBImpl(NativeNetMessages.GetNestedMessage(Address, "base"), false); }
-
+    public CBaseUserCmdPB Base
+    { get => new CBaseUserCmdPBImpl(NativeNetMessages.GetNestedMessage(Address, "base"), false); }
 }

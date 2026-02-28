@@ -40,14 +40,6 @@ internal partial class CMolotovProjectileImpl : CBaseCSGrenadeProjectileImpl, CM
             return new IntervalTimerImpl(_Handle + _StillTimerOffset!.Value);
         }
     }
-    private static nint? _HasBouncedOffPlayerOffset;
-
-    public ref bool HasBouncedOffPlayer {
-        get {
-            _HasBouncedOffPlayerOffset = _HasBouncedOffPlayerOffset ?? Schema.GetOffset(0xA239EA8F2A625F7B);
-            return ref _Handle.AsRef<bool>(_HasBouncedOffPlayerOffset!.Value);
-        }
-    }
 
     public void IsIncGrenadeUpdated() => Schema.Update(_Handle, 0xA239EA8F9D1C12B7);
 }

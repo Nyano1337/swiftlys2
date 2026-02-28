@@ -35,23 +35,31 @@ internal static class NativeCommands
         }
     }
 
-    private unsafe static delegate* unmanaged<byte*, nint, byte, ulong> _RegisterCommand;
+    private unsafe static delegate* unmanaged<byte*, nint, byte, byte*, ulong> _RegisterCommand;
 
     /// <summary>
     /// callback should receive (int32 playerid, string arguments_list (separated by \x01), string commandName, string prefix, bool silent), if registerRaw is false, it will not put "sw_" before the command name
     /// </summary>
-    public unsafe static ulong RegisterCommand(string commandName, nint callback, bool registerRaw)
+    public unsafe static ulong RegisterCommand(string commandName, nint callback, bool registerRaw, string helpText)
     {
         var pool = ArrayPool<byte>.Shared;
         var commandNameLength = Encoding.UTF8.GetByteCount(commandName);
         var commandNameBuffer = pool.Rent(commandNameLength + 1);
         Encoding.UTF8.GetBytes(commandName, commandNameBuffer);
         commandNameBuffer[commandNameLength] = 0;
+        var helpTextLength = Encoding.UTF8.GetByteCount(helpText);
+        var helpTextBuffer = pool.Rent(helpTextLength + 1);
+        Encoding.UTF8.GetBytes(helpText, helpTextBuffer);
+        helpTextBuffer[helpTextLength] = 0;
         fixed (byte* commandNameBufferPtr = commandNameBuffer)
         {
-            var ret = _RegisterCommand(commandNameBufferPtr, callback, registerRaw ? (byte)1 : (byte)0);
-            pool.Return(commandNameBuffer);
-            return ret;
+            fixed (byte* helpTextBufferPtr = helpTextBuffer)
+            {
+                var ret = _RegisterCommand(commandNameBufferPtr, callback, registerRaw ? (byte)1 : (byte)0, helpTextBufferPtr);
+                pool.Return(commandNameBuffer);
+                pool.Return(helpTextBuffer);
+                return ret;
+            }
         }
     }
 
