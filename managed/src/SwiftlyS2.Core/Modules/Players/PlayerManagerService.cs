@@ -98,7 +98,7 @@ internal class PlayerManagerService : IPlayerManagerService
     {
         IEnumerable<IPlayer> allPlayers = [];
 
-        var players = GetAllPlayers();
+        var players = GetAllValidPlayers();
         foreach (var targetPlayer in players)
         {
             if (searchMode.HasFlag(TargetSearchMode.NoBots) && targetPlayer.IsFakeClient)
@@ -351,11 +351,15 @@ internal class PlayerManagerService : IPlayerManagerService
 
     public IPlayer? GetPlayerFromSteamId( ulong steamId, bool allowUnauthorized = true )
     {
-        return PlayerObjects.Values.FirstOrDefault(p => {
-            if (allowUnauthorized) {
+        return PlayerObjects.Values.FirstOrDefault(p =>
+        {
+            if (allowUnauthorized)
+            {
                 if (p.SteamID == steamId) return true;
                 if (p.UnauthorizedSteamID == steamId) return true;
-            } else {
+            }
+            else
+            {
                 if (p.SteamID == steamId && p.IsAuthorized) return true;
             }
             return false;
