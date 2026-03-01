@@ -298,7 +298,11 @@ public struct CVariant<TAllocator> : IDisposable
     {
         unsafe
         {
-            if (value is bool boolValue)
+            if (value is null)
+            {
+                SetString("");
+            }
+            else if (value is bool boolValue)
             {
                 SetBool(boolValue);
             }
