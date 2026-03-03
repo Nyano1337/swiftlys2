@@ -435,7 +435,8 @@ internal class CoreHookService : IDisposable
             {
                 var entity = core.Memory.ToSchemaClass<CBaseEntity>(pBaseEntity);
                 var otherEntity = core.Memory.ToSchemaClass<CBaseEntity>(pOtherEntity);
-                EventPublisher.InvokeOnEntityStartTouch(new OnEntityStartTouchEvent { Entity = entity, OtherEntity = otherEntity });
+                using var @event = new OnEntityStartTouchEvent { Entity = entity, OtherEntity = otherEntity };
+                EventPublisher.InvokeOnEntityStartTouch(@event);
                 return next()(pBaseEntity, pOtherEntity);
             };
         });
@@ -446,7 +447,8 @@ internal class CoreHookService : IDisposable
             {
                 var entity = core.Memory.ToSchemaClass<CBaseEntity>(pBaseEntity);
                 var otherEntity = core.Memory.ToSchemaClass<CBaseEntity>(pOtherEntity);
-                EventPublisher.InvokeOnEntityTouch(new OnEntityTouchEvent { Entity = entity, OtherEntity = otherEntity });
+                using var @event = new OnEntityTouchEvent { Entity = entity, OtherEntity = otherEntity };
+                EventPublisher.InvokeOnEntityTouch(@event);
                 return next()(pBaseEntity, pOtherEntity);
             };
         });
@@ -457,7 +459,8 @@ internal class CoreHookService : IDisposable
             {
                 var entity = core.Memory.ToSchemaClass<CBaseEntity>(pBaseEntity);
                 var otherEntity = core.Memory.ToSchemaClass<CBaseEntity>(pOtherEntity);
-                EventPublisher.InvokeOnEntityEndTouch(new OnEntityEndTouchEvent { Entity = entity, OtherEntity = otherEntity });
+                using var @event = new OnEntityEndTouchEvent { Entity = entity, OtherEntity = otherEntity };
+                EventPublisher.InvokeOnEntityEndTouch(@event);
                 return next()(pBaseEntity, pOtherEntity);
             };
         });
@@ -497,7 +500,7 @@ internal class CoreHookService : IDisposable
                 var userCmdPb = new CSGOUserCmdPBImpl(pUserCmd + 0x10, false);
                 var buttonState = new CInButtonStateImpl(pUserCmd + 0x58);
 
-                var @event = new OnMovementServicesRunCommandHookEvent {
+                using var @event = new OnMovementServicesRunCommandHookEvent {
                     MovementServices = movementService,
                     ButtonState = buttonState,
                     UserCmdPB = userCmdPb
@@ -523,7 +526,7 @@ internal class CoreHookService : IDisposable
             {
                 var playerPawn = core.Memory.ToSchemaClass<CCSPlayerPawn>(pPlayerPawn);
 
-                var @event = new OnPlayerPawnPostThinkHookEvent {
+                using var @event = new OnPlayerPawnPostThinkHookEvent {
                     PlayerPawn = playerPawn
                 };
                 EventPublisher.InvokeOnPlayerPawnPostThinkHook(@event);

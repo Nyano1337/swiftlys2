@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using SwiftlyS2.Core.Hooks;
@@ -5,6 +6,14 @@ using SwiftlyS2.Core.Natives.NativeObjects;
 using SwiftlyS2.Shared.Memory;
 
 namespace SwiftlyS2.Core.Memory;
+
+public static class DelegateCache<TDelegate> where TDelegate : Delegate
+{
+    private static readonly ConcurrentDictionary<nint, TDelegate> Cache = new();
+
+    public static TDelegate Get( nint ptr ) =>
+        Cache.GetOrAdd(ptr, static p => Marshal.GetDelegateForFunctionPointer<TDelegate>(p));
+}
 
 internal abstract class UnmanagedFunction : NativeHandle, IDisposable
 {
@@ -29,7 +38,7 @@ internal class UnmanagedFunction<TDelegate> : UnmanagedFunction, IUnmanagedFunct
                 var original = _HookManager.GetOriginal(Address);
                 if (original != nint.Zero)
                 {
-                    return Marshal.GetDelegateForFunctionPointer<TDelegate>(original);
+                    return DelegateCache<TDelegate>.Get(original);
                 }
             }
             return Call;
@@ -52,14 +61,14 @@ internal class UnmanagedFunction<TDelegate> : UnmanagedFunction, IUnmanagedFunct
 
         Address = address;
 
-        Call = Marshal.GetDelegateForFunctionPointer<TDelegate>(address);
+        Call = DelegateCache<TDelegate>.Get(address);
     }
 
     public Guid AddHook( Func<Func<TDelegate>, TDelegate> callbackBuilder )
     {
         try
         {
-            var id = _HookManager.AddHook(Address, ( builder ) => callbackBuilder(() => Marshal.GetDelegateForFunctionPointer<TDelegate>(builder())));
+            var id = _HookManager.AddHook(Address, ( builder ) => callbackBuilder(() => DelegateCache<TDelegate>.Get(builder())));
             Hooks.Add(id);
             return id;
         }

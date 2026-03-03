@@ -595,12 +595,11 @@ internal static class EventPublisher
         {
             unsafe
             {
-                var usercmdPtrs = new ReadOnlySpan<nint>(usercmdsPtr.ToPointer(), numcmds);
-                List<CSGOUserCmdPB> usercmds = [];
-                foreach (var pUsercmd in usercmdPtrs)
+                var usercmdPtrs = (nint*)usercmdsPtr;
+                List<CSGOUserCmdPB> usercmds = new(numcmds);
+                for (var i = 0; i < numcmds; i++)
                 {
-                    var usercmd = new CSGOUserCmdPBImpl(pUsercmd, false);
-                    usercmds.Add(usercmd);
+                    usercmds.Add(new CSGOUserCmdPBImpl(usercmdPtrs[i], false));
                 }
 
                 OnClientProcessUsercmdsEvent @event = new() {

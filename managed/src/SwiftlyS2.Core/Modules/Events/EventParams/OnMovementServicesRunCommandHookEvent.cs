@@ -4,10 +4,13 @@ using SwiftlyS2.Shared.SchemaDefinitions;
 
 namespace SwiftlyS2.Core.Events;
 
-internal class OnMovementServicesRunCommandHookEvent : IOnMovementServicesRunCommandHookEvent
+internal class OnMovementServicesRunCommandHookEvent : IOnMovementServicesRunCommandHookEvent, IDisposable
 {
   public required CCSPlayer_MovementServices MovementServices { get; set; }
   public required CInButtonState ButtonState { get; set; }
   public required CSGOUserCmdPB UserCmdPB { get; set; }
 
+  public void Dispose()
+  {
+  }
 }
