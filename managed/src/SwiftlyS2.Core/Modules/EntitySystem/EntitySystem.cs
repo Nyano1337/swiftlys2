@@ -8,6 +8,7 @@ using SwiftlyS2.Core.Extensions;
 using SwiftlyS2.Shared.EntitySystem;
 using SwiftlyS2.Core.SchemaDefinitions;
 using SwiftlyS2.Shared.SchemaDefinitions;
+using System.Diagnostics;
 
 namespace SwiftlyS2.Core.EntitySystem;
 
@@ -51,6 +52,7 @@ internal class EntitySystemService : IEntitySystemService, IDisposable
     {
         ThrowIfEntitySystemInvalid();
         var handle = NativeEntitySystem.CreateEntityByName(designerName);
+
         var entity = EntityManager.OnEntityCreated(handle);
 
         return handle == nint.Zero

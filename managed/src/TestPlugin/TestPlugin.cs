@@ -1441,11 +1441,10 @@ public class TestPlugin : BasePlugin
     [CommandAlias("cmat")]
     public void CommandTestCommand( ICommandContext context )
     {
-        Console.WriteLine("start");
-        var sw = Stopwatch.StartNew();
-        _ = Core.EntitySystem.GetAllEntities().Where(e => e.IsValid);
-        sw.Stop();
-        Console.WriteLine($"end - elapsed: {sw.ElapsedMilliseconds} ms");
+        for (var i = 0; i < 1024; i++)
+        {
+            _ = Core.EntitySystem.CreateEntity<CPointWorldText>();
+        }
     }
 
     [Command("ecwb")]

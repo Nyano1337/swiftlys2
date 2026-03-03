@@ -1,7 +1,6 @@
 using SwiftlyS2.Core.Natives;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Linq;
 using System.Diagnostics;
 
 namespace SwiftlyS2.Core.Services;
@@ -12,8 +11,8 @@ internal class ProfileService
   private readonly Lock _lock = new();
   private bool _enabled = false;
 
-  private readonly Dictionary<string, Dictionary<string, Stat>> _statsTable = new();
-  private readonly Dictionary<string, Dictionary<string, ulong>> _activeStartsUs = new();
+  private readonly Dictionary<string, Dictionary<string, Stat>> _statsTable = [];
+  private readonly Dictionary<string, Dictionary<string, ulong>> _activeStartsUs = [];
 
   // High-precision timestamping via Stopwatch, mapped to epoch micros
   private readonly long _swBaseTicks;
@@ -96,7 +95,7 @@ internal class ProfileService
       if (!startMap.TryGetValue(name, out var startUs)) return;
       var endUs = NowMicrosecondsSinceUnixEpoch();
       var durUs = endUs > startUs ? endUs - startUs : 0UL;
-      startMap.Remove(name);
+      _ = startMap.Remove(name);
 
       if (!_statsTable.TryGetValue(identifier, out var nameToStat))
       {
@@ -109,7 +108,7 @@ internal class ProfileService
         nameToStat[name] = stat;
       }
 
-      stat.Count++;
+      ++stat.Count;
       stat.TotalUs += durUs;
       if (durUs < stat.MinUs) stat.MinUs = durUs;
       if (durUs > stat.MaxUs) stat.MaxUs = durUs;
@@ -134,7 +133,7 @@ internal class ProfileService
         nameToStat[name] = stat;
       }
 
-      stat.Count++;
+      ++stat.Count;
       stat.TotalUs += durUs;
       if (durUs < stat.MinUs) stat.MinUs = durUs;
       if (durUs > stat.MaxUs) stat.MaxUs = durUs;
@@ -224,9 +223,9 @@ internal class ProfileService
       foreach (var (name, stat) in nameMap)
       {
         var count = stat.Count;
-        float minUs = count == 0 ? 0f : stat.MinUs;
-        float maxUs = stat.MaxUs;
-        float avgUs = count == 0 ? 0f : (float)(stat.TotalUs / (double)count);
+        var minUs = count == 0 ? 0f : stat.MinUs;
+        var maxUs = stat.MaxUs;
+        var avgUs = count == 0 ? 0f : (float)(stat.TotalUs / (double)count);
         var eventName = $"{name} [{plugin}] (min={FormatUs(minUs)},avg={FormatUs(avgUs)},max={FormatUs(maxUs)},count={(ulong)count})";
 
         traceEvents.Add(new Dictionary<string, object?> {

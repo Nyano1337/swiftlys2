@@ -9,7 +9,7 @@ internal static class EntityManager
     private static readonly List<uint> _ActiveEntityIndices = [];
     private static readonly Dictionary<nint, uint> _PtrToIndex = [];
     private static readonly CEntityInstanceImpl _Dummy = new(0);
-    private static readonly ReaderWriterLockSlim _rw = new(LockRecursionPolicy.NoRecursion);
+    private static readonly Lock _lock = new();
 
     public static CEntityInstance OnEntityCreated( nint entityPtr )
     {
@@ -19,89 +19,99 @@ internal static class EntityManager
         _Dummy.DangerousSetHandle(entityPtr);
         var index = _Dummy.Index;
         var entity = ClassConvertor.ConvertEntityByDesignerName(entityPtr, _Dummy.DesignerName);
-        _rw.EnterWriteLock();
-        try
+        lock (_lock)
         {
-            _Entities[index] = entity;
-            _ActiveEntityIndices.Add(index);
-            _PtrToIndex.Add(entityPtr, index);
-            return entity;
-        }
-        finally
-        {
-            _rw.ExitWriteLock();
+            try
+            {
+                _Entities[index] = entity;
+                _ActiveEntityIndices.Add(index);
+                _PtrToIndex.Add(entityPtr, index);
+                return entity;
+            }
+            catch
+            {
+                return entity;
+            }
         }
     }
 
     public static CEntityInstance? GetEntityByIndex( uint index )
     {
-        _rw.EnterReadLock();
-        try
+        lock (_lock)
         {
-            return _Entities[index];
-        }
-        finally
-        {
-            _rw.ExitReadLock();
+            try
+            {
+                return _Entities[index];
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 
     public static CEntityInstance? GetEntityByAddress( nint address )
     {
-        _rw.EnterReadLock();
-        try
+        lock (_lock)
         {
-            return !_PtrToIndex.TryGetValue(address, out var value) ? null : _Entities[value];
-        }
-        finally
-        {
-            _rw.ExitReadLock();
+            try
+            {
+                return !_PtrToIndex.TryGetValue(address, out var value) ? null : _Entities[value];
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 
     public static void OnEntityDeleted( nint entityPtr )
     {
-        _rw.EnterWriteLock();
-        try
+        lock (_lock)
         {
-            if (!_PtrToIndex.TryGetValue(entityPtr, out var index))
+            try
             {
-                return;
+                if (!_PtrToIndex.TryGetValue(entityPtr, out var index))
+                {
+                    return;
+                }
+                _Entities[index] = null;
+                _ = _ActiveEntityIndices.Remove(index);
+                _ = _PtrToIndex.Remove(entityPtr);
             }
-            _Entities[index] = null;
-            _ = _ActiveEntityIndices.Remove(index);
-            _ = _PtrToIndex.Remove(entityPtr);
-        }
-        finally
-        {
-            _rw.ExitWriteLock();
+            catch
+            {
+            }
         }
     }
 
     public static IEnumerable<CEntityInstance> GetAllEntities()
     {
-
-        _rw.EnterReadLock();
-        try
+        lock (_lock)
         {
-            return _ActiveEntityIndices.Select(index => _Entities[index]!);
-        }
-        finally
-        {
-            _rw.ExitReadLock();
+            try
+            {
+                return _ActiveEntityIndices.Select(index => _Entities[index]!);
+            }
+            catch
+            {
+                return [];
+            }
         }
     }
 
     public static bool IsAddressValid( nint address )
     {
-        _rw.EnterReadLock();
-        try
+        lock (_lock)
         {
-            return _PtrToIndex.ContainsKey(address);
-        }
-        finally
-        {
-            _rw.ExitReadLock();
+            try
+            {
+                return _PtrToIndex.ContainsKey(address);
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 
