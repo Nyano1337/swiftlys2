@@ -10,15 +10,11 @@ public struct CGlobalSymbol
 
   private nint _pString;
 
-  public string Value
-  {
-    get
-    {
-      if (!_pString.IsValidPtr()) return string.Empty;
-      return Marshal.PtrToStringUTF8(_pString)!;
+  public string Value {
+    get {
+      return !_pString.IsValidPtr() ? string.Empty : Marshal.PtrToStringUTF8(_pString)!;
     }
-    set
-    {
+    set {
       _pString = StringPool.Allocate(value);
     }
   }

@@ -60,6 +60,7 @@ internal class CommandCallback : CommandCallbackBase
                 var prefixString = Marshal.PtrToStringUTF8(prefixPtr)!;
 
                 var args = argsString.Split('\x01').ToArray();
+                if (args.Length < 2) args = [.. args.Where(s => !string.IsNullOrWhiteSpace(s))];
                 var context = new CommandContext(playerId, args, commandNameString, prefixString, slient == 1);
                 if (!context.IsSentByPlayer || string.IsNullOrWhiteSpace(commandPermissions) || permissionManager.PlayerHasPermission(playerManagerService.GetPlayer(playerId)?.SteamID ?? 0, commandPermissions))
                 {
