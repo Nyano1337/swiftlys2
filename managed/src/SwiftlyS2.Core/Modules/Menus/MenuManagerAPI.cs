@@ -386,7 +386,6 @@ internal sealed class MenuManagerAPI : IMenuManagerAPI
 
     internal void OnClientDisconnected( IOnClientDisconnectedEvent @event )
     {
-        var stackTrace = new System.Diagnostics.StackTrace(true);
         var player = Core.PlayerManager.GetPlayer(@event.PlayerId);
         if (player != null)
         {

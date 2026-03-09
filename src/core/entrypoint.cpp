@@ -370,9 +370,10 @@ void __fastcall PreloadDLLHook(HMODULE hModule)
 
 void GameServerSteamAPIActivatedHook(void* _this)
 {
-    if (!CommandLine()->HasParm("-dedicated"))
+    auto engine = g_ifaceService.FetchInterface<IVEngineServer2>(INTERFACEVERSION_VENGINESERVER);
+    if (!engine->IsDedicatedServer())
     {
-        return;
+        return reinterpret_cast<decltype(&GameServerSteamAPIActivatedHook)>(g_pGameServerSteamAPIActivated->GetOriginal())(_this);
     }
 
     static auto playermanager = g_ifaceService.FetchInterface<IPlayerManager>(PLAYERMANAGER_INTERFACE_VERSION);
