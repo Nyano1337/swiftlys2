@@ -15,48 +15,30 @@ internal static class NativePatches
 
     public unsafe static void Apply(string patchName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var patchNameLength = Encoding.UTF8.GetByteCount(patchName);
-        var patchNameBuffer = pool.Rent(patchNameLength + 1);
-        Encoding.UTF8.GetBytes(patchName, patchNameBuffer);
-        patchNameBuffer[patchNameLength] = 0;
-        fixed (byte* patchNameBufferPtr = patchNameBuffer)
+        StringAlloc.CreateCString(patchName, patchNameBufferPtr =>
         {
-            _Apply(patchNameBufferPtr);
-            pool.Return(patchNameBuffer);
-        }
+            _Apply((byte*)patchNameBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, void> _Revert;
 
     public unsafe static void Revert(string patchName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var patchNameLength = Encoding.UTF8.GetByteCount(patchName);
-        var patchNameBuffer = pool.Rent(patchNameLength + 1);
-        Encoding.UTF8.GetBytes(patchName, patchNameBuffer);
-        patchNameBuffer[patchNameLength] = 0;
-        fixed (byte* patchNameBufferPtr = patchNameBuffer)
+        StringAlloc.CreateCString(patchName, patchNameBufferPtr =>
         {
-            _Revert(patchNameBufferPtr);
-            pool.Return(patchNameBuffer);
-        }
+            _Revert((byte*)patchNameBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte> _Exists;
 
     public unsafe static bool Exists(string patchName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var patchNameLength = Encoding.UTF8.GetByteCount(patchName);
-        var patchNameBuffer = pool.Rent(patchNameLength + 1);
-        Encoding.UTF8.GetBytes(patchName, patchNameBuffer);
-        patchNameBuffer[patchNameLength] = 0;
-        fixed (byte* patchNameBufferPtr = patchNameBuffer)
+        return StringAlloc.CreateCString(patchName, patchNameBufferPtr =>
         {
-            var ret = _Exists(patchNameBufferPtr);
-            pool.Return(patchNameBuffer);
+            var ret = _Exists((byte*)patchNameBufferPtr);
             return ret == 1;
-        }
+        });
     }
 }

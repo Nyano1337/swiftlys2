@@ -24,15 +24,10 @@ internal static class NativeCore
     public unsafe static string PluginLoadOrder()
     {
         var ret = _PluginLoadOrder(null);
-        var pool = ArrayPool<byte>.Shared;
-        var retBuffer = pool.Rent(ret + 1);
-        fixed (byte* retBufferPtr = retBuffer)
+        return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
         {
-            ret = _PluginLoadOrder(retBufferPtr);
-            var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-            pool.Return(retBuffer);
-            return retString;
-        }
+            _ = _PluginLoadOrder((byte*)retBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<byte> _EnableProfilerByDefault;

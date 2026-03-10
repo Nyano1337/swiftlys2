@@ -42,16 +42,10 @@ internal static class NativeSounds
 
     public unsafe static void SetName(nint soundEvent, string name)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var nameLength = Encoding.UTF8.GetByteCount(name);
-        var nameBuffer = pool.Rent(nameLength + 1);
-        Encoding.UTF8.GetBytes(name, nameBuffer);
-        nameBuffer[nameLength] = 0;
-        fixed (byte* nameBufferPtr = nameBuffer)
+        StringAlloc.CreateCString(name, nameBufferPtr =>
         {
-            _SetName(soundEvent, nameBufferPtr);
-            pool.Return(nameBuffer);
-        }
+            _SetName(soundEvent, (byte*)nameBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, nint, int> _GetName;
@@ -59,15 +53,10 @@ internal static class NativeSounds
     public unsafe static string GetName(nint soundEvent)
     {
         var ret = _GetName(null, soundEvent);
-        var pool = ArrayPool<byte>.Shared;
-        var retBuffer = pool.Rent(ret + 1);
-        fixed (byte* retBufferPtr = retBuffer)
+        return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
         {
-            ret = _GetName(retBufferPtr, soundEvent);
-            var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-            pool.Return(retBuffer);
-            return retString;
-        }
+            _ = _GetName((byte*)retBufferPtr, soundEvent);
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, int, void> _SetSourceEntityIndex;
@@ -117,215 +106,137 @@ internal static class NativeSounds
 
     public unsafe static bool HasField(nint soundEvent, string fieldName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var fieldNameLength = Encoding.UTF8.GetByteCount(fieldName);
-        var fieldNameBuffer = pool.Rent(fieldNameLength + 1);
-        Encoding.UTF8.GetBytes(fieldName, fieldNameBuffer);
-        fieldNameBuffer[fieldNameLength] = 0;
-        fixed (byte* fieldNameBufferPtr = fieldNameBuffer)
+        return StringAlloc.CreateCString(fieldName, fieldNameBufferPtr =>
         {
-            var ret = _HasField(soundEvent, fieldNameBufferPtr);
-            pool.Return(fieldNameBuffer);
+            var ret = _HasField(soundEvent, (byte*)fieldNameBufferPtr);
             return ret == 1;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, byte*, byte, void> _SetBool;
 
     public unsafe static void SetBool(nint soundEvent, string fieldName, bool value)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var fieldNameLength = Encoding.UTF8.GetByteCount(fieldName);
-        var fieldNameBuffer = pool.Rent(fieldNameLength + 1);
-        Encoding.UTF8.GetBytes(fieldName, fieldNameBuffer);
-        fieldNameBuffer[fieldNameLength] = 0;
-        fixed (byte* fieldNameBufferPtr = fieldNameBuffer)
+        StringAlloc.CreateCString(fieldName, fieldNameBufferPtr =>
         {
-            _SetBool(soundEvent, fieldNameBufferPtr, value ? (byte)1 : (byte)0);
-            pool.Return(fieldNameBuffer);
-        }
+            _SetBool(soundEvent, (byte*)fieldNameBufferPtr, value ? (byte)1 : (byte)0);
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, byte*, byte> _GetBool;
 
     public unsafe static bool GetBool(nint soundEvent, string fieldName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var fieldNameLength = Encoding.UTF8.GetByteCount(fieldName);
-        var fieldNameBuffer = pool.Rent(fieldNameLength + 1);
-        Encoding.UTF8.GetBytes(fieldName, fieldNameBuffer);
-        fieldNameBuffer[fieldNameLength] = 0;
-        fixed (byte* fieldNameBufferPtr = fieldNameBuffer)
+        return StringAlloc.CreateCString(fieldName, fieldNameBufferPtr =>
         {
-            var ret = _GetBool(soundEvent, fieldNameBufferPtr);
-            pool.Return(fieldNameBuffer);
+            var ret = _GetBool(soundEvent, (byte*)fieldNameBufferPtr);
             return ret == 1;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, byte*, int, void> _SetInt32;
 
     public unsafe static void SetInt32(nint soundEvent, string fieldName, int value)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var fieldNameLength = Encoding.UTF8.GetByteCount(fieldName);
-        var fieldNameBuffer = pool.Rent(fieldNameLength + 1);
-        Encoding.UTF8.GetBytes(fieldName, fieldNameBuffer);
-        fieldNameBuffer[fieldNameLength] = 0;
-        fixed (byte* fieldNameBufferPtr = fieldNameBuffer)
+        StringAlloc.CreateCString(fieldName, fieldNameBufferPtr =>
         {
-            _SetInt32(soundEvent, fieldNameBufferPtr, value);
-            pool.Return(fieldNameBuffer);
-        }
+            _SetInt32(soundEvent, (byte*)fieldNameBufferPtr, value);
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, byte*, int> _GetInt32;
 
     public unsafe static int GetInt32(nint soundEvent, string fieldName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var fieldNameLength = Encoding.UTF8.GetByteCount(fieldName);
-        var fieldNameBuffer = pool.Rent(fieldNameLength + 1);
-        Encoding.UTF8.GetBytes(fieldName, fieldNameBuffer);
-        fieldNameBuffer[fieldNameLength] = 0;
-        fixed (byte* fieldNameBufferPtr = fieldNameBuffer)
+        return StringAlloc.CreateCString(fieldName, fieldNameBufferPtr =>
         {
-            var ret = _GetInt32(soundEvent, fieldNameBufferPtr);
-            pool.Return(fieldNameBuffer);
+            var ret = _GetInt32(soundEvent, (byte*)fieldNameBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, byte*, uint, void> _SetUInt32;
 
     public unsafe static void SetUInt32(nint soundEvent, string fieldName, uint value)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var fieldNameLength = Encoding.UTF8.GetByteCount(fieldName);
-        var fieldNameBuffer = pool.Rent(fieldNameLength + 1);
-        Encoding.UTF8.GetBytes(fieldName, fieldNameBuffer);
-        fieldNameBuffer[fieldNameLength] = 0;
-        fixed (byte* fieldNameBufferPtr = fieldNameBuffer)
+        StringAlloc.CreateCString(fieldName, fieldNameBufferPtr =>
         {
-            _SetUInt32(soundEvent, fieldNameBufferPtr, value);
-            pool.Return(fieldNameBuffer);
-        }
+            _SetUInt32(soundEvent, (byte*)fieldNameBufferPtr, value);
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, byte*, uint> _GetUInt32;
 
     public unsafe static uint GetUInt32(nint soundEvent, string fieldName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var fieldNameLength = Encoding.UTF8.GetByteCount(fieldName);
-        var fieldNameBuffer = pool.Rent(fieldNameLength + 1);
-        Encoding.UTF8.GetBytes(fieldName, fieldNameBuffer);
-        fieldNameBuffer[fieldNameLength] = 0;
-        fixed (byte* fieldNameBufferPtr = fieldNameBuffer)
+        return StringAlloc.CreateCString(fieldName, fieldNameBufferPtr =>
         {
-            var ret = _GetUInt32(soundEvent, fieldNameBufferPtr);
-            pool.Return(fieldNameBuffer);
+            var ret = _GetUInt32(soundEvent, (byte*)fieldNameBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, byte*, ulong, void> _SetUInt64;
 
     public unsafe static void SetUInt64(nint soundEvent, string fieldName, ulong value)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var fieldNameLength = Encoding.UTF8.GetByteCount(fieldName);
-        var fieldNameBuffer = pool.Rent(fieldNameLength + 1);
-        Encoding.UTF8.GetBytes(fieldName, fieldNameBuffer);
-        fieldNameBuffer[fieldNameLength] = 0;
-        fixed (byte* fieldNameBufferPtr = fieldNameBuffer)
+        StringAlloc.CreateCString(fieldName, fieldNameBufferPtr =>
         {
-            _SetUInt64(soundEvent, fieldNameBufferPtr, value);
-            pool.Return(fieldNameBuffer);
-        }
+            _SetUInt64(soundEvent, (byte*)fieldNameBufferPtr, value);
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, byte*, ulong> _GetUInt64;
 
     public unsafe static ulong GetUInt64(nint soundEvent, string fieldName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var fieldNameLength = Encoding.UTF8.GetByteCount(fieldName);
-        var fieldNameBuffer = pool.Rent(fieldNameLength + 1);
-        Encoding.UTF8.GetBytes(fieldName, fieldNameBuffer);
-        fieldNameBuffer[fieldNameLength] = 0;
-        fixed (byte* fieldNameBufferPtr = fieldNameBuffer)
+        return StringAlloc.CreateCString(fieldName, fieldNameBufferPtr =>
         {
-            var ret = _GetUInt64(soundEvent, fieldNameBufferPtr);
-            pool.Return(fieldNameBuffer);
+            var ret = _GetUInt64(soundEvent, (byte*)fieldNameBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, byte*, float, void> _SetFloat;
 
     public unsafe static void SetFloat(nint soundEvent, string fieldName, float value)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var fieldNameLength = Encoding.UTF8.GetByteCount(fieldName);
-        var fieldNameBuffer = pool.Rent(fieldNameLength + 1);
-        Encoding.UTF8.GetBytes(fieldName, fieldNameBuffer);
-        fieldNameBuffer[fieldNameLength] = 0;
-        fixed (byte* fieldNameBufferPtr = fieldNameBuffer)
+        StringAlloc.CreateCString(fieldName, fieldNameBufferPtr =>
         {
-            _SetFloat(soundEvent, fieldNameBufferPtr, value);
-            pool.Return(fieldNameBuffer);
-        }
+            _SetFloat(soundEvent, (byte*)fieldNameBufferPtr, value);
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, byte*, float> _GetFloat;
 
     public unsafe static float GetFloat(nint soundEvent, string fieldName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var fieldNameLength = Encoding.UTF8.GetByteCount(fieldName);
-        var fieldNameBuffer = pool.Rent(fieldNameLength + 1);
-        Encoding.UTF8.GetBytes(fieldName, fieldNameBuffer);
-        fieldNameBuffer[fieldNameLength] = 0;
-        fixed (byte* fieldNameBufferPtr = fieldNameBuffer)
+        return StringAlloc.CreateCString(fieldName, fieldNameBufferPtr =>
         {
-            var ret = _GetFloat(soundEvent, fieldNameBufferPtr);
-            pool.Return(fieldNameBuffer);
+            var ret = _GetFloat(soundEvent, (byte*)fieldNameBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, byte*, Vector, void> _SetFloat3;
 
     public unsafe static void SetFloat3(nint soundEvent, string fieldName, Vector value)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var fieldNameLength = Encoding.UTF8.GetByteCount(fieldName);
-        var fieldNameBuffer = pool.Rent(fieldNameLength + 1);
-        Encoding.UTF8.GetBytes(fieldName, fieldNameBuffer);
-        fieldNameBuffer[fieldNameLength] = 0;
-        fixed (byte* fieldNameBufferPtr = fieldNameBuffer)
+        StringAlloc.CreateCString(fieldName, fieldNameBufferPtr =>
         {
-            _SetFloat3(soundEvent, fieldNameBufferPtr, value);
-            pool.Return(fieldNameBuffer);
-        }
+            _SetFloat3(soundEvent, (byte*)fieldNameBufferPtr, value);
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, byte*, Vector> _GetFloat3;
 
     public unsafe static Vector GetFloat3(nint soundEvent, string fieldName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var fieldNameLength = Encoding.UTF8.GetByteCount(fieldName);
-        var fieldNameBuffer = pool.Rent(fieldNameLength + 1);
-        Encoding.UTF8.GetBytes(fieldName, fieldNameBuffer);
-        fieldNameBuffer[fieldNameLength] = 0;
-        fixed (byte* fieldNameBufferPtr = fieldNameBuffer)
+        return StringAlloc.CreateCString(fieldName, fieldNameBufferPtr =>
         {
-            var ret = _GetFloat3(soundEvent, fieldNameBufferPtr);
-            pool.Return(fieldNameBuffer);
+            var ret = _GetFloat3(soundEvent, (byte*)fieldNameBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, ulong> _GetClients;

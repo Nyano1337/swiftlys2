@@ -15,17 +15,11 @@ internal static class NativeStringTable
 
     public unsafe static nint ContainerFindTable(string tableName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var tableNameLength = Encoding.UTF8.GetByteCount(tableName);
-        var tableNameBuffer = pool.Rent(tableNameLength + 1);
-        Encoding.UTF8.GetBytes(tableName, tableNameBuffer);
-        tableNameBuffer[tableNameLength] = 0;
-        fixed (byte* tableNameBufferPtr = tableNameBuffer)
+        return StringAlloc.CreateCString(tableName, tableNameBufferPtr =>
         {
-            var ret = _ContainerFindTable(tableNameBufferPtr);
-            pool.Return(tableNameBuffer);
+            var ret = _ContainerFindTable((byte*)tableNameBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<int, nint> _ContainerGetTableById;
@@ -49,15 +43,10 @@ internal static class NativeStringTable
     public unsafe static string GetTableName(nint table)
     {
         var ret = _GetTableName(null, table);
-        var pool = ArrayPool<byte>.Shared;
-        var retBuffer = pool.Rent(ret + 1);
-        fixed (byte* retBufferPtr = retBuffer)
+        return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
         {
-            ret = _GetTableName(retBufferPtr, table);
-            var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-            pool.Return(retBuffer);
-            return retString;
-        }
+            _ = _GetTableName((byte*)retBufferPtr, table);
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, int> _GetNumStrings;
@@ -72,17 +61,11 @@ internal static class NativeStringTable
 
     public unsafe static int FindStringIndex(nint table, string str)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var strLength = Encoding.UTF8.GetByteCount(str);
-        var strBuffer = pool.Rent(strLength + 1);
-        Encoding.UTF8.GetBytes(str, strBuffer);
-        strBuffer[strLength] = 0;
-        fixed (byte* strBufferPtr = strBuffer)
+        return StringAlloc.CreateCString(str, strBufferPtr =>
         {
-            var ret = _FindStringIndex(table, strBufferPtr);
-            pool.Return(strBuffer);
+            var ret = _FindStringIndex(table, (byte*)strBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, int, byte> _IsStringIndexValid;
@@ -98,15 +81,10 @@ internal static class NativeStringTable
     public unsafe static string GetString(nint table, int index)
     {
         var ret = _GetString(null, table, index);
-        var pool = ArrayPool<byte>.Shared;
-        var retBuffer = pool.Rent(ret + 1);
-        fixed (byte* retBufferPtr = retBuffer)
+        return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
         {
-            ret = _GetString(retBufferPtr, table, index);
-            var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-            pool.Return(retBuffer);
-            return retString;
-        }
+            _ = _GetString((byte*)retBufferPtr, table, index);
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, int, nint> _GetStringUserData;
@@ -129,41 +107,30 @@ internal static class NativeStringTable
 
     public unsafe static int AddString(nint table, string str)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var strLength = Encoding.UTF8.GetByteCount(str);
-        var strBuffer = pool.Rent(strLength + 1);
-        Encoding.UTF8.GetBytes(str, strBuffer);
-        strBuffer[strLength] = 0;
-        fixed (byte* strBufferPtr = strBuffer)
+        return StringAlloc.CreateCString(str, strBufferPtr =>
         {
-            var ret = _AddString(table, strBufferPtr);
-            pool.Return(strBuffer);
+            var ret = _AddString(table, (byte*)strBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, nint, int, byte*, byte, nint, int, int> _Serialize;
 
     public unsafe static byte[] Serialize(nint table, int index, string keyName, bool newKey, nint userData, int userDataSize)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var keyNameLength = Encoding.UTF8.GetByteCount(keyName);
-        var keyNameBuffer = pool.Rent(keyNameLength + 1);
-        Encoding.UTF8.GetBytes(keyName, keyNameBuffer);
-        keyNameBuffer[keyNameLength] = 0;
-        fixed (byte* keyNameBufferPtr = keyNameBuffer)
+        return StringAlloc.CreateCString(keyName, keyNameBufferPtr =>
         {
-            var ret = _Serialize(null, table, index, keyNameBufferPtr, newKey ? (byte)1 : (byte)0, userData, userDataSize);
+            var ret = _Serialize(null, table, index, (byte*)keyNameBufferPtr, newKey ? (byte)1 : (byte)0, userData, userDataSize);
+            var pool = ArrayPool<byte>.Shared;
             var retBuffer = pool.Rent(ret + 1);
             fixed (byte* retBufferPtr = retBuffer)
             {
-                ret = _Serialize(retBufferPtr, table, index, keyNameBufferPtr, newKey ? (byte)1 : (byte)0, userData, userDataSize);
+                ret = _Serialize(retBufferPtr, table, index, (byte*)keyNameBufferPtr, newKey ? (byte)1 : (byte)0, userData, userDataSize);
                 var retBytes = new byte[ret];
                 for (int i = 0; i < ret; i++) retBytes[i] = retBufferPtr[i];
                 pool.Return(retBuffer);
-                pool.Return(keyNameBuffer);
                 return retBytes;
             }
-        }
+        });
     }
 }

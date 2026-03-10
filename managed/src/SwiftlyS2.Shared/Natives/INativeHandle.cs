@@ -1,5 +1,3 @@
-using SwiftlyS2.Shared.Schemas;
-
 namespace SwiftlyS2.Shared.Natives;
 
 /// <summary>
@@ -19,6 +17,6 @@ public interface INativeHandle
   /// Dangerous method to get the memory address of the object
   /// </summary>
   /// <returns>The raw handle.</returns>
-  public unsafe IntPtr Address { get; }
+  public IntPtr Address { get; }
 
 }

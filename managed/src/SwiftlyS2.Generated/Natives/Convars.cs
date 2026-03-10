@@ -19,16 +19,10 @@ internal static class NativeConvars
         {
             throw new InvalidOperationException("This method can only be called from the main thread.");
         }
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            _QueryClientConvar(playerid, cvarNameBufferPtr);
-            pool.Return(cvarNameBuffer);
-        }
+            _QueryClientConvar(playerid, (byte*)cvarNameBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, int> _AddQueryClientCvarCallback;
@@ -107,418 +101,230 @@ internal static class NativeConvars
 
     public unsafe static void CreateConvarInt16(string cvarName, int cvarType, ulong cvarFlags, string helpMessage, short defaultValue, nint minValue, nint maxValue)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var helpMessageLength = Encoding.UTF8.GetByteCount(helpMessage);
-        var helpMessageBuffer = pool.Rent(helpMessageLength + 1);
-        Encoding.UTF8.GetBytes(helpMessage, helpMessageBuffer);
-        helpMessageBuffer[helpMessageLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* helpMessageBufferPtr = helpMessageBuffer)
+            StringAlloc.CreateCString(helpMessage, helpMessageBufferPtr =>
             {
-                _CreateConvarInt16(cvarNameBufferPtr, cvarType, cvarFlags, helpMessageBufferPtr, defaultValue, minValue, maxValue);
-                pool.Return(cvarNameBuffer);
-                pool.Return(helpMessageBuffer);
-            }
-        }
+                _CreateConvarInt16((byte*)cvarNameBufferPtr, cvarType, cvarFlags, (byte*)helpMessageBufferPtr, defaultValue, minValue, maxValue);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int, ulong, byte*, ushort, nint, nint, void> _CreateConvarUInt16;
 
     public unsafe static void CreateConvarUInt16(string cvarName, int cvarType, ulong cvarFlags, string helpMessage, ushort defaultValue, nint minValue, nint maxValue)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var helpMessageLength = Encoding.UTF8.GetByteCount(helpMessage);
-        var helpMessageBuffer = pool.Rent(helpMessageLength + 1);
-        Encoding.UTF8.GetBytes(helpMessage, helpMessageBuffer);
-        helpMessageBuffer[helpMessageLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* helpMessageBufferPtr = helpMessageBuffer)
+            StringAlloc.CreateCString(helpMessage, helpMessageBufferPtr =>
             {
-                _CreateConvarUInt16(cvarNameBufferPtr, cvarType, cvarFlags, helpMessageBufferPtr, defaultValue, minValue, maxValue);
-                pool.Return(cvarNameBuffer);
-                pool.Return(helpMessageBuffer);
-            }
-        }
+                _CreateConvarUInt16((byte*)cvarNameBufferPtr, cvarType, cvarFlags, (byte*)helpMessageBufferPtr, defaultValue, minValue, maxValue);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int, ulong, byte*, int, nint, nint, void> _CreateConvarInt32;
 
     public unsafe static void CreateConvarInt32(string cvarName, int cvarType, ulong cvarFlags, string helpMessage, int defaultValue, nint minValue, nint maxValue)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var helpMessageLength = Encoding.UTF8.GetByteCount(helpMessage);
-        var helpMessageBuffer = pool.Rent(helpMessageLength + 1);
-        Encoding.UTF8.GetBytes(helpMessage, helpMessageBuffer);
-        helpMessageBuffer[helpMessageLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* helpMessageBufferPtr = helpMessageBuffer)
+            StringAlloc.CreateCString(helpMessage, helpMessageBufferPtr =>
             {
-                _CreateConvarInt32(cvarNameBufferPtr, cvarType, cvarFlags, helpMessageBufferPtr, defaultValue, minValue, maxValue);
-                pool.Return(cvarNameBuffer);
-                pool.Return(helpMessageBuffer);
-            }
-        }
+                _CreateConvarInt32((byte*)cvarNameBufferPtr, cvarType, cvarFlags, (byte*)helpMessageBufferPtr, defaultValue, minValue, maxValue);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int, ulong, byte*, uint, nint, nint, void> _CreateConvarUInt32;
 
     public unsafe static void CreateConvarUInt32(string cvarName, int cvarType, ulong cvarFlags, string helpMessage, uint defaultValue, nint minValue, nint maxValue)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var helpMessageLength = Encoding.UTF8.GetByteCount(helpMessage);
-        var helpMessageBuffer = pool.Rent(helpMessageLength + 1);
-        Encoding.UTF8.GetBytes(helpMessage, helpMessageBuffer);
-        helpMessageBuffer[helpMessageLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* helpMessageBufferPtr = helpMessageBuffer)
+            StringAlloc.CreateCString(helpMessage, helpMessageBufferPtr =>
             {
-                _CreateConvarUInt32(cvarNameBufferPtr, cvarType, cvarFlags, helpMessageBufferPtr, defaultValue, minValue, maxValue);
-                pool.Return(cvarNameBuffer);
-                pool.Return(helpMessageBuffer);
-            }
-        }
+                _CreateConvarUInt32((byte*)cvarNameBufferPtr, cvarType, cvarFlags, (byte*)helpMessageBufferPtr, defaultValue, minValue, maxValue);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int, ulong, byte*, long, nint, nint, void> _CreateConvarInt64;
 
     public unsafe static void CreateConvarInt64(string cvarName, int cvarType, ulong cvarFlags, string helpMessage, long defaultValue, nint minValue, nint maxValue)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var helpMessageLength = Encoding.UTF8.GetByteCount(helpMessage);
-        var helpMessageBuffer = pool.Rent(helpMessageLength + 1);
-        Encoding.UTF8.GetBytes(helpMessage, helpMessageBuffer);
-        helpMessageBuffer[helpMessageLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* helpMessageBufferPtr = helpMessageBuffer)
+            StringAlloc.CreateCString(helpMessage, helpMessageBufferPtr =>
             {
-                _CreateConvarInt64(cvarNameBufferPtr, cvarType, cvarFlags, helpMessageBufferPtr, defaultValue, minValue, maxValue);
-                pool.Return(cvarNameBuffer);
-                pool.Return(helpMessageBuffer);
-            }
-        }
+                _CreateConvarInt64((byte*)cvarNameBufferPtr, cvarType, cvarFlags, (byte*)helpMessageBufferPtr, defaultValue, minValue, maxValue);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int, ulong, byte*, ulong, nint, nint, void> _CreateConvarUInt64;
 
     public unsafe static void CreateConvarUInt64(string cvarName, int cvarType, ulong cvarFlags, string helpMessage, ulong defaultValue, nint minValue, nint maxValue)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var helpMessageLength = Encoding.UTF8.GetByteCount(helpMessage);
-        var helpMessageBuffer = pool.Rent(helpMessageLength + 1);
-        Encoding.UTF8.GetBytes(helpMessage, helpMessageBuffer);
-        helpMessageBuffer[helpMessageLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* helpMessageBufferPtr = helpMessageBuffer)
+            StringAlloc.CreateCString(helpMessage, helpMessageBufferPtr =>
             {
-                _CreateConvarUInt64(cvarNameBufferPtr, cvarType, cvarFlags, helpMessageBufferPtr, defaultValue, minValue, maxValue);
-                pool.Return(cvarNameBuffer);
-                pool.Return(helpMessageBuffer);
-            }
-        }
+                _CreateConvarUInt64((byte*)cvarNameBufferPtr, cvarType, cvarFlags, (byte*)helpMessageBufferPtr, defaultValue, minValue, maxValue);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int, ulong, byte*, byte, nint, nint, void> _CreateConvarBool;
 
     public unsafe static void CreateConvarBool(string cvarName, int cvarType, ulong cvarFlags, string helpMessage, bool defaultValue, nint minValue, nint maxValue)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var helpMessageLength = Encoding.UTF8.GetByteCount(helpMessage);
-        var helpMessageBuffer = pool.Rent(helpMessageLength + 1);
-        Encoding.UTF8.GetBytes(helpMessage, helpMessageBuffer);
-        helpMessageBuffer[helpMessageLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* helpMessageBufferPtr = helpMessageBuffer)
+            StringAlloc.CreateCString(helpMessage, helpMessageBufferPtr =>
             {
-                _CreateConvarBool(cvarNameBufferPtr, cvarType, cvarFlags, helpMessageBufferPtr, defaultValue ? (byte)1 : (byte)0, minValue, maxValue);
-                pool.Return(cvarNameBuffer);
-                pool.Return(helpMessageBuffer);
-            }
-        }
+                _CreateConvarBool((byte*)cvarNameBufferPtr, cvarType, cvarFlags, (byte*)helpMessageBufferPtr, defaultValue ? (byte)1 : (byte)0, minValue, maxValue);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int, ulong, byte*, float, nint, nint, void> _CreateConvarFloat;
 
     public unsafe static void CreateConvarFloat(string cvarName, int cvarType, ulong cvarFlags, string helpMessage, float defaultValue, nint minValue, nint maxValue)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var helpMessageLength = Encoding.UTF8.GetByteCount(helpMessage);
-        var helpMessageBuffer = pool.Rent(helpMessageLength + 1);
-        Encoding.UTF8.GetBytes(helpMessage, helpMessageBuffer);
-        helpMessageBuffer[helpMessageLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* helpMessageBufferPtr = helpMessageBuffer)
+            StringAlloc.CreateCString(helpMessage, helpMessageBufferPtr =>
             {
-                _CreateConvarFloat(cvarNameBufferPtr, cvarType, cvarFlags, helpMessageBufferPtr, defaultValue, minValue, maxValue);
-                pool.Return(cvarNameBuffer);
-                pool.Return(helpMessageBuffer);
-            }
-        }
+                _CreateConvarFloat((byte*)cvarNameBufferPtr, cvarType, cvarFlags, (byte*)helpMessageBufferPtr, defaultValue, minValue, maxValue);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int, ulong, byte*, double, nint, nint, void> _CreateConvarDouble;
 
     public unsafe static void CreateConvarDouble(string cvarName, int cvarType, ulong cvarFlags, string helpMessage, double defaultValue, nint minValue, nint maxValue)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var helpMessageLength = Encoding.UTF8.GetByteCount(helpMessage);
-        var helpMessageBuffer = pool.Rent(helpMessageLength + 1);
-        Encoding.UTF8.GetBytes(helpMessage, helpMessageBuffer);
-        helpMessageBuffer[helpMessageLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* helpMessageBufferPtr = helpMessageBuffer)
+            StringAlloc.CreateCString(helpMessage, helpMessageBufferPtr =>
             {
-                _CreateConvarDouble(cvarNameBufferPtr, cvarType, cvarFlags, helpMessageBufferPtr, defaultValue, minValue, maxValue);
-                pool.Return(cvarNameBuffer);
-                pool.Return(helpMessageBuffer);
-            }
-        }
+                _CreateConvarDouble((byte*)cvarNameBufferPtr, cvarType, cvarFlags, (byte*)helpMessageBufferPtr, defaultValue, minValue, maxValue);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int, ulong, byte*, Color, nint, nint, void> _CreateConvarColor;
 
     public unsafe static void CreateConvarColor(string cvarName, int cvarType, ulong cvarFlags, string helpMessage, Color defaultValue, nint minValue, nint maxValue)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var helpMessageLength = Encoding.UTF8.GetByteCount(helpMessage);
-        var helpMessageBuffer = pool.Rent(helpMessageLength + 1);
-        Encoding.UTF8.GetBytes(helpMessage, helpMessageBuffer);
-        helpMessageBuffer[helpMessageLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* helpMessageBufferPtr = helpMessageBuffer)
+            StringAlloc.CreateCString(helpMessage, helpMessageBufferPtr =>
             {
-                _CreateConvarColor(cvarNameBufferPtr, cvarType, cvarFlags, helpMessageBufferPtr, defaultValue, minValue, maxValue);
-                pool.Return(cvarNameBuffer);
-                pool.Return(helpMessageBuffer);
-            }
-        }
+                _CreateConvarColor((byte*)cvarNameBufferPtr, cvarType, cvarFlags, (byte*)helpMessageBufferPtr, defaultValue, minValue, maxValue);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int, ulong, byte*, Vector2D, nint, nint, void> _CreateConvarVector2D;
 
     public unsafe static void CreateConvarVector2D(string cvarName, int cvarType, ulong cvarFlags, string helpMessage, Vector2D defaultValue, nint minValue, nint maxValue)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var helpMessageLength = Encoding.UTF8.GetByteCount(helpMessage);
-        var helpMessageBuffer = pool.Rent(helpMessageLength + 1);
-        Encoding.UTF8.GetBytes(helpMessage, helpMessageBuffer);
-        helpMessageBuffer[helpMessageLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* helpMessageBufferPtr = helpMessageBuffer)
+            StringAlloc.CreateCString(helpMessage, helpMessageBufferPtr =>
             {
-                _CreateConvarVector2D(cvarNameBufferPtr, cvarType, cvarFlags, helpMessageBufferPtr, defaultValue, minValue, maxValue);
-                pool.Return(cvarNameBuffer);
-                pool.Return(helpMessageBuffer);
-            }
-        }
+                _CreateConvarVector2D((byte*)cvarNameBufferPtr, cvarType, cvarFlags, (byte*)helpMessageBufferPtr, defaultValue, minValue, maxValue);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int, ulong, byte*, Vector, nint, nint, void> _CreateConvarVector;
 
     public unsafe static void CreateConvarVector(string cvarName, int cvarType, ulong cvarFlags, string helpMessage, Vector defaultValue, nint minValue, nint maxValue)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var helpMessageLength = Encoding.UTF8.GetByteCount(helpMessage);
-        var helpMessageBuffer = pool.Rent(helpMessageLength + 1);
-        Encoding.UTF8.GetBytes(helpMessage, helpMessageBuffer);
-        helpMessageBuffer[helpMessageLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* helpMessageBufferPtr = helpMessageBuffer)
+            StringAlloc.CreateCString(helpMessage, helpMessageBufferPtr =>
             {
-                _CreateConvarVector(cvarNameBufferPtr, cvarType, cvarFlags, helpMessageBufferPtr, defaultValue, minValue, maxValue);
-                pool.Return(cvarNameBuffer);
-                pool.Return(helpMessageBuffer);
-            }
-        }
+                _CreateConvarVector((byte*)cvarNameBufferPtr, cvarType, cvarFlags, (byte*)helpMessageBufferPtr, defaultValue, minValue, maxValue);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int, ulong, byte*, Vector4D, nint, nint, void> _CreateConvarVector4D;
 
     public unsafe static void CreateConvarVector4D(string cvarName, int cvarType, ulong cvarFlags, string helpMessage, Vector4D defaultValue, nint minValue, nint maxValue)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var helpMessageLength = Encoding.UTF8.GetByteCount(helpMessage);
-        var helpMessageBuffer = pool.Rent(helpMessageLength + 1);
-        Encoding.UTF8.GetBytes(helpMessage, helpMessageBuffer);
-        helpMessageBuffer[helpMessageLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* helpMessageBufferPtr = helpMessageBuffer)
+            StringAlloc.CreateCString(helpMessage, helpMessageBufferPtr =>
             {
-                _CreateConvarVector4D(cvarNameBufferPtr, cvarType, cvarFlags, helpMessageBufferPtr, defaultValue, minValue, maxValue);
-                pool.Return(cvarNameBuffer);
-                pool.Return(helpMessageBuffer);
-            }
-        }
+                _CreateConvarVector4D((byte*)cvarNameBufferPtr, cvarType, cvarFlags, (byte*)helpMessageBufferPtr, defaultValue, minValue, maxValue);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int, ulong, byte*, QAngle, nint, nint, void> _CreateConvarQAngle;
 
     public unsafe static void CreateConvarQAngle(string cvarName, int cvarType, ulong cvarFlags, string helpMessage, QAngle defaultValue, nint minValue, nint maxValue)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var helpMessageLength = Encoding.UTF8.GetByteCount(helpMessage);
-        var helpMessageBuffer = pool.Rent(helpMessageLength + 1);
-        Encoding.UTF8.GetBytes(helpMessage, helpMessageBuffer);
-        helpMessageBuffer[helpMessageLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* helpMessageBufferPtr = helpMessageBuffer)
+            StringAlloc.CreateCString(helpMessage, helpMessageBufferPtr =>
             {
-                _CreateConvarQAngle(cvarNameBufferPtr, cvarType, cvarFlags, helpMessageBufferPtr, defaultValue, minValue, maxValue);
-                pool.Return(cvarNameBuffer);
-                pool.Return(helpMessageBuffer);
-            }
-        }
+                _CreateConvarQAngle((byte*)cvarNameBufferPtr, cvarType, cvarFlags, (byte*)helpMessageBufferPtr, defaultValue, minValue, maxValue);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int, ulong, byte*, byte*, nint, nint, void> _CreateConvarString;
 
     public unsafe static void CreateConvarString(string cvarName, int cvarType, ulong cvarFlags, string helpMessage, string defaultValue, nint minValue, nint maxValue)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var helpMessageLength = Encoding.UTF8.GetByteCount(helpMessage);
-        var helpMessageBuffer = pool.Rent(helpMessageLength + 1);
-        Encoding.UTF8.GetBytes(helpMessage, helpMessageBuffer);
-        helpMessageBuffer[helpMessageLength] = 0;
-        var defaultValueLength = Encoding.UTF8.GetByteCount(defaultValue);
-        var defaultValueBuffer = pool.Rent(defaultValueLength + 1);
-        Encoding.UTF8.GetBytes(defaultValue, defaultValueBuffer);
-        defaultValueBuffer[defaultValueLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* helpMessageBufferPtr = helpMessageBuffer)
+            StringAlloc.CreateCString(helpMessage, helpMessageBufferPtr =>
             {
-                fixed (byte* defaultValueBufferPtr = defaultValueBuffer)
+                StringAlloc.CreateCString(defaultValue, defaultValueBufferPtr =>
                 {
-                    _CreateConvarString(cvarNameBufferPtr, cvarType, cvarFlags, helpMessageBufferPtr, defaultValueBufferPtr, minValue, maxValue);
-                    pool.Return(cvarNameBuffer);
-                    pool.Return(helpMessageBuffer);
-                    pool.Return(defaultValueBuffer);
-                }
-            }
-        }
+                    _CreateConvarString((byte*)cvarNameBufferPtr, cvarType, cvarFlags, (byte*)helpMessageBufferPtr, (byte*)defaultValueBufferPtr, minValue, maxValue);
+                });
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, void> _DeleteConvar;
 
     public unsafe static void DeleteConvar(string cvarName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            _DeleteConvar(cvarNameBufferPtr);
-            pool.Return(cvarNameBuffer);
-        }
+            _DeleteConvar((byte*)cvarNameBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte> _ExistsConvar;
 
     public unsafe static bool ExistsConvar(string cvarName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        return StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            var ret = _ExistsConvar(cvarNameBufferPtr);
-            pool.Return(cvarNameBuffer);
+            var ret = _ExistsConvar((byte*)cvarNameBufferPtr);
             return ret == 1;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int> _GetConvarType;
 
     public unsafe static int GetConvarType(string cvarName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        return StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            var ret = _GetConvarType(cvarNameBufferPtr);
-            pool.Return(cvarNameBuffer);
+            var ret = _GetConvarType((byte*)cvarNameBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<int, byte*, byte*, void> _SetClientConvarValueString;
@@ -529,41 +335,24 @@ internal static class NativeConvars
         {
             throw new InvalidOperationException("This method can only be called from the main thread.");
         }
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var defaultValueLength = Encoding.UTF8.GetByteCount(defaultValue);
-        var defaultValueBuffer = pool.Rent(defaultValueLength + 1);
-        Encoding.UTF8.GetBytes(defaultValue, defaultValueBuffer);
-        defaultValueBuffer[defaultValueLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* defaultValueBufferPtr = defaultValueBuffer)
+            StringAlloc.CreateCString(defaultValue, defaultValueBufferPtr =>
             {
-                _SetClientConvarValueString(playerid, cvarNameBufferPtr, defaultValueBufferPtr);
-                pool.Return(cvarNameBuffer);
-                pool.Return(defaultValueBuffer);
-            }
-        }
+                _SetClientConvarValueString(playerid, (byte*)cvarNameBufferPtr, (byte*)defaultValueBufferPtr);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, ulong> _GetFlags;
 
     public unsafe static ulong GetFlags(string cvarName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        return StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            var ret = _GetFlags(cvarNameBufferPtr);
-            pool.Return(cvarNameBuffer);
+            var ret = _GetFlags((byte*)cvarNameBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, ulong, void> _SetFlags;
@@ -574,416 +363,246 @@ internal static class NativeConvars
         {
             throw new InvalidOperationException("This method can only be called from the main thread.");
         }
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            _SetFlags(cvarNameBufferPtr, flags);
-            pool.Return(cvarNameBuffer);
-        }
+            _SetFlags((byte*)cvarNameBufferPtr, flags);
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, nint> _GetMinValuePtrPtr;
 
     public unsafe static nint GetMinValuePtrPtr(string cvarName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        return StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            var ret = _GetMinValuePtrPtr(cvarNameBufferPtr);
-            pool.Return(cvarNameBuffer);
+            var ret = _GetMinValuePtrPtr((byte*)cvarNameBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, nint> _GetMaxValuePtrPtr;
 
     public unsafe static nint GetMaxValuePtrPtr(string cvarName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        return StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            var ret = _GetMaxValuePtrPtr(cvarNameBufferPtr);
-            pool.Return(cvarNameBuffer);
+            var ret = _GetMaxValuePtrPtr((byte*)cvarNameBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte> _HasDefaultValue;
 
     public unsafe static bool HasDefaultValue(string cvarName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        return StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            var ret = _HasDefaultValue(cvarNameBufferPtr);
-            pool.Return(cvarNameBuffer);
+            var ret = _HasDefaultValue((byte*)cvarNameBufferPtr);
             return ret == 1;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, nint> _GetDefaultValuePtr;
 
     public unsafe static nint GetDefaultValuePtr(string cvarName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        return StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            var ret = _GetDefaultValuePtr(cvarNameBufferPtr);
-            pool.Return(cvarNameBuffer);
+            var ret = _GetDefaultValuePtr((byte*)cvarNameBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, nint, void> _SetDefaultValue;
 
     public unsafe static void SetDefaultValue(string cvarName, nint defaultValue)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            _SetDefaultValue(cvarNameBufferPtr, defaultValue);
-            pool.Return(cvarNameBuffer);
-        }
+            _SetDefaultValue((byte*)cvarNameBufferPtr, defaultValue);
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, void> _SetDefaultValueString;
 
     public unsafe static void SetDefaultValueString(string cvarName, string defaultValue)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var defaultValueLength = Encoding.UTF8.GetByteCount(defaultValue);
-        var defaultValueBuffer = pool.Rent(defaultValueLength + 1);
-        Encoding.UTF8.GetBytes(defaultValue, defaultValueBuffer);
-        defaultValueBuffer[defaultValueLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* defaultValueBufferPtr = defaultValueBuffer)
+            StringAlloc.CreateCString(defaultValue, defaultValueBufferPtr =>
             {
-                _SetDefaultValueString(cvarNameBufferPtr, defaultValueBufferPtr);
-                pool.Return(cvarNameBuffer);
-                pool.Return(defaultValueBuffer);
-            }
-        }
+                _SetDefaultValueString((byte*)cvarNameBufferPtr, (byte*)defaultValueBufferPtr);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, nint> _GetValuePtr;
 
     public unsafe static nint GetValuePtr(string cvarName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        return StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            var ret = _GetValuePtr(cvarNameBufferPtr);
-            pool.Return(cvarNameBuffer);
+            var ret = _GetValuePtr((byte*)cvarNameBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, nint, void> _SetValuePtr;
 
     public unsafe static void SetValuePtr(string cvarName, nint value)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            _SetValuePtr(cvarNameBufferPtr, value);
-            pool.Return(cvarNameBuffer);
-        }
+            _SetValuePtr((byte*)cvarNameBufferPtr, value);
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, nint, void> _SetValueInternalPtr;
 
     public unsafe static void SetValueInternalPtr(string cvarName, nint value)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            _SetValueInternalPtr(cvarNameBufferPtr, value);
-            pool.Return(cvarNameBuffer);
-        }
+            _SetValueInternalPtr((byte*)cvarNameBufferPtr, value);
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, byte> _SetValueAsString;
 
     public unsafe static bool SetValueAsString(string cvarName, string value)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var valueLength = Encoding.UTF8.GetByteCount(value);
-        var valueBuffer = pool.Rent(valueLength + 1);
-        Encoding.UTF8.GetBytes(value, valueBuffer);
-        valueBuffer[valueLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        return StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* valueBufferPtr = valueBuffer)
+            return StringAlloc.CreateCString(value, valueBufferPtr =>
             {
-                var ret = _SetValueAsString(cvarNameBufferPtr, valueBufferPtr);
-                pool.Return(cvarNameBuffer);
-                pool.Return(valueBuffer);
+                var ret = _SetValueAsString((byte*)cvarNameBufferPtr, (byte*)valueBufferPtr);
                 return ret == 1;
-            }
-        }
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, int> _GetValueAsString;
 
     public unsafe static string GetValueAsString(string cvarName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        return StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            var ret = _GetValueAsString(null, cvarNameBufferPtr);
-            var retBuffer = pool.Rent(ret + 1);
-            fixed (byte* retBufferPtr = retBuffer)
+            var ret = _GetValueAsString(null, (byte*)cvarNameBufferPtr);
+            return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
             {
-                ret = _GetValueAsString(retBufferPtr, cvarNameBufferPtr);
-                var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-                pool.Return(retBuffer);
-                pool.Return(cvarNameBuffer);
-                return retString;
-            }
-        }
+                _ = _GetValueAsString((byte*)retBufferPtr, (byte*)cvarNameBufferPtr);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, byte> _SetDefaultValueAsString;
 
     public unsafe static bool SetDefaultValueAsString(string cvarName, string value)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var valueLength = Encoding.UTF8.GetByteCount(value);
-        var valueBuffer = pool.Rent(valueLength + 1);
-        Encoding.UTF8.GetBytes(value, valueBuffer);
-        valueBuffer[valueLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        return StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* valueBufferPtr = valueBuffer)
+            return StringAlloc.CreateCString(value, valueBufferPtr =>
             {
-                var ret = _SetDefaultValueAsString(cvarNameBufferPtr, valueBufferPtr);
-                pool.Return(cvarNameBuffer);
-                pool.Return(valueBuffer);
+                var ret = _SetDefaultValueAsString((byte*)cvarNameBufferPtr, (byte*)valueBufferPtr);
                 return ret == 1;
-            }
-        }
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, int> _GetDefaultValueAsString;
 
     public unsafe static string GetDefaultValueAsString(string cvarName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        return StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            var ret = _GetDefaultValueAsString(null, cvarNameBufferPtr);
-            var retBuffer = pool.Rent(ret + 1);
-            fixed (byte* retBufferPtr = retBuffer)
+            var ret = _GetDefaultValueAsString(null, (byte*)cvarNameBufferPtr);
+            return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
             {
-                ret = _GetDefaultValueAsString(retBufferPtr, cvarNameBufferPtr);
-                var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-                pool.Return(retBuffer);
-                pool.Return(cvarNameBuffer);
-                return retString;
-            }
-        }
+                _ = _GetDefaultValueAsString((byte*)retBufferPtr, (byte*)cvarNameBufferPtr);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, byte> _SetMinValueAsString;
 
     public unsafe static bool SetMinValueAsString(string cvarName, string value)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var valueLength = Encoding.UTF8.GetByteCount(value);
-        var valueBuffer = pool.Rent(valueLength + 1);
-        Encoding.UTF8.GetBytes(value, valueBuffer);
-        valueBuffer[valueLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        return StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* valueBufferPtr = valueBuffer)
+            return StringAlloc.CreateCString(value, valueBufferPtr =>
             {
-                var ret = _SetMinValueAsString(cvarNameBufferPtr, valueBufferPtr);
-                pool.Return(cvarNameBuffer);
-                pool.Return(valueBuffer);
+                var ret = _SetMinValueAsString((byte*)cvarNameBufferPtr, (byte*)valueBufferPtr);
                 return ret == 1;
-            }
-        }
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, int> _GetMinValueAsString;
 
     public unsafe static string GetMinValueAsString(string cvarName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        return StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            var ret = _GetMinValueAsString(null, cvarNameBufferPtr);
-            var retBuffer = pool.Rent(ret + 1);
-            fixed (byte* retBufferPtr = retBuffer)
+            var ret = _GetMinValueAsString(null, (byte*)cvarNameBufferPtr);
+            return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
             {
-                ret = _GetMinValueAsString(retBufferPtr, cvarNameBufferPtr);
-                var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-                pool.Return(retBuffer);
-                pool.Return(cvarNameBuffer);
-                return retString;
-            }
-        }
+                _ = _GetMinValueAsString((byte*)retBufferPtr, (byte*)cvarNameBufferPtr);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, byte> _SetMaxValueAsString;
 
     public unsafe static bool SetMaxValueAsString(string cvarName, string value)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var valueLength = Encoding.UTF8.GetByteCount(value);
-        var valueBuffer = pool.Rent(valueLength + 1);
-        Encoding.UTF8.GetBytes(value, valueBuffer);
-        valueBuffer[valueLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        return StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* valueBufferPtr = valueBuffer)
+            return StringAlloc.CreateCString(value, valueBufferPtr =>
             {
-                var ret = _SetMaxValueAsString(cvarNameBufferPtr, valueBufferPtr);
-                pool.Return(cvarNameBuffer);
-                pool.Return(valueBuffer);
+                var ret = _SetMaxValueAsString((byte*)cvarNameBufferPtr, (byte*)valueBufferPtr);
                 return ret == 1;
-            }
-        }
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, int> _GetMaxValueAsString;
 
     public unsafe static string GetMaxValueAsString(string cvarName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        return StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            var ret = _GetMaxValueAsString(null, cvarNameBufferPtr);
-            var retBuffer = pool.Rent(ret + 1);
-            fixed (byte* retBufferPtr = retBuffer)
+            var ret = _GetMaxValueAsString(null, (byte*)cvarNameBufferPtr);
+            return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
             {
-                ret = _GetMaxValueAsString(retBufferPtr, cvarNameBufferPtr);
-                var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-                pool.Return(retBuffer);
-                pool.Return(cvarNameBuffer);
-                return retString;
-            }
-        }
+                _ = _GetMaxValueAsString((byte*)retBufferPtr, (byte*)cvarNameBufferPtr);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, void> _SetValueInternalAsString;
 
     public unsafe static void SetValueInternalAsString(string cvarName, string value)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        var valueLength = Encoding.UTF8.GetByteCount(value);
-        var valueBuffer = pool.Rent(valueLength + 1);
-        Encoding.UTF8.GetBytes(value, valueBuffer);
-        valueBuffer[valueLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            fixed (byte* valueBufferPtr = valueBuffer)
+            StringAlloc.CreateCString(value, valueBufferPtr =>
             {
-                _SetValueInternalAsString(cvarNameBufferPtr, valueBufferPtr);
-                pool.Return(cvarNameBuffer);
-                pool.Return(valueBuffer);
-            }
-        }
+                _SetValueInternalAsString((byte*)cvarNameBufferPtr, (byte*)valueBufferPtr);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, int> _GetDescription;
 
     public unsafe static string GetDescription(string cvarName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var cvarNameLength = Encoding.UTF8.GetByteCount(cvarName);
-        var cvarNameBuffer = pool.Rent(cvarNameLength + 1);
-        Encoding.UTF8.GetBytes(cvarName, cvarNameBuffer);
-        cvarNameBuffer[cvarNameLength] = 0;
-        fixed (byte* cvarNameBufferPtr = cvarNameBuffer)
+        return StringAlloc.CreateCString(cvarName, cvarNameBufferPtr =>
         {
-            var ret = _GetDescription(null, cvarNameBufferPtr);
-            var retBuffer = pool.Rent(ret + 1);
-            fixed (byte* retBufferPtr = retBuffer)
+            var ret = _GetDescription(null, (byte*)cvarNameBufferPtr);
+            return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
             {
-                ret = _GetDescription(retBufferPtr, cvarNameBufferPtr);
-                var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-                pool.Return(retBuffer);
-                pool.Return(cvarNameBuffer);
-                return retString;
-            }
-        }
+                _ = _GetDescription((byte*)retBufferPtr, (byte*)cvarNameBufferPtr);
+            });
+        });
     }
 }

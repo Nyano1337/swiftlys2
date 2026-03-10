@@ -35,16 +35,10 @@ internal static class NativePlayerManager
         {
             throw new InvalidOperationException("This method can only be called from the main thread.");
         }
-        var pool = ArrayPool<byte>.Shared;
-        var messageLength = Encoding.UTF8.GetByteCount(message);
-        var messageBuffer = pool.Rent(messageLength + 1);
-        Encoding.UTF8.GetBytes(message, messageBuffer);
-        messageBuffer[messageLength] = 0;
-        fixed (byte* messageBufferPtr = messageBuffer)
+        StringAlloc.CreateCString(message, messageBufferPtr =>
         {
-            _SendMessage(kind, messageBufferPtr, duration);
-            pool.Return(messageBuffer);
-        }
+            _SendMessage(kind, (byte*)messageBufferPtr, duration);
+        });
     }
 
     private unsafe static delegate* unmanaged<int, byte, void> _ShouldBlockTransmitEntity;

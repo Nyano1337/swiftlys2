@@ -15,33 +15,21 @@ internal static class NativeSignatures
 
     public unsafe static bool Exists(string signatureName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var signatureNameLength = Encoding.UTF8.GetByteCount(signatureName);
-        var signatureNameBuffer = pool.Rent(signatureNameLength + 1);
-        Encoding.UTF8.GetBytes(signatureName, signatureNameBuffer);
-        signatureNameBuffer[signatureNameLength] = 0;
-        fixed (byte* signatureNameBufferPtr = signatureNameBuffer)
+        return StringAlloc.CreateCString(signatureName, signatureNameBufferPtr =>
         {
-            var ret = _Exists(signatureNameBufferPtr);
-            pool.Return(signatureNameBuffer);
+            var ret = _Exists((byte*)signatureNameBufferPtr);
             return ret == 1;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, nint> _Fetch;
 
     public unsafe static nint Fetch(string signatureName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var signatureNameLength = Encoding.UTF8.GetByteCount(signatureName);
-        var signatureNameBuffer = pool.Rent(signatureNameLength + 1);
-        Encoding.UTF8.GetBytes(signatureName, signatureNameBuffer);
-        signatureNameBuffer[signatureNameLength] = 0;
-        fixed (byte* signatureNameBufferPtr = signatureNameBuffer)
+        return StringAlloc.CreateCString(signatureName, signatureNameBufferPtr =>
         {
-            var ret = _Fetch(signatureNameBufferPtr);
-            pool.Return(signatureNameBuffer);
+            var ret = _Fetch((byte*)signatureNameBufferPtr);
             return ret;
-        }
+        });
     }
 }

@@ -18,100 +18,56 @@ internal static class NativeMemoryHelpers
     /// </summary>
     public unsafe static nint FetchInterfaceByName(string ifaceName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var ifaceNameLength = Encoding.UTF8.GetByteCount(ifaceName);
-        var ifaceNameBuffer = pool.Rent(ifaceNameLength + 1);
-        Encoding.UTF8.GetBytes(ifaceName, ifaceNameBuffer);
-        ifaceNameBuffer[ifaceNameLength] = 0;
-        fixed (byte* ifaceNameBufferPtr = ifaceNameBuffer)
+        return StringAlloc.CreateCString(ifaceName, ifaceNameBufferPtr =>
         {
-            var ret = _FetchInterfaceByName(ifaceNameBufferPtr);
-            pool.Return(ifaceNameBuffer);
+            var ret = _FetchInterfaceByName((byte*)ifaceNameBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, nint> _GetVirtualTableAddress;
 
     public unsafe static nint GetVirtualTableAddress(string library, string vtableName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var libraryLength = Encoding.UTF8.GetByteCount(library);
-        var libraryBuffer = pool.Rent(libraryLength + 1);
-        Encoding.UTF8.GetBytes(library, libraryBuffer);
-        libraryBuffer[libraryLength] = 0;
-        var vtableNameLength = Encoding.UTF8.GetByteCount(vtableName);
-        var vtableNameBuffer = pool.Rent(vtableNameLength + 1);
-        Encoding.UTF8.GetBytes(vtableName, vtableNameBuffer);
-        vtableNameBuffer[vtableNameLength] = 0;
-        fixed (byte* libraryBufferPtr = libraryBuffer)
+        return StringAlloc.CreateCString(library, libraryBufferPtr =>
         {
-            fixed (byte* vtableNameBufferPtr = vtableNameBuffer)
+            return StringAlloc.CreateCString(vtableName, vtableNameBufferPtr =>
             {
-                var ret = _GetVirtualTableAddress(libraryBufferPtr, vtableNameBufferPtr);
-                pool.Return(libraryBuffer);
-                pool.Return(vtableNameBuffer);
+                var ret = _GetVirtualTableAddress((byte*)libraryBufferPtr, (byte*)vtableNameBufferPtr);
                 return ret;
-            }
-        }
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, byte*, nint> _GetVirtualTableAddressNested2;
 
     public unsafe static nint GetVirtualTableAddressNested2(string library, string class1, string class2)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var libraryLength = Encoding.UTF8.GetByteCount(library);
-        var libraryBuffer = pool.Rent(libraryLength + 1);
-        Encoding.UTF8.GetBytes(library, libraryBuffer);
-        libraryBuffer[libraryLength] = 0;
-        var class1Length = Encoding.UTF8.GetByteCount(class1);
-        var class1Buffer = pool.Rent(class1Length + 1);
-        Encoding.UTF8.GetBytes(class1, class1Buffer);
-        class1Buffer[class1Length] = 0;
-        var class2Length = Encoding.UTF8.GetByteCount(class2);
-        var class2Buffer = pool.Rent(class2Length + 1);
-        Encoding.UTF8.GetBytes(class2, class2Buffer);
-        class2Buffer[class2Length] = 0;
-        fixed (byte* libraryBufferPtr = libraryBuffer)
+        return StringAlloc.CreateCString(library, libraryBufferPtr =>
         {
-            fixed (byte* class1BufferPtr = class1Buffer)
+            return StringAlloc.CreateCString(class1, class1BufferPtr =>
             {
-                fixed (byte* class2BufferPtr = class2Buffer)
+                return StringAlloc.CreateCString(class2, class2BufferPtr =>
                 {
-                    var ret = _GetVirtualTableAddressNested2(libraryBufferPtr, class1BufferPtr, class2BufferPtr);
-                    pool.Return(libraryBuffer);
-                    pool.Return(class1Buffer);
-                    pool.Return(class2Buffer);
+                    var ret = _GetVirtualTableAddressNested2((byte*)libraryBufferPtr, (byte*)class1BufferPtr, (byte*)class2BufferPtr);
                     return ret;
-                }
-            }
-        }
+                });
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, int, byte, nint> _GetAddressBySignature;
 
     public unsafe static nint GetAddressBySignature(string library, string sig, int len, bool rawBytes)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var libraryLength = Encoding.UTF8.GetByteCount(library);
-        var libraryBuffer = pool.Rent(libraryLength + 1);
-        Encoding.UTF8.GetBytes(library, libraryBuffer);
-        libraryBuffer[libraryLength] = 0;
-        var sigLength = Encoding.UTF8.GetByteCount(sig);
-        var sigBuffer = pool.Rent(sigLength + 1);
-        Encoding.UTF8.GetBytes(sig, sigBuffer);
-        sigBuffer[sigLength] = 0;
-        fixed (byte* libraryBufferPtr = libraryBuffer)
+        return StringAlloc.CreateCString(library, libraryBufferPtr =>
         {
-            fixed (byte* sigBufferPtr = sigBuffer)
+            return StringAlloc.CreateCString(sig, sigBufferPtr =>
             {
-                var ret = _GetAddressBySignature(libraryBufferPtr, sigBufferPtr, len, rawBytes ? (byte)1 : (byte)0);
-                pool.Return(libraryBuffer);
-                pool.Return(sigBuffer);
+                var ret = _GetAddressBySignature((byte*)libraryBufferPtr, (byte*)sigBufferPtr, len, rawBytes ? (byte)1 : (byte)0);
                 return ret;
-            }
-        }
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, nint, int> _GetObjectPtrVtableName;
@@ -119,15 +75,10 @@ internal static class NativeMemoryHelpers
     public unsafe static string GetObjectPtrVtableName(nint objptr)
     {
         var ret = _GetObjectPtrVtableName(null, objptr);
-        var pool = ArrayPool<byte>.Shared;
-        var retBuffer = pool.Rent(ret + 1);
-        fixed (byte* retBufferPtr = retBuffer)
+        return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
         {
-            ret = _GetObjectPtrVtableName(retBufferPtr, objptr);
-            var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-            pool.Return(retBuffer);
-            return retString;
-        }
+            _ = _GetObjectPtrVtableName((byte*)retBufferPtr, objptr);
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, byte> _ObjectPtrHasVtable;
@@ -142,16 +93,10 @@ internal static class NativeMemoryHelpers
 
     public unsafe static bool ObjectPtrHasBaseClass(nint objptr, string baseClassName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var baseClassNameLength = Encoding.UTF8.GetByteCount(baseClassName);
-        var baseClassNameBuffer = pool.Rent(baseClassNameLength + 1);
-        Encoding.UTF8.GetBytes(baseClassName, baseClassNameBuffer);
-        baseClassNameBuffer[baseClassNameLength] = 0;
-        fixed (byte* baseClassNameBufferPtr = baseClassNameBuffer)
+        return StringAlloc.CreateCString(baseClassName, baseClassNameBufferPtr =>
         {
-            var ret = _ObjectPtrHasBaseClass(objptr, baseClassNameBufferPtr);
-            pool.Return(baseClassNameBuffer);
+            var ret = _ObjectPtrHasBaseClass(objptr, (byte*)baseClassNameBufferPtr);
             return ret == 1;
-        }
+        });
     }
 }

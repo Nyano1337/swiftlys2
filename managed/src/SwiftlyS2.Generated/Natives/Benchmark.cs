@@ -150,41 +150,25 @@ internal static class NativeBenchmark
 
     public unsafe static string StringToString(string value)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var valueLength = Encoding.UTF8.GetByteCount(value);
-        var valueBuffer = pool.Rent(valueLength + 1);
-        Encoding.UTF8.GetBytes(value, valueBuffer);
-        valueBuffer[valueLength] = 0;
-        fixed (byte* valueBufferPtr = valueBuffer)
+        return StringAlloc.CreateCString(value, valueBufferPtr =>
         {
-            var ret = _StringToString(null, valueBufferPtr);
-            var retBuffer = pool.Rent(ret + 1);
-            fixed (byte* retBufferPtr = retBuffer)
+            var ret = _StringToString(null, (byte*)valueBufferPtr);
+            return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
             {
-                ret = _StringToString(retBufferPtr, valueBufferPtr);
-                var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-                pool.Return(retBuffer);
-                pool.Return(valueBuffer);
-                return retString;
-            }
-        }
+                _ = _StringToString((byte*)retBufferPtr, (byte*)valueBufferPtr);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, nint> _StringToPtr;
 
     public unsafe static nint StringToPtr(string value)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var valueLength = Encoding.UTF8.GetByteCount(value);
-        var valueBuffer = pool.Rent(valueLength + 1);
-        Encoding.UTF8.GetBytes(value, valueBuffer);
-        valueBuffer[valueLength] = 0;
-        fixed (byte* valueBufferPtr = valueBuffer)
+        return StringAlloc.CreateCString(value, valueBufferPtr =>
         {
-            var ret = _StringToPtr(valueBufferPtr);
-            pool.Return(valueBuffer);
+            var ret = _StringToPtr((byte*)valueBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, int, float, byte, ulong, int> _MultiPrimitives;
@@ -199,41 +183,24 @@ internal static class NativeBenchmark
 
     public unsafe static int MultiWithOneString(nint p1, string s1, nint p2, int i1, float f1)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var s1Length = Encoding.UTF8.GetByteCount(s1);
-        var s1Buffer = pool.Rent(s1Length + 1);
-        Encoding.UTF8.GetBytes(s1, s1Buffer);
-        s1Buffer[s1Length] = 0;
-        fixed (byte* s1BufferPtr = s1Buffer)
+        return StringAlloc.CreateCString(s1, s1BufferPtr =>
         {
-            var ret = _MultiWithOneString(p1, s1BufferPtr, p2, i1, f1);
-            pool.Return(s1Buffer);
+            var ret = _MultiWithOneString(p1, (byte*)s1BufferPtr, p2, i1, f1);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, byte*, nint, byte*, int, void> _MultiWithTwoStrings;
 
     public unsafe static void MultiWithTwoStrings(nint p1, string s1, nint p2, string s2, int i1)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var s1Length = Encoding.UTF8.GetByteCount(s1);
-        var s1Buffer = pool.Rent(s1Length + 1);
-        Encoding.UTF8.GetBytes(s1, s1Buffer);
-        s1Buffer[s1Length] = 0;
-        var s2Length = Encoding.UTF8.GetByteCount(s2);
-        var s2Buffer = pool.Rent(s2Length + 1);
-        Encoding.UTF8.GetBytes(s2, s2Buffer);
-        s2Buffer[s2Length] = 0;
-        fixed (byte* s1BufferPtr = s1Buffer)
+        StringAlloc.CreateCString(s1, s1BufferPtr =>
         {
-            fixed (byte* s2BufferPtr = s2Buffer)
+            StringAlloc.CreateCString(s2, s2BufferPtr =>
             {
-                _MultiWithTwoStrings(p1, s1BufferPtr, p2, s2BufferPtr, i1);
-                pool.Return(s1Buffer);
-                pool.Return(s2Buffer);
-            }
-        }
+                _MultiWithTwoStrings(p1, (byte*)s1BufferPtr, p2, (byte*)s2BufferPtr, i1);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, Vector, void> _VectorToVector;
@@ -254,15 +221,9 @@ internal static class NativeBenchmark
 
     public unsafe static void ComplexWithString(nint entity, Vector pos, string name, QAngle angle)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var nameLength = Encoding.UTF8.GetByteCount(name);
-        var nameBuffer = pool.Rent(nameLength + 1);
-        Encoding.UTF8.GetBytes(name, nameBuffer);
-        nameBuffer[nameLength] = 0;
-        fixed (byte* nameBufferPtr = nameBuffer)
+        StringAlloc.CreateCString(name, nameBufferPtr =>
         {
-            _ComplexWithString(entity, pos, nameBufferPtr, angle);
-            pool.Return(nameBuffer);
-        }
+            _ComplexWithString(entity, pos, (byte*)nameBufferPtr, angle);
+        });
     }
 }

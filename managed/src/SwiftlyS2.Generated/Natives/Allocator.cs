@@ -23,25 +23,14 @@ internal static class NativeAllocator
 
     public unsafe static nint TrackedAlloc(ulong size, string identifier, string details)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var identifierLength = Encoding.UTF8.GetByteCount(identifier);
-        var identifierBuffer = pool.Rent(identifierLength + 1);
-        Encoding.UTF8.GetBytes(identifier, identifierBuffer);
-        identifierBuffer[identifierLength] = 0;
-        var detailsLength = Encoding.UTF8.GetByteCount(details);
-        var detailsBuffer = pool.Rent(detailsLength + 1);
-        Encoding.UTF8.GetBytes(details, detailsBuffer);
-        detailsBuffer[detailsLength] = 0;
-        fixed (byte* identifierBufferPtr = identifierBuffer)
+        return StringAlloc.CreateCString(identifier, identifierBufferPtr =>
         {
-            fixed (byte* detailsBufferPtr = detailsBuffer)
+            return StringAlloc.CreateCString(details, detailsBufferPtr =>
             {
-                var ret = _TrackedAlloc(size, identifierBufferPtr, detailsBufferPtr);
-                pool.Return(identifierBuffer);
-                pool.Return(detailsBuffer);
+                var ret = _TrackedAlloc(size, (byte*)identifierBufferPtr, (byte*)detailsBufferPtr);
                 return ret;
-            }
-        }
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, void> _Free;
@@ -82,17 +71,11 @@ internal static class NativeAllocator
 
     public unsafe static ulong GetAllocatedByTrackedIdentifier(string identifier)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var identifierLength = Encoding.UTF8.GetByteCount(identifier);
-        var identifierBuffer = pool.Rent(identifierLength + 1);
-        Encoding.UTF8.GetBytes(identifier, identifierBuffer);
-        identifierBuffer[identifierLength] = 0;
-        fixed (byte* identifierBufferPtr = identifierBuffer)
+        return StringAlloc.CreateCString(identifier, identifierBufferPtr =>
         {
-            var ret = _GetAllocatedByTrackedIdentifier(identifierBufferPtr);
-            pool.Return(identifierBuffer);
+            var ret = _GetAllocatedByTrackedIdentifier((byte*)identifierBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, byte> _IsPointerValid;

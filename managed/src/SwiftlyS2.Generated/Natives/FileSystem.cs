@@ -15,24 +15,14 @@ internal static class NativeFileSystem
 
     public unsafe static string GetSearchPath(string pathId, int searchPathType, int searchPathsToGet)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var pathIdLength = Encoding.UTF8.GetByteCount(pathId);
-        var pathIdBuffer = pool.Rent(pathIdLength + 1);
-        Encoding.UTF8.GetBytes(pathId, pathIdBuffer);
-        pathIdBuffer[pathIdLength] = 0;
-        fixed (byte* pathIdBufferPtr = pathIdBuffer)
+        return StringAlloc.CreateCString(pathId, pathIdBufferPtr =>
         {
-            var ret = _GetSearchPath(null, pathIdBufferPtr, searchPathType, searchPathsToGet);
-            var retBuffer = pool.Rent(ret + 1);
-            fixed (byte* retBufferPtr = retBuffer)
+            var ret = _GetSearchPath(null, (byte*)pathIdBufferPtr, searchPathType, searchPathsToGet);
+            return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
             {
-                ret = _GetSearchPath(retBufferPtr, pathIdBufferPtr, searchPathType, searchPathsToGet);
-                var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-                pool.Return(retBuffer);
-                pool.Return(pathIdBuffer);
-                return retString;
-            }
-        }
+                _ = _GetSearchPath((byte*)retBufferPtr, (byte*)pathIdBufferPtr, searchPathType, searchPathsToGet);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, int, int, void> _AddSearchPath;
@@ -43,99 +33,55 @@ internal static class NativeFileSystem
         {
             throw new InvalidOperationException("This method can only be called from the main thread.");
         }
-        var pool = ArrayPool<byte>.Shared;
-        var pathLength = Encoding.UTF8.GetByteCount(path);
-        var pathBuffer = pool.Rent(pathLength + 1);
-        Encoding.UTF8.GetBytes(path, pathBuffer);
-        pathBuffer[pathLength] = 0;
-        var pathIdLength = Encoding.UTF8.GetByteCount(pathId);
-        var pathIdBuffer = pool.Rent(pathIdLength + 1);
-        Encoding.UTF8.GetBytes(pathId, pathIdBuffer);
-        pathIdBuffer[pathIdLength] = 0;
-        fixed (byte* pathBufferPtr = pathBuffer)
+        StringAlloc.CreateCString(path, pathBufferPtr =>
         {
-            fixed (byte* pathIdBufferPtr = pathIdBuffer)
+            StringAlloc.CreateCString(pathId, pathIdBufferPtr =>
             {
-                _AddSearchPath(pathBufferPtr, pathIdBufferPtr, searchPathAdd, searchPathPriority);
-                pool.Return(pathBuffer);
-                pool.Return(pathIdBuffer);
-            }
-        }
+                _AddSearchPath((byte*)pathBufferPtr, (byte*)pathIdBufferPtr, searchPathAdd, searchPathPriority);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, byte> _RemoveSearchPath;
 
     public unsafe static bool RemoveSearchPath(string path, string pathId)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var pathLength = Encoding.UTF8.GetByteCount(path);
-        var pathBuffer = pool.Rent(pathLength + 1);
-        Encoding.UTF8.GetBytes(path, pathBuffer);
-        pathBuffer[pathLength] = 0;
-        var pathIdLength = Encoding.UTF8.GetByteCount(pathId);
-        var pathIdBuffer = pool.Rent(pathIdLength + 1);
-        Encoding.UTF8.GetBytes(pathId, pathIdBuffer);
-        pathIdBuffer[pathIdLength] = 0;
-        fixed (byte* pathBufferPtr = pathBuffer)
+        return StringAlloc.CreateCString(path, pathBufferPtr =>
         {
-            fixed (byte* pathIdBufferPtr = pathIdBuffer)
+            return StringAlloc.CreateCString(pathId, pathIdBufferPtr =>
             {
-                var ret = _RemoveSearchPath(pathBufferPtr, pathIdBufferPtr);
-                pool.Return(pathBuffer);
-                pool.Return(pathIdBuffer);
+                var ret = _RemoveSearchPath((byte*)pathBufferPtr, (byte*)pathIdBufferPtr);
                 return ret == 1;
-            }
-        }
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, byte> _FileExists;
 
     public unsafe static bool FileExists(string fileName, string pathId)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var fileNameLength = Encoding.UTF8.GetByteCount(fileName);
-        var fileNameBuffer = pool.Rent(fileNameLength + 1);
-        Encoding.UTF8.GetBytes(fileName, fileNameBuffer);
-        fileNameBuffer[fileNameLength] = 0;
-        var pathIdLength = Encoding.UTF8.GetByteCount(pathId);
-        var pathIdBuffer = pool.Rent(pathIdLength + 1);
-        Encoding.UTF8.GetBytes(pathId, pathIdBuffer);
-        pathIdBuffer[pathIdLength] = 0;
-        fixed (byte* fileNameBufferPtr = fileNameBuffer)
+        return StringAlloc.CreateCString(fileName, fileNameBufferPtr =>
         {
-            fixed (byte* pathIdBufferPtr = pathIdBuffer)
+            return StringAlloc.CreateCString(pathId, pathIdBufferPtr =>
             {
-                var ret = _FileExists(fileNameBufferPtr, pathIdBufferPtr);
-                pool.Return(fileNameBuffer);
-                pool.Return(pathIdBuffer);
+                var ret = _FileExists((byte*)fileNameBufferPtr, (byte*)pathIdBufferPtr);
                 return ret == 1;
-            }
-        }
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, byte> _IsDirectory;
 
     public unsafe static bool IsDirectory(string path, string pathId)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var pathLength = Encoding.UTF8.GetByteCount(path);
-        var pathBuffer = pool.Rent(pathLength + 1);
-        Encoding.UTF8.GetBytes(path, pathBuffer);
-        pathBuffer[pathLength] = 0;
-        var pathIdLength = Encoding.UTF8.GetByteCount(pathId);
-        var pathIdBuffer = pool.Rent(pathIdLength + 1);
-        Encoding.UTF8.GetBytes(pathId, pathIdBuffer);
-        pathIdBuffer[pathIdLength] = 0;
-        fixed (byte* pathBufferPtr = pathBuffer)
+        return StringAlloc.CreateCString(path, pathBufferPtr =>
         {
-            fixed (byte* pathIdBufferPtr = pathIdBuffer)
+            return StringAlloc.CreateCString(pathId, pathIdBufferPtr =>
             {
-                var ret = _IsDirectory(pathBufferPtr, pathIdBufferPtr);
-                pool.Return(pathBuffer);
-                pool.Return(pathIdBuffer);
+                var ret = _IsDirectory((byte*)pathBufferPtr, (byte*)pathIdBufferPtr);
                 return ret == 1;
-            }
-        }
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<void> _PrintSearchPaths;
@@ -149,32 +95,17 @@ internal static class NativeFileSystem
 
     public unsafe static string ReadFile(string fileName, string pathId)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var fileNameLength = Encoding.UTF8.GetByteCount(fileName);
-        var fileNameBuffer = pool.Rent(fileNameLength + 1);
-        Encoding.UTF8.GetBytes(fileName, fileNameBuffer);
-        fileNameBuffer[fileNameLength] = 0;
-        var pathIdLength = Encoding.UTF8.GetByteCount(pathId);
-        var pathIdBuffer = pool.Rent(pathIdLength + 1);
-        Encoding.UTF8.GetBytes(pathId, pathIdBuffer);
-        pathIdBuffer[pathIdLength] = 0;
-        fixed (byte* fileNameBufferPtr = fileNameBuffer)
+        return StringAlloc.CreateCString(fileName, fileNameBufferPtr =>
         {
-            fixed (byte* pathIdBufferPtr = pathIdBuffer)
+            return StringAlloc.CreateCString(pathId, pathIdBufferPtr =>
             {
-                var ret = _ReadFile(null, fileNameBufferPtr, pathIdBufferPtr);
-                var retBuffer = pool.Rent(ret + 1);
-                fixed (byte* retBufferPtr = retBuffer)
+                var ret = _ReadFile(null, (byte*)fileNameBufferPtr, (byte*)pathIdBufferPtr);
+                return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
                 {
-                    ret = _ReadFile(retBufferPtr, fileNameBufferPtr, pathIdBufferPtr);
-                    var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-                    pool.Return(retBuffer);
-                    pool.Return(fileNameBuffer);
-                    pool.Return(pathIdBuffer);
-                    return retString;
-                }
-            }
-        }
+                    _ = _ReadFile((byte*)retBufferPtr, (byte*)fileNameBufferPtr, (byte*)pathIdBufferPtr);
+                });
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, byte*, byte> _WriteFile;
@@ -185,108 +116,59 @@ internal static class NativeFileSystem
         {
             throw new InvalidOperationException("This method can only be called from the main thread.");
         }
-        var pool = ArrayPool<byte>.Shared;
-        var fileNameLength = Encoding.UTF8.GetByteCount(fileName);
-        var fileNameBuffer = pool.Rent(fileNameLength + 1);
-        Encoding.UTF8.GetBytes(fileName, fileNameBuffer);
-        fileNameBuffer[fileNameLength] = 0;
-        var pathIdLength = Encoding.UTF8.GetByteCount(pathId);
-        var pathIdBuffer = pool.Rent(pathIdLength + 1);
-        Encoding.UTF8.GetBytes(pathId, pathIdBuffer);
-        pathIdBuffer[pathIdLength] = 0;
-        var contentLength = Encoding.UTF8.GetByteCount(content);
-        var contentBuffer = pool.Rent(contentLength + 1);
-        Encoding.UTF8.GetBytes(content, contentBuffer);
-        contentBuffer[contentLength] = 0;
-        fixed (byte* fileNameBufferPtr = fileNameBuffer)
+        return StringAlloc.CreateCString(fileName, fileNameBufferPtr =>
         {
-            fixed (byte* pathIdBufferPtr = pathIdBuffer)
+            return StringAlloc.CreateCString(pathId, pathIdBufferPtr =>
             {
-                fixed (byte* contentBufferPtr = contentBuffer)
+                return StringAlloc.CreateCString(content, contentBufferPtr =>
                 {
-                    var ret = _WriteFile(fileNameBufferPtr, pathIdBufferPtr, contentBufferPtr);
-                    pool.Return(fileNameBuffer);
-                    pool.Return(pathIdBuffer);
-                    pool.Return(contentBuffer);
+                    var ret = _WriteFile((byte*)fileNameBufferPtr, (byte*)pathIdBufferPtr, (byte*)contentBufferPtr);
                     return ret == 1;
-                }
-            }
-        }
+                });
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, uint> _GetFileSize;
 
     public unsafe static uint GetFileSize(string fileName, string pathId)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var fileNameLength = Encoding.UTF8.GetByteCount(fileName);
-        var fileNameBuffer = pool.Rent(fileNameLength + 1);
-        Encoding.UTF8.GetBytes(fileName, fileNameBuffer);
-        fileNameBuffer[fileNameLength] = 0;
-        var pathIdLength = Encoding.UTF8.GetByteCount(pathId);
-        var pathIdBuffer = pool.Rent(pathIdLength + 1);
-        Encoding.UTF8.GetBytes(pathId, pathIdBuffer);
-        pathIdBuffer[pathIdLength] = 0;
-        fixed (byte* fileNameBufferPtr = fileNameBuffer)
+        return StringAlloc.CreateCString(fileName, fileNameBufferPtr =>
         {
-            fixed (byte* pathIdBufferPtr = pathIdBuffer)
+            return StringAlloc.CreateCString(pathId, pathIdBufferPtr =>
             {
-                var ret = _GetFileSize(fileNameBufferPtr, pathIdBufferPtr);
-                pool.Return(fileNameBuffer);
-                pool.Return(pathIdBuffer);
+                var ret = _GetFileSize((byte*)fileNameBufferPtr, (byte*)pathIdBufferPtr);
                 return ret;
-            }
-        }
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, byte> _PrecacheFile;
 
     public unsafe static bool PrecacheFile(string fileName, string pathId)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var fileNameLength = Encoding.UTF8.GetByteCount(fileName);
-        var fileNameBuffer = pool.Rent(fileNameLength + 1);
-        Encoding.UTF8.GetBytes(fileName, fileNameBuffer);
-        fileNameBuffer[fileNameLength] = 0;
-        var pathIdLength = Encoding.UTF8.GetByteCount(pathId);
-        var pathIdBuffer = pool.Rent(pathIdLength + 1);
-        Encoding.UTF8.GetBytes(pathId, pathIdBuffer);
-        pathIdBuffer[pathIdLength] = 0;
-        fixed (byte* fileNameBufferPtr = fileNameBuffer)
+        return StringAlloc.CreateCString(fileName, fileNameBufferPtr =>
         {
-            fixed (byte* pathIdBufferPtr = pathIdBuffer)
+            return StringAlloc.CreateCString(pathId, pathIdBufferPtr =>
             {
-                var ret = _PrecacheFile(fileNameBufferPtr, pathIdBufferPtr);
-                pool.Return(fileNameBuffer);
-                pool.Return(pathIdBuffer);
+                var ret = _PrecacheFile((byte*)fileNameBufferPtr, (byte*)pathIdBufferPtr);
                 return ret == 1;
-            }
-        }
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, byte> _IsFileWritable;
 
     public unsafe static bool IsFileWritable(string fileName, string pathId)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var fileNameLength = Encoding.UTF8.GetByteCount(fileName);
-        var fileNameBuffer = pool.Rent(fileNameLength + 1);
-        Encoding.UTF8.GetBytes(fileName, fileNameBuffer);
-        fileNameBuffer[fileNameLength] = 0;
-        var pathIdLength = Encoding.UTF8.GetByteCount(pathId);
-        var pathIdBuffer = pool.Rent(pathIdLength + 1);
-        Encoding.UTF8.GetBytes(pathId, pathIdBuffer);
-        pathIdBuffer[pathIdLength] = 0;
-        fixed (byte* fileNameBufferPtr = fileNameBuffer)
+        return StringAlloc.CreateCString(fileName, fileNameBufferPtr =>
         {
-            fixed (byte* pathIdBufferPtr = pathIdBuffer)
+            return StringAlloc.CreateCString(pathId, pathIdBufferPtr =>
             {
-                var ret = _IsFileWritable(fileNameBufferPtr, pathIdBufferPtr);
-                pool.Return(fileNameBuffer);
-                pool.Return(pathIdBuffer);
+                var ret = _IsFileWritable((byte*)fileNameBufferPtr, (byte*)pathIdBufferPtr);
                 return ret == 1;
-            }
-        }
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, byte, byte> _SetFileWritable;
@@ -297,48 +179,26 @@ internal static class NativeFileSystem
         {
             throw new InvalidOperationException("This method can only be called from the main thread.");
         }
-        var pool = ArrayPool<byte>.Shared;
-        var fileNameLength = Encoding.UTF8.GetByteCount(fileName);
-        var fileNameBuffer = pool.Rent(fileNameLength + 1);
-        Encoding.UTF8.GetBytes(fileName, fileNameBuffer);
-        fileNameBuffer[fileNameLength] = 0;
-        var pathIdLength = Encoding.UTF8.GetByteCount(pathId);
-        var pathIdBuffer = pool.Rent(pathIdLength + 1);
-        Encoding.UTF8.GetBytes(pathId, pathIdBuffer);
-        pathIdBuffer[pathIdLength] = 0;
-        fixed (byte* fileNameBufferPtr = fileNameBuffer)
+        return StringAlloc.CreateCString(fileName, fileNameBufferPtr =>
         {
-            fixed (byte* pathIdBufferPtr = pathIdBuffer)
+            return StringAlloc.CreateCString(pathId, pathIdBufferPtr =>
             {
-                var ret = _SetFileWritable(fileNameBufferPtr, pathIdBufferPtr, writable ? (byte)1 : (byte)0);
-                pool.Return(fileNameBuffer);
-                pool.Return(pathIdBuffer);
+                var ret = _SetFileWritable((byte*)fileNameBufferPtr, (byte*)pathIdBufferPtr, writable ? (byte)1 : (byte)0);
                 return ret == 1;
-            }
-        }
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, byte*, byte*, void> _FindFileAbsoluteList;
 
     public unsafe static void FindFileAbsoluteList(nint outVector, string wildcard, string pathId)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var wildcardLength = Encoding.UTF8.GetByteCount(wildcard);
-        var wildcardBuffer = pool.Rent(wildcardLength + 1);
-        Encoding.UTF8.GetBytes(wildcard, wildcardBuffer);
-        wildcardBuffer[wildcardLength] = 0;
-        var pathIdLength = Encoding.UTF8.GetByteCount(pathId);
-        var pathIdBuffer = pool.Rent(pathIdLength + 1);
-        Encoding.UTF8.GetBytes(pathId, pathIdBuffer);
-        pathIdBuffer[pathIdLength] = 0;
-        fixed (byte* wildcardBufferPtr = wildcardBuffer)
+        StringAlloc.CreateCString(wildcard, wildcardBufferPtr =>
         {
-            fixed (byte* pathIdBufferPtr = pathIdBuffer)
+            StringAlloc.CreateCString(pathId, pathIdBufferPtr =>
             {
-                _FindFileAbsoluteList(outVector, wildcardBufferPtr, pathIdBufferPtr);
-                pool.Return(wildcardBuffer);
-                pool.Return(pathIdBuffer);
-            }
-        }
+                _FindFileAbsoluteList(outVector, (byte*)wildcardBufferPtr, (byte*)pathIdBufferPtr);
+            });
+        });
     }
 }

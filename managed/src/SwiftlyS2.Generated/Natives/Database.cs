@@ -16,15 +16,10 @@ internal static class NativeDatabase
     public unsafe static string GetDefaultDriver()
     {
         var ret = _GetDefaultDriver(null);
-        var pool = ArrayPool<byte>.Shared;
-        var retBuffer = pool.Rent(ret + 1);
-        fixed (byte* retBufferPtr = retBuffer)
+        return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
         {
-            ret = _GetDefaultDriver(retBufferPtr);
-            var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-            pool.Return(retBuffer);
-            return retString;
-        }
+            _ = _GetDefaultDriver((byte*)retBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int> _GetDefaultConnectionName;
@@ -32,209 +27,126 @@ internal static class NativeDatabase
     public unsafe static string GetDefaultConnectionName()
     {
         var ret = _GetDefaultConnectionName(null);
-        var pool = ArrayPool<byte>.Shared;
-        var retBuffer = pool.Rent(ret + 1);
-        fixed (byte* retBufferPtr = retBuffer)
+        return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
         {
-            ret = _GetDefaultConnectionName(retBufferPtr);
-            var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-            pool.Return(retBuffer);
-            return retString;
-        }
+            _ = _GetDefaultConnectionName((byte*)retBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, int> _GetConnectionDriver;
 
     public unsafe static string GetConnectionDriver(string connectionName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var connectionNameLength = Encoding.UTF8.GetByteCount(connectionName);
-        var connectionNameBuffer = pool.Rent(connectionNameLength + 1);
-        Encoding.UTF8.GetBytes(connectionName, connectionNameBuffer);
-        connectionNameBuffer[connectionNameLength] = 0;
-        fixed (byte* connectionNameBufferPtr = connectionNameBuffer)
+        return StringAlloc.CreateCString(connectionName, connectionNameBufferPtr =>
         {
-            var ret = _GetConnectionDriver(null, connectionNameBufferPtr);
-            var retBuffer = pool.Rent(ret + 1);
-            fixed (byte* retBufferPtr = retBuffer)
+            var ret = _GetConnectionDriver(null, (byte*)connectionNameBufferPtr);
+            return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
             {
-                ret = _GetConnectionDriver(retBufferPtr, connectionNameBufferPtr);
-                var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-                pool.Return(retBuffer);
-                pool.Return(connectionNameBuffer);
-                return retString;
-            }
-        }
+                _ = _GetConnectionDriver((byte*)retBufferPtr, (byte*)connectionNameBufferPtr);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, int> _GetConnectionHost;
 
     public unsafe static string GetConnectionHost(string connectionName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var connectionNameLength = Encoding.UTF8.GetByteCount(connectionName);
-        var connectionNameBuffer = pool.Rent(connectionNameLength + 1);
-        Encoding.UTF8.GetBytes(connectionName, connectionNameBuffer);
-        connectionNameBuffer[connectionNameLength] = 0;
-        fixed (byte* connectionNameBufferPtr = connectionNameBuffer)
+        return StringAlloc.CreateCString(connectionName, connectionNameBufferPtr =>
         {
-            var ret = _GetConnectionHost(null, connectionNameBufferPtr);
-            var retBuffer = pool.Rent(ret + 1);
-            fixed (byte* retBufferPtr = retBuffer)
+            var ret = _GetConnectionHost(null, (byte*)connectionNameBufferPtr);
+            return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
             {
-                ret = _GetConnectionHost(retBufferPtr, connectionNameBufferPtr);
-                var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-                pool.Return(retBuffer);
-                pool.Return(connectionNameBuffer);
-                return retString;
-            }
-        }
+                _ = _GetConnectionHost((byte*)retBufferPtr, (byte*)connectionNameBufferPtr);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, int> _GetConnectionDatabase;
 
     public unsafe static string GetConnectionDatabase(string connectionName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var connectionNameLength = Encoding.UTF8.GetByteCount(connectionName);
-        var connectionNameBuffer = pool.Rent(connectionNameLength + 1);
-        Encoding.UTF8.GetBytes(connectionName, connectionNameBuffer);
-        connectionNameBuffer[connectionNameLength] = 0;
-        fixed (byte* connectionNameBufferPtr = connectionNameBuffer)
+        return StringAlloc.CreateCString(connectionName, connectionNameBufferPtr =>
         {
-            var ret = _GetConnectionDatabase(null, connectionNameBufferPtr);
-            var retBuffer = pool.Rent(ret + 1);
-            fixed (byte* retBufferPtr = retBuffer)
+            var ret = _GetConnectionDatabase(null, (byte*)connectionNameBufferPtr);
+            return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
             {
-                ret = _GetConnectionDatabase(retBufferPtr, connectionNameBufferPtr);
-                var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-                pool.Return(retBuffer);
-                pool.Return(connectionNameBuffer);
-                return retString;
-            }
-        }
+                _ = _GetConnectionDatabase((byte*)retBufferPtr, (byte*)connectionNameBufferPtr);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, int> _GetConnectionUser;
 
     public unsafe static string GetConnectionUser(string connectionName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var connectionNameLength = Encoding.UTF8.GetByteCount(connectionName);
-        var connectionNameBuffer = pool.Rent(connectionNameLength + 1);
-        Encoding.UTF8.GetBytes(connectionName, connectionNameBuffer);
-        connectionNameBuffer[connectionNameLength] = 0;
-        fixed (byte* connectionNameBufferPtr = connectionNameBuffer)
+        return StringAlloc.CreateCString(connectionName, connectionNameBufferPtr =>
         {
-            var ret = _GetConnectionUser(null, connectionNameBufferPtr);
-            var retBuffer = pool.Rent(ret + 1);
-            fixed (byte* retBufferPtr = retBuffer)
+            var ret = _GetConnectionUser(null, (byte*)connectionNameBufferPtr);
+            return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
             {
-                ret = _GetConnectionUser(retBufferPtr, connectionNameBufferPtr);
-                var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-                pool.Return(retBuffer);
-                pool.Return(connectionNameBuffer);
-                return retString;
-            }
-        }
+                _ = _GetConnectionUser((byte*)retBufferPtr, (byte*)connectionNameBufferPtr);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, int> _GetConnectionPass;
 
     public unsafe static string GetConnectionPass(string connectionName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var connectionNameLength = Encoding.UTF8.GetByteCount(connectionName);
-        var connectionNameBuffer = pool.Rent(connectionNameLength + 1);
-        Encoding.UTF8.GetBytes(connectionName, connectionNameBuffer);
-        connectionNameBuffer[connectionNameLength] = 0;
-        fixed (byte* connectionNameBufferPtr = connectionNameBuffer)
+        return StringAlloc.CreateCString(connectionName, connectionNameBufferPtr =>
         {
-            var ret = _GetConnectionPass(null, connectionNameBufferPtr);
-            var retBuffer = pool.Rent(ret + 1);
-            fixed (byte* retBufferPtr = retBuffer)
+            var ret = _GetConnectionPass(null, (byte*)connectionNameBufferPtr);
+            return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
             {
-                ret = _GetConnectionPass(retBufferPtr, connectionNameBufferPtr);
-                var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-                pool.Return(retBuffer);
-                pool.Return(connectionNameBuffer);
-                return retString;
-            }
-        }
+                _ = _GetConnectionPass((byte*)retBufferPtr, (byte*)connectionNameBufferPtr);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, uint> _GetConnectionTimeout;
 
     public unsafe static uint GetConnectionTimeout(string connectionName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var connectionNameLength = Encoding.UTF8.GetByteCount(connectionName);
-        var connectionNameBuffer = pool.Rent(connectionNameLength + 1);
-        Encoding.UTF8.GetBytes(connectionName, connectionNameBuffer);
-        connectionNameBuffer[connectionNameLength] = 0;
-        fixed (byte* connectionNameBufferPtr = connectionNameBuffer)
+        return StringAlloc.CreateCString(connectionName, connectionNameBufferPtr =>
         {
-            var ret = _GetConnectionTimeout(connectionNameBufferPtr);
-            pool.Return(connectionNameBuffer);
+            var ret = _GetConnectionTimeout((byte*)connectionNameBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, ushort> _GetConnectionPort;
 
     public unsafe static ushort GetConnectionPort(string connectionName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var connectionNameLength = Encoding.UTF8.GetByteCount(connectionName);
-        var connectionNameBuffer = pool.Rent(connectionNameLength + 1);
-        Encoding.UTF8.GetBytes(connectionName, connectionNameBuffer);
-        connectionNameBuffer[connectionNameLength] = 0;
-        fixed (byte* connectionNameBufferPtr = connectionNameBuffer)
+        return StringAlloc.CreateCString(connectionName, connectionNameBufferPtr =>
         {
-            var ret = _GetConnectionPort(connectionNameBufferPtr);
-            pool.Return(connectionNameBuffer);
+            var ret = _GetConnectionPort((byte*)connectionNameBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, int> _GetConnectionRawUri;
 
     public unsafe static string GetConnectionRawUri(string connectionName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var connectionNameLength = Encoding.UTF8.GetByteCount(connectionName);
-        var connectionNameBuffer = pool.Rent(connectionNameLength + 1);
-        Encoding.UTF8.GetBytes(connectionName, connectionNameBuffer);
-        connectionNameBuffer[connectionNameLength] = 0;
-        fixed (byte* connectionNameBufferPtr = connectionNameBuffer)
+        return StringAlloc.CreateCString(connectionName, connectionNameBufferPtr =>
         {
-            var ret = _GetConnectionRawUri(null, connectionNameBufferPtr);
-            var retBuffer = pool.Rent(ret + 1);
-            fixed (byte* retBufferPtr = retBuffer)
+            var ret = _GetConnectionRawUri(null, (byte*)connectionNameBufferPtr);
+            return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
             {
-                ret = _GetConnectionRawUri(retBufferPtr, connectionNameBufferPtr);
-                var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-                pool.Return(retBuffer);
-                pool.Return(connectionNameBuffer);
-                return retString;
-            }
-        }
+                _ = _GetConnectionRawUri((byte*)retBufferPtr, (byte*)connectionNameBufferPtr);
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte> _ConnectionExists;
 
     public unsafe static bool ConnectionExists(string connectionName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var connectionNameLength = Encoding.UTF8.GetByteCount(connectionName);
-        var connectionNameBuffer = pool.Rent(connectionNameLength + 1);
-        Encoding.UTF8.GetBytes(connectionName, connectionNameBuffer);
-        connectionNameBuffer[connectionNameLength] = 0;
-        fixed (byte* connectionNameBufferPtr = connectionNameBuffer)
+        return StringAlloc.CreateCString(connectionName, connectionNameBufferPtr =>
         {
-            var ret = _ConnectionExists(connectionNameBufferPtr);
-            pool.Return(connectionNameBuffer);
+            var ret = _ConnectionExists((byte*)connectionNameBufferPtr);
             return ret == 1;
-        }
+        });
     }
 }

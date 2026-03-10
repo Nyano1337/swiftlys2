@@ -22,17 +22,11 @@ internal static class NativeSchema
 
     public unsafe static uint FindChainOffset(string className)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var classNameLength = Encoding.UTF8.GetByteCount(className);
-        var classNameBuffer = pool.Rent(classNameLength + 1);
-        Encoding.UTF8.GetBytes(className, classNameBuffer);
-        classNameBuffer[classNameLength] = 0;
-        fixed (byte* classNameBufferPtr = classNameBuffer)
+        return StringAlloc.CreateCString(className, classNameBufferPtr =>
         {
-            var ret = _FindChainOffset(classNameBufferPtr);
-            pool.Return(classNameBuffer);
+            var ret = _FindChainOffset((byte*)classNameBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<ulong, int> _GetOffset;
@@ -47,34 +41,22 @@ internal static class NativeSchema
 
     public unsafe static bool IsStruct(string className)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var classNameLength = Encoding.UTF8.GetByteCount(className);
-        var classNameBuffer = pool.Rent(classNameLength + 1);
-        Encoding.UTF8.GetBytes(className, classNameBuffer);
-        classNameBuffer[classNameLength] = 0;
-        fixed (byte* classNameBufferPtr = classNameBuffer)
+        return StringAlloc.CreateCString(className, classNameBufferPtr =>
         {
-            var ret = _IsStruct(classNameBufferPtr);
-            pool.Return(classNameBuffer);
+            var ret = _IsStruct((byte*)classNameBufferPtr);
             return ret == 1;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte> _IsClassLoaded;
 
     public unsafe static bool IsClassLoaded(string className)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var classNameLength = Encoding.UTF8.GetByteCount(className);
-        var classNameBuffer = pool.Rent(classNameLength + 1);
-        Encoding.UTF8.GetBytes(className, classNameBuffer);
-        classNameBuffer[classNameLength] = 0;
-        fixed (byte* classNameBufferPtr = classNameBuffer)
+        return StringAlloc.CreateCString(className, classNameBufferPtr =>
         {
-            var ret = _IsClassLoaded(classNameBufferPtr);
-            pool.Return(classNameBuffer);
+            var ret = _IsClassLoaded((byte*)classNameBufferPtr);
             return ret == 1;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, ulong, nint> _GetPropPtr;

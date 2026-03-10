@@ -16,15 +16,10 @@ internal static class NativeEngineHelpers
     public unsafe static string GetIP()
     {
         var ret = _GetIP(null);
-        var pool = ArrayPool<byte>.Shared;
-        var retBuffer = pool.Rent(ret + 1);
-        fixed (byte* retBufferPtr = retBuffer)
+        return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
         {
-            ret = _GetIP(retBufferPtr);
-            var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-            pool.Return(retBuffer);
-            return retString;
-        }
+            _ = _GetIP((byte*)retBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte> _IsMapValid;
@@ -34,17 +29,11 @@ internal static class NativeEngineHelpers
     /// </summary>
     public unsafe static bool IsMapValid(string map_name)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var map_nameLength = Encoding.UTF8.GetByteCount(map_name);
-        var map_nameBuffer = pool.Rent(map_nameLength + 1);
-        Encoding.UTF8.GetBytes(map_name, map_nameBuffer);
-        map_nameBuffer[map_nameLength] = 0;
-        fixed (byte* map_nameBufferPtr = map_nameBuffer)
+        return StringAlloc.CreateCString(map_name, map_nameBufferPtr =>
         {
-            var ret = _IsMapValid(map_nameBufferPtr);
-            pool.Return(map_nameBuffer);
+            var ret = _IsMapValid((byte*)map_nameBufferPtr);
             return ret == 1;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, void> _ExecuteCommand;
@@ -55,49 +44,31 @@ internal static class NativeEngineHelpers
         {
             throw new InvalidOperationException("This method can only be called from the main thread.");
         }
-        var pool = ArrayPool<byte>.Shared;
-        var commandLength = Encoding.UTF8.GetByteCount(command);
-        var commandBuffer = pool.Rent(commandLength + 1);
-        Encoding.UTF8.GetBytes(command, commandBuffer);
-        commandBuffer[commandLength] = 0;
-        fixed (byte* commandBufferPtr = commandBuffer)
+        StringAlloc.CreateCString(command, commandBufferPtr =>
         {
-            _ExecuteCommand(commandBufferPtr);
-            pool.Return(commandBuffer);
-        }
+            _ExecuteCommand((byte*)commandBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, nint> _FindGameSystemByName;
 
     public unsafe static nint FindGameSystemByName(string name)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var nameLength = Encoding.UTF8.GetByteCount(name);
-        var nameBuffer = pool.Rent(nameLength + 1);
-        Encoding.UTF8.GetBytes(name, nameBuffer);
-        nameBuffer[nameLength] = 0;
-        fixed (byte* nameBufferPtr = nameBuffer)
+        return StringAlloc.CreateCString(name, nameBufferPtr =>
         {
-            var ret = _FindGameSystemByName(nameBufferPtr);
-            pool.Return(nameBuffer);
+            var ret = _FindGameSystemByName((byte*)nameBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, void> _SendMessageToConsole;
 
     public unsafe static void SendMessageToConsole(string msg)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var msgLength = Encoding.UTF8.GetByteCount(msg);
-        var msgBuffer = pool.Rent(msgLength + 1);
-        Encoding.UTF8.GetBytes(msg, msgBuffer);
-        msgBuffer[msgLength] = 0;
-        fixed (byte* msgBufferPtr = msgBuffer)
+        StringAlloc.CreateCString(msg, msgBufferPtr =>
         {
-            _SendMessageToConsole(msgBufferPtr);
-            pool.Return(msgBuffer);
-        }
+            _SendMessageToConsole((byte*)msgBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<nint> _GetTraceManager;
@@ -113,15 +84,10 @@ internal static class NativeEngineHelpers
     public unsafe static string GetCurrentGame()
     {
         var ret = _GetCurrentGame(null);
-        var pool = ArrayPool<byte>.Shared;
-        var retBuffer = pool.Rent(ret + 1);
-        fixed (byte* retBufferPtr = retBuffer)
+        return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
         {
-            ret = _GetCurrentGame(retBufferPtr);
-            var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-            pool.Return(retBuffer);
-            return retString;
-        }
+            _ = _GetCurrentGame((byte*)retBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int> _GetNativeVersion;
@@ -129,15 +95,10 @@ internal static class NativeEngineHelpers
     public unsafe static string GetNativeVersion()
     {
         var ret = _GetNativeVersion(null);
-        var pool = ArrayPool<byte>.Shared;
-        var retBuffer = pool.Rent(ret + 1);
-        fixed (byte* retBufferPtr = retBuffer)
+        return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
         {
-            ret = _GetNativeVersion(retBufferPtr);
-            var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-            pool.Return(retBuffer);
-            return retString;
-        }
+            _ = _GetNativeVersion((byte*)retBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int> _GetMenuSettings;
@@ -145,15 +106,10 @@ internal static class NativeEngineHelpers
     public unsafe static string GetMenuSettings()
     {
         var ret = _GetMenuSettings(null);
-        var pool = ArrayPool<byte>.Shared;
-        var retBuffer = pool.Rent(ret + 1);
-        fixed (byte* retBufferPtr = retBuffer)
+        return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
         {
-            ret = _GetMenuSettings(retBufferPtr);
-            var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-            pool.Return(retBuffer);
-            return retString;
-        }
+            _ = _GetMenuSettings((byte*)retBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<nint> _GetGlobalVars;
@@ -177,15 +133,10 @@ internal static class NativeEngineHelpers
     public unsafe static string GetCSGODirectoryPath()
     {
         var ret = _GetCSGODirectoryPath(null);
-        var pool = ArrayPool<byte>.Shared;
-        var retBuffer = pool.Rent(ret + 1);
-        fixed (byte* retBufferPtr = retBuffer)
+        return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
         {
-            ret = _GetCSGODirectoryPath(retBufferPtr);
-            var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-            pool.Return(retBuffer);
-            return retString;
-        }
+            _ = _GetCSGODirectoryPath((byte*)retBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int> _GetGameDirectoryPath;
@@ -193,15 +144,10 @@ internal static class NativeEngineHelpers
     public unsafe static string GetGameDirectoryPath()
     {
         var ret = _GetGameDirectoryPath(null);
-        var pool = ArrayPool<byte>.Shared;
-        var retBuffer = pool.Rent(ret + 1);
-        fixed (byte* retBufferPtr = retBuffer)
+        return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
         {
-            ret = _GetGameDirectoryPath(retBufferPtr);
-            var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-            pool.Return(retBuffer);
-            return retString;
-        }
+            _ = _GetGameDirectoryPath((byte*)retBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int> _GetWorkshopId;
@@ -209,30 +155,19 @@ internal static class NativeEngineHelpers
     public unsafe static string GetWorkshopId()
     {
         var ret = _GetWorkshopId(null);
-        var pool = ArrayPool<byte>.Shared;
-        var retBuffer = pool.Rent(ret + 1);
-        fixed (byte* retBufferPtr = retBuffer)
+        return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
         {
-            ret = _GetWorkshopId(retBufferPtr);
-            var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-            pool.Return(retBuffer);
-            return retString;
-        }
+            _ = _GetWorkshopId((byte*)retBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, uint, nint, byte, nint, byte, int, ulong, void> _DispatchParticleEffect;
 
     public unsafe static void DispatchParticleEffect(string particleName, uint attachmentType, nint entity, byte attachmentPoint, nint attachmentName, bool resetAllParticlesOnEntity, int splitScreenSlot, ulong filtermask)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var particleNameLength = Encoding.UTF8.GetByteCount(particleName);
-        var particleNameBuffer = pool.Rent(particleNameLength + 1);
-        Encoding.UTF8.GetBytes(particleName, particleNameBuffer);
-        particleNameBuffer[particleNameLength] = 0;
-        fixed (byte* particleNameBufferPtr = particleNameBuffer)
+        StringAlloc.CreateCString(particleName, particleNameBufferPtr =>
         {
-            _DispatchParticleEffect(particleNameBufferPtr, attachmentType, entity, attachmentPoint, attachmentName, resetAllParticlesOnEntity ? (byte)1 : (byte)0, splitScreenSlot, filtermask);
-            pool.Return(particleNameBuffer);
-        }
+            _DispatchParticleEffect((byte*)particleNameBufferPtr, attachmentType, entity, attachmentPoint, attachmentName, resetAllParticlesOnEntity ? (byte)1 : (byte)0, splitScreenSlot, filtermask);
+        });
     }
 }

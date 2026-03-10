@@ -15,33 +15,21 @@ internal static class NativeOffsets
 
     public unsafe static bool Exists(string name)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var nameLength = Encoding.UTF8.GetByteCount(name);
-        var nameBuffer = pool.Rent(nameLength + 1);
-        Encoding.UTF8.GetBytes(name, nameBuffer);
-        nameBuffer[nameLength] = 0;
-        fixed (byte* nameBufferPtr = nameBuffer)
+        return StringAlloc.CreateCString(name, nameBufferPtr =>
         {
-            var ret = _Exists(nameBufferPtr);
-            pool.Return(nameBuffer);
+            var ret = _Exists((byte*)nameBufferPtr);
             return ret == 1;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int> _Fetch;
 
     public unsafe static int Fetch(string name)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var nameLength = Encoding.UTF8.GetByteCount(name);
-        var nameBuffer = pool.Rent(nameLength + 1);
-        Encoding.UTF8.GetBytes(name, nameBuffer);
-        nameBuffer[nameLength] = 0;
-        fixed (byte* nameBufferPtr = nameBuffer)
+        return StringAlloc.CreateCString(name, nameBufferPtr =>
         {
-            var ret = _Fetch(nameBufferPtr);
-            pool.Return(nameBuffer);
+            var ret = _Fetch((byte*)nameBufferPtr);
             return ret;
-        }
+        });
     }
 }

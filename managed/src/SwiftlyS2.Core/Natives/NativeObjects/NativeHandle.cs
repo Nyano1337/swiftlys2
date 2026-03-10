@@ -1,22 +1,22 @@
-using System.Numerics;
-using System.Runtime.CompilerServices;
 using SwiftlyS2.Shared.Natives;
 
 namespace SwiftlyS2.Core.Natives.NativeObjects;
 
-internal class NativeHandle : INativeHandle {
-  protected nint _Handle { get; set; }
+internal class NativeHandle : INativeHandle
+{
+    protected nint _Handle { get; set; }
 
-  public bool IsValid { get => _Handle != nint.Zero; }
+    public bool IsValid { get => _Handle != nint.Zero; }
 
-  public NativeHandle(nint handle) {
-    _Handle = handle;
-  }
+    public NativeHandle( nint handle )
+    {
+        _Handle = handle;
+    }
 
-  internal void DangerousSetHandle(nint ptr)
-  {
+    internal void DangerousSetHandle( nint ptr )
+    {
         _Handle = ptr;
-  }
+    }
 
-  public nint Address => _Handle;
+    public nint Address => _Handle;
 }

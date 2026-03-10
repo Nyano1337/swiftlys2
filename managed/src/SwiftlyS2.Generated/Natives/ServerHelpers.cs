@@ -16,15 +16,10 @@ internal static class NativeServerHelpers
     public unsafe static string GetServerLanguage()
     {
         var ret = _GetServerLanguage(null);
-        var pool = ArrayPool<byte>.Shared;
-        var retBuffer = pool.Rent(ret + 1);
-        fixed (byte* retBufferPtr = retBuffer)
+        return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
         {
-            ret = _GetServerLanguage(retBufferPtr);
-            var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-            pool.Return(retBuffer);
-            return retString;
-        }
+            _ = _GetServerLanguage((byte*)retBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<byte> _UsePlayerLanguage;

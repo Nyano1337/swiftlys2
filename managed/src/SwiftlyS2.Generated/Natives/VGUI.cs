@@ -37,16 +37,10 @@ internal static class NativeVGUI
 
     public unsafe static void ScreenTextSetText(ulong textid, string text)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var textLength = Encoding.UTF8.GetByteCount(text);
-        var textBuffer = pool.Rent(textLength + 1);
-        Encoding.UTF8.GetBytes(text, textBuffer);
-        textBuffer[textLength] = 0;
-        fixed (byte* textBufferPtr = textBuffer)
+        StringAlloc.CreateCString(text, textBufferPtr =>
         {
-            _ScreenTextSetText(textid, textBufferPtr);
-            pool.Return(textBuffer);
-        }
+            _ScreenTextSetText(textid, (byte*)textBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<ulong, Color, void> _ScreenTextSetColor;

@@ -253,7 +253,7 @@ internal class CoreHookService : IDisposable
                 return ( pWeaponServices, pPlayerWeapon, swapping ) =>
                 {
                     var weaponServices = core.Memory.ToSchemaClass<CCSPlayer_WeaponServices>(pWeaponServices);
-                    var playerWeapon = pPlayerWeapon != nint.Zero ? core.Memory.ToSchemaClass<CBasePlayerWeapon>(pPlayerWeapon) : null;
+                    var playerWeapon = pPlayerWeapon != nint.Zero ? EntityManager.GetEntityByAddress(pPlayerWeapon) as CBasePlayerWeapon ?? core.Memory.ToSchemaClass<CBasePlayerWeapon>(pPlayerWeapon) : null;
 
                     var @event = new OnWeaponServicesDropWeaponHook {
                         WeaponServices = weaponServices,
@@ -276,7 +276,7 @@ internal class CoreHookService : IDisposable
                 return ( pWeaponServices, pPlayerWeapon, swapping ) =>
                 {
                     var weaponServices = core.Memory.ToSchemaClass<CCSPlayer_WeaponServices>(pWeaponServices);
-                    var playerWeapon = pPlayerWeapon != nint.Zero ? core.Memory.ToSchemaClass<CBasePlayerWeapon>(pPlayerWeapon) : null;
+                    var playerWeapon = pPlayerWeapon != nint.Zero ? EntityManager.GetEntityByAddress(pPlayerWeapon) as CBasePlayerWeapon ?? core.Memory.ToSchemaClass<CBasePlayerWeapon>(pPlayerWeapon) : null;
 
                     var @event = new OnWeaponServicesDropWeaponHook {
                         WeaponServices = weaponServices,
@@ -403,7 +403,7 @@ internal class CoreHookService : IDisposable
                 var result = next()(pWeaponServices, pBasePlayerWeapon);
 
                 var weaponServices = core.Memory.ToSchemaClass<CCSPlayer_WeaponServices>(pWeaponServices);
-                var basePlayerWeapon = core.Memory.ToSchemaClass<CCSWeaponBase>(pBasePlayerWeapon);
+                var basePlayerWeapon = EntityManager.GetEntityByAddress(pBasePlayerWeapon) as CCSWeaponBase ?? core.Memory.ToSchemaClass<CCSWeaponBase>(pBasePlayerWeapon);
 
                 var @event = new OnWeaponServicesCanUseHookEvent {
                     WeaponServices = weaponServices,

@@ -37,17 +37,11 @@ internal static class NativeEntitySystem
 
     public unsafe static nint CreateEntityByName(string name)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var nameLength = Encoding.UTF8.GetByteCount(name);
-        var nameBuffer = pool.Rent(nameLength + 1);
-        Encoding.UTF8.GetBytes(name, nameBuffer);
-        nameBuffer[nameLength] = 0;
-        fixed (byte* nameBufferPtr = nameBuffer)
+        return StringAlloc.CreateCString(name, nameBufferPtr =>
         {
-            var ret = _CreateEntityByName(nameBufferPtr);
-            pool.Return(nameBuffer);
+            var ret = _CreateEntityByName((byte*)nameBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, byte*, nint, nint, nint, int, void> _AcceptInput;
@@ -58,16 +52,10 @@ internal static class NativeEntitySystem
         {
             throw new InvalidOperationException("This method can only be called from the main thread.");
         }
-        var pool = ArrayPool<byte>.Shared;
-        var inputLength = Encoding.UTF8.GetByteCount(input);
-        var inputBuffer = pool.Rent(inputLength + 1);
-        Encoding.UTF8.GetBytes(input, inputBuffer);
-        inputBuffer[inputLength] = 0;
-        fixed (byte* inputBufferPtr = inputBuffer)
+        StringAlloc.CreateCString(input, inputBufferPtr =>
         {
-            _AcceptInput(entity, inputBufferPtr, activator, caller, value, outputID);
-            pool.Return(inputBuffer);
-        }
+            _AcceptInput(entity, (byte*)inputBufferPtr, activator, caller, value, outputID);
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, byte*, nint, nint, nint, float, void> _AddEntityIOEvent;
@@ -78,16 +66,10 @@ internal static class NativeEntitySystem
         {
             throw new InvalidOperationException("This method can only be called from the main thread.");
         }
-        var pool = ArrayPool<byte>.Shared;
-        var inputLength = Encoding.UTF8.GetByteCount(input);
-        var inputBuffer = pool.Rent(inputLength + 1);
-        Encoding.UTF8.GetBytes(input, inputBuffer);
-        inputBuffer[inputLength] = 0;
-        fixed (byte* inputBufferPtr = inputBuffer)
+        StringAlloc.CreateCString(input, inputBufferPtr =>
         {
-            _AddEntityIOEvent(entity, inputBufferPtr, activator, caller, value, delay);
-            pool.Return(inputBuffer);
-        }
+            _AddEntityIOEvent(entity, (byte*)inputBufferPtr, activator, caller, value, delay);
+        });
     }
 
     private unsafe static delegate* unmanaged<nint, byte> _IsValidEntity;
@@ -153,25 +135,14 @@ internal static class NativeEntitySystem
     /// </summary>
     public unsafe static ulong HookEntityOutput(string className, string outputName, nint callback)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var classNameLength = Encoding.UTF8.GetByteCount(className);
-        var classNameBuffer = pool.Rent(classNameLength + 1);
-        Encoding.UTF8.GetBytes(className, classNameBuffer);
-        classNameBuffer[classNameLength] = 0;
-        var outputNameLength = Encoding.UTF8.GetByteCount(outputName);
-        var outputNameBuffer = pool.Rent(outputNameLength + 1);
-        Encoding.UTF8.GetBytes(outputName, outputNameBuffer);
-        outputNameBuffer[outputNameLength] = 0;
-        fixed (byte* classNameBufferPtr = classNameBuffer)
+        return StringAlloc.CreateCString(className, classNameBufferPtr =>
         {
-            fixed (byte* outputNameBufferPtr = outputNameBuffer)
+            return StringAlloc.CreateCString(outputName, outputNameBufferPtr =>
             {
-                var ret = _HookEntityOutput(classNameBufferPtr, outputNameBufferPtr, callback);
-                pool.Return(classNameBuffer);
-                pool.Return(outputNameBuffer);
+                var ret = _HookEntityOutput((byte*)classNameBufferPtr, (byte*)outputNameBufferPtr, callback);
                 return ret;
-            }
-        }
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<ulong, void> _UnhookEntityOutput;

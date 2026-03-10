@@ -67,17 +67,11 @@ internal static class NativeConsoleOutput
     /// </summary>
     public unsafe static bool NeedsFiltering(string text)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var textLength = Encoding.UTF8.GetByteCount(text);
-        var textBuffer = pool.Rent(textLength + 1);
-        Encoding.UTF8.GetBytes(text, textBuffer);
-        textBuffer[textLength] = 0;
-        fixed (byte* textBufferPtr = textBuffer)
+        return StringAlloc.CreateCString(text, textBufferPtr =>
         {
-            var ret = _NeedsFiltering(textBufferPtr);
-            pool.Return(textBuffer);
+            var ret = _NeedsFiltering((byte*)textBufferPtr);
             return ret == 1;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int> _GetCounterText;
@@ -88,14 +82,9 @@ internal static class NativeConsoleOutput
     public unsafe static string GetCounterText()
     {
         var ret = _GetCounterText(null);
-        var pool = ArrayPool<byte>.Shared;
-        var retBuffer = pool.Rent(ret + 1);
-        fixed (byte* retBufferPtr = retBuffer)
+        return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
         {
-            ret = _GetCounterText(retBufferPtr);
-            var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-            pool.Return(retBuffer);
-            return retString;
-        }
+            _ = _GetCounterText((byte*)retBufferPtr);
+        });
     }
 }

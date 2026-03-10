@@ -19,16 +19,10 @@ internal static class NativePlayer
         {
             throw new InvalidOperationException("This method can only be called from the main thread.");
         }
-        var pool = ArrayPool<byte>.Shared;
-        var messageLength = Encoding.UTF8.GetByteCount(message);
-        var messageBuffer = pool.Rent(messageLength + 1);
-        Encoding.UTF8.GetBytes(message, messageBuffer);
-        messageBuffer[messageLength] = 0;
-        fixed (byte* messageBufferPtr = messageBuffer)
+        StringAlloc.CreateCString(message, messageBufferPtr =>
         {
-            _SendMessage(playerid, kind, messageBufferPtr, htmlDuration);
-            pool.Return(messageBuffer);
-        }
+            _SendMessage(playerid, kind, (byte*)messageBufferPtr, htmlDuration);
+        });
     }
 
     private unsafe static delegate* unmanaged<int, byte> _IsFakeClient;
@@ -111,16 +105,10 @@ internal static class NativePlayer
         {
             throw new InvalidOperationException("This method can only be called from the main thread.");
         }
-        var pool = ArrayPool<byte>.Shared;
-        var commandLength = Encoding.UTF8.GetByteCount(command);
-        var commandBuffer = pool.Rent(commandLength + 1);
-        Encoding.UTF8.GetBytes(command, commandBuffer);
-        commandBuffer[commandLength] = 0;
-        fixed (byte* commandBufferPtr = commandBuffer)
+        StringAlloc.CreateCString(command, commandBufferPtr =>
         {
-            _PerformCommand(playerid, commandBufferPtr);
-            pool.Return(commandBuffer);
-        }
+            _PerformCommand(playerid, (byte*)commandBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, int, int> _GetIPAddress;
@@ -128,15 +116,10 @@ internal static class NativePlayer
     public unsafe static string GetIPAddress(int playerid)
     {
         var ret = _GetIPAddress(null, playerid);
-        var pool = ArrayPool<byte>.Shared;
-        var retBuffer = pool.Rent(ret + 1);
-        fixed (byte* retBufferPtr = retBuffer)
+        return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
         {
-            ret = _GetIPAddress(retBufferPtr, playerid);
-            var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-            pool.Return(retBuffer);
-            return retString;
-        }
+            _ = _GetIPAddress((byte*)retBufferPtr, playerid);
+        });
     }
 
     private unsafe static delegate* unmanaged<int, byte*, int, void> _Kick;
@@ -147,16 +130,10 @@ internal static class NativePlayer
         {
             throw new InvalidOperationException("This method can only be called from the main thread.");
         }
-        var pool = ArrayPool<byte>.Shared;
-        var reasonLength = Encoding.UTF8.GetByteCount(reason);
-        var reasonBuffer = pool.Rent(reasonLength + 1);
-        Encoding.UTF8.GetBytes(reason, reasonBuffer);
-        reasonBuffer[reasonLength] = 0;
-        fixed (byte* reasonBufferPtr = reasonBuffer)
+        StringAlloc.CreateCString(reason, reasonBufferPtr =>
         {
-            _Kick(playerid, reasonBufferPtr, gamereason);
-            pool.Return(reasonBuffer);
-        }
+            _Kick(playerid, (byte*)reasonBufferPtr, gamereason);
+        });
     }
 
     private unsafe static delegate* unmanaged<int, int, byte, void> _ShouldBlockTransmitEntity;
@@ -230,31 +207,20 @@ internal static class NativePlayer
     public unsafe static string GetLanguage(int playerid)
     {
         var ret = _GetLanguage(null, playerid);
-        var pool = ArrayPool<byte>.Shared;
-        var retBuffer = pool.Rent(ret + 1);
-        fixed (byte* retBufferPtr = retBuffer)
+        return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
         {
-            ret = _GetLanguage(retBufferPtr, playerid);
-            var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-            pool.Return(retBuffer);
-            return retString;
-        }
+            _ = _GetLanguage((byte*)retBufferPtr, playerid);
+        });
     }
 
     private unsafe static delegate* unmanaged<int, byte*, void> _SetCenterMenuRender;
 
     public unsafe static void SetCenterMenuRender(int playerid, string text)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var textLength = Encoding.UTF8.GetByteCount(text);
-        var textBuffer = pool.Rent(textLength + 1);
-        Encoding.UTF8.GetBytes(text, textBuffer);
-        textBuffer[textLength] = 0;
-        fixed (byte* textBufferPtr = textBuffer)
+        StringAlloc.CreateCString(text, textBufferPtr =>
         {
-            _SetCenterMenuRender(playerid, textBufferPtr);
-            pool.Return(textBuffer);
-        }
+            _SetCenterMenuRender(playerid, (byte*)textBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<int, void> _ClearCenterMenuRender;
@@ -280,16 +246,10 @@ internal static class NativePlayer
         {
             throw new InvalidOperationException("This method can only be called from the main thread.");
         }
-        var pool = ArrayPool<byte>.Shared;
-        var commandLength = Encoding.UTF8.GetByteCount(command);
-        var commandBuffer = pool.Rent(commandLength + 1);
-        Encoding.UTF8.GetBytes(command, commandBuffer);
-        commandBuffer[commandLength] = 0;
-        fixed (byte* commandBufferPtr = commandBuffer)
+        StringAlloc.CreateCString(command, commandBufferPtr =>
         {
-            _ExecuteCommand(playerid, commandBufferPtr);
-            pool.Return(commandBuffer);
-        }
+            _ExecuteCommand(playerid, (byte*)commandBufferPtr);
+        });
     }
 
     private unsafe static delegate* unmanaged<int, byte> _IsFirstSpawn;
@@ -321,14 +281,9 @@ internal static class NativePlayer
     public unsafe static string GetName(int playerid)
     {
         var ret = _GetName(null, playerid);
-        var pool = ArrayPool<byte>.Shared;
-        var retBuffer = pool.Rent(ret + 1);
-        fixed (byte* retBufferPtr = retBuffer)
+        return StringAlloc.CreateCSharpString(ret, retBufferPtr =>
         {
-            ret = _GetName(retBufferPtr, playerid);
-            var retString = Encoding.UTF8.GetString(retBufferPtr, ret);
-            pool.Return(retBuffer);
-            return retString;
-        }
+            _ = _GetName((byte*)retBufferPtr, playerid);
+        });
     }
 }

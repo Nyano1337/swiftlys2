@@ -22,17 +22,11 @@ internal static class NativeCommands
         {
             throw new InvalidOperationException("This method can only be called from the main thread.");
         }
-        var pool = ArrayPool<byte>.Shared;
-        var commandLength = Encoding.UTF8.GetByteCount(command);
-        var commandBuffer = pool.Rent(commandLength + 1);
-        Encoding.UTF8.GetBytes(command, commandBuffer);
-        commandBuffer[commandLength] = 0;
-        fixed (byte* commandBufferPtr = commandBuffer)
+        return StringAlloc.CreateCString(command, commandBufferPtr =>
         {
-            var ret = _HandleCommandForPlayer(playerid, commandBufferPtr);
-            pool.Return(commandBuffer);
+            var ret = _HandleCommandForPlayer(playerid, (byte*)commandBufferPtr);
             return ret;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, nint, byte, byte*, ulong> _RegisterCommand;
@@ -42,25 +36,14 @@ internal static class NativeCommands
     /// </summary>
     public unsafe static ulong RegisterCommand(string commandName, nint callback, bool registerRaw, string helpText)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var commandNameLength = Encoding.UTF8.GetByteCount(commandName);
-        var commandNameBuffer = pool.Rent(commandNameLength + 1);
-        Encoding.UTF8.GetBytes(commandName, commandNameBuffer);
-        commandNameBuffer[commandNameLength] = 0;
-        var helpTextLength = Encoding.UTF8.GetByteCount(helpText);
-        var helpTextBuffer = pool.Rent(helpTextLength + 1);
-        Encoding.UTF8.GetBytes(helpText, helpTextBuffer);
-        helpTextBuffer[helpTextLength] = 0;
-        fixed (byte* commandNameBufferPtr = commandNameBuffer)
+        return StringAlloc.CreateCString(commandName, commandNameBufferPtr =>
         {
-            fixed (byte* helpTextBufferPtr = helpTextBuffer)
+            return StringAlloc.CreateCString(helpText, helpTextBufferPtr =>
             {
-                var ret = _RegisterCommand(commandNameBufferPtr, callback, registerRaw ? (byte)1 : (byte)0, helpTextBufferPtr);
-                pool.Return(commandNameBuffer);
-                pool.Return(helpTextBuffer);
+                var ret = _RegisterCommand((byte*)commandNameBufferPtr, callback, registerRaw ? (byte)1 : (byte)0, (byte*)helpTextBufferPtr);
                 return ret;
-            }
-        }
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<ulong, void> _UnregisterCommand;
@@ -74,17 +57,11 @@ internal static class NativeCommands
 
     public unsafe static bool IsCommandRegistered(string commandName)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var commandNameLength = Encoding.UTF8.GetByteCount(commandName);
-        var commandNameBuffer = pool.Rent(commandNameLength + 1);
-        Encoding.UTF8.GetBytes(commandName, commandNameBuffer);
-        commandNameBuffer[commandNameLength] = 0;
-        fixed (byte* commandNameBufferPtr = commandNameBuffer)
+        return StringAlloc.CreateCString(commandName, commandNameBufferPtr =>
         {
-            var ret = _IsCommandRegistered(commandNameBufferPtr);
-            pool.Return(commandNameBuffer);
+            var ret = _IsCommandRegistered((byte*)commandNameBufferPtr);
             return ret == 1;
-        }
+        });
     }
 
     private unsafe static delegate* unmanaged<byte*, byte*, byte, ulong> _RegisterAlias;
@@ -94,25 +71,14 @@ internal static class NativeCommands
     /// </summary>
     public unsafe static ulong RegisterAlias(string aliasName, string commandName, bool registerRaw)
     {
-        var pool = ArrayPool<byte>.Shared;
-        var aliasNameLength = Encoding.UTF8.GetByteCount(aliasName);
-        var aliasNameBuffer = pool.Rent(aliasNameLength + 1);
-        Encoding.UTF8.GetBytes(aliasName, aliasNameBuffer);
-        aliasNameBuffer[aliasNameLength] = 0;
-        var commandNameLength = Encoding.UTF8.GetByteCount(commandName);
-        var commandNameBuffer = pool.Rent(commandNameLength + 1);
-        Encoding.UTF8.GetBytes(commandName, commandNameBuffer);
-        commandNameBuffer[commandNameLength] = 0;
-        fixed (byte* aliasNameBufferPtr = aliasNameBuffer)
+        return StringAlloc.CreateCString(aliasName, aliasNameBufferPtr =>
         {
-            fixed (byte* commandNameBufferPtr = commandNameBuffer)
+            return StringAlloc.CreateCString(commandName, commandNameBufferPtr =>
             {
-                var ret = _RegisterAlias(aliasNameBufferPtr, commandNameBufferPtr, registerRaw ? (byte)1 : (byte)0);
-                pool.Return(aliasNameBuffer);
-                pool.Return(commandNameBuffer);
+                var ret = _RegisterAlias((byte*)aliasNameBufferPtr, (byte*)commandNameBufferPtr, registerRaw ? (byte)1 : (byte)0);
                 return ret;
-            }
-        }
+            });
+        });
     }
 
     private unsafe static delegate* unmanaged<ulong, void> _UnregisterAlias;
