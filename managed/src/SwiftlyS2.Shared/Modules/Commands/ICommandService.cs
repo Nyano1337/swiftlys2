@@ -98,4 +98,22 @@ public interface ICommandService
     /// </summary>
     /// <param name="guid">The guid of the client chat.</param>
     public void UnhookClientChat( Guid guid );
+
+    /// <summary>
+    /// Gets all registered commands by both plugins and the game.
+    /// </summary>
+    public List<string> GetAllCommands();
+
+    /// <summary>
+    /// Gets all commands registered by a specific plugin.
+    /// </summary>
+    /// <param name="pluginName">The name of the plugin.</param>
+    /// <returns>List of command information registered by the plugin.</returns>
+    public List<CommandInfo> GetCommandsByPlugin( string pluginName );
+
+    /// <summary>
+    /// Gets all plugins that have registered commands.
+    /// </summary>
+    /// <returns>Dictionary mapping plugin names to their registered command information.</returns>
+    public Dictionary<string, List<CommandInfo>> GetAllCommandsByPlugin();
 }

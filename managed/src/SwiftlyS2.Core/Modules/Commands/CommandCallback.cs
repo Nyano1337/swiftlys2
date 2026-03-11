@@ -16,13 +16,15 @@ internal delegate HookResult ClientChatListenerCallbackDelegate( int playerId, n
 internal abstract class CommandCallbackBase : IDisposable
 {
     public Guid Guid { get; protected init; }
+    public string PluginName { get; protected init; }
     public IContextedProfilerService Profiler { get; }
     public ILoggerFactory LoggerFactory { get; }
 
-    protected CommandCallbackBase( ILoggerFactory loggerFactory, IContextedProfilerService profiler )
+    protected CommandCallbackBase( ILoggerFactory loggerFactory, IContextedProfilerService profiler, string pluginName )
     {
         LoggerFactory = loggerFactory;
         Profiler = profiler;
+        PluginName = pluginName;
     }
 
     public abstract void Dispose();
@@ -31,23 +33,27 @@ internal abstract class CommandCallbackBase : IDisposable
 internal class CommandCallback : CommandCallbackBase
 {
     public string CommandName { get; protected init; }
+    public bool RegisterRaw { get; protected init; }
+    public string Permission { get; protected init; }
+    public string HelpText { get; protected init; }
 
     private readonly ICommandService.CommandListener commandHandle;
     private readonly CommandCallbackDelegate commandCallback;
 
     private readonly nint commandCallbackPtr;
-    private readonly string commandPermissions;
     private readonly ulong nativeListenerId;
     private readonly ILogger<CommandCallback> logger;
 
-    public CommandCallback( string commandName, bool registerRaw, ICommandService.CommandListener handler, string permission, string helpText, IPlayerManagerService playerManagerService, IPermissionManager permissionManager, ILoggerFactory loggerFactory, IContextedProfilerService profiler ) : base(loggerFactory, profiler)
+    public CommandCallback( string commandName, bool registerRaw, ICommandService.CommandListener handler, string permission, string helpText, IPlayerManagerService playerManagerService, IPermissionManager permissionManager, ILoggerFactory loggerFactory, IContextedProfilerService profiler, string pluginName ) : base(loggerFactory, profiler, pluginName)
     {
         this.logger = LoggerFactory.CreateLogger<CommandCallback>();
 
         Guid = Guid.NewGuid();
 
         CommandName = commandName;
-        commandPermissions = permission;
+        RegisterRaw = registerRaw;
+        Permission = permission;
+        HelpText = helpText;
         commandHandle = handler;
         commandCallback = ( playerId, argsPtr, commandNamePtr, prefixPtr, slient ) =>
         {
@@ -62,7 +68,7 @@ internal class CommandCallback : CommandCallbackBase
                 var args = argsString.Split('\x01').ToArray();
                 if (args.Length < 2) args = [.. args.Where(s => !string.IsNullOrWhiteSpace(s))];
                 var context = new CommandContext(playerId, args, commandNameString, prefixString, slient == 1);
-                if (!context.IsSentByPlayer || string.IsNullOrWhiteSpace(commandPermissions) || permissionManager.PlayerHasPermission(playerManagerService.GetPlayer(playerId)?.SteamID ?? 0, commandPermissions))
+                if (!context.IsSentByPlayer || string.IsNullOrWhiteSpace(Permission) || permissionManager.PlayerHasPermission(playerManagerService.GetPlayer(playerId)?.SteamID ?? 0, Permission))
                 {
                     commandHandle(context);
                 }
@@ -97,7 +103,7 @@ internal class ClientCommandListenerCallback : CommandCallbackBase
     private readonly ulong nativeListenerId;
     private readonly ILogger<ClientCommandListenerCallback> logger;
 
-    public ClientCommandListenerCallback( ICommandService.ClientCommandHandler handler, ILoggerFactory loggerFactory, IContextedProfilerService profiler ) : base(loggerFactory, profiler)
+    public ClientCommandListenerCallback( ICommandService.ClientCommandHandler handler, ILoggerFactory loggerFactory, IContextedProfilerService profiler, string pluginName ) : base(loggerFactory, profiler, pluginName)
     {
         logger = LoggerFactory.CreateLogger<ClientCommandListenerCallback>();
         Guid = Guid.NewGuid();
@@ -140,7 +146,7 @@ internal class ClientChatListenerCallback : CommandCallbackBase
     private readonly ulong nativeListenerId;
     private readonly ILogger<ClientChatListenerCallback> logger;
 
-    public ClientChatListenerCallback( ICommandService.ClientChatHandler handler, ILoggerFactory loggerFactory, IContextedProfilerService profiler ) : base(loggerFactory, profiler)
+    public ClientChatListenerCallback( ICommandService.ClientChatHandler handler, ILoggerFactory loggerFactory, IContextedProfilerService profiler, string pluginName ) : base(loggerFactory, profiler, pluginName)
     {
         logger = LoggerFactory.CreateLogger<ClientChatListenerCallback>();
         Guid = Guid.NewGuid();
