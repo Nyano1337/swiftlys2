@@ -1,4 +1,5 @@
-﻿using SwiftlyS2.Shared.SchemaDefinitions;
+﻿using SwiftlyS2.Core.EntitySystem;
+using SwiftlyS2.Shared.SchemaDefinitions;
 using System.Runtime.InteropServices;
 
 namespace SwiftlyS2.Shared.Natives;
@@ -60,10 +61,11 @@ internal static class CTraceFilterVTable
     [UnmanagedCallersOnly]
     public unsafe static byte ShouldHitEntity( CTraceFilter* filter, nint entity )
     {
-        var ent = Helper.AsSchema<CBaseEntity>(entity);
-        if (ent == null || !ent.IsValid) return 0;
+        var ent = EntityManager.GetEntityByAddress(entity) as CBaseEntity ?? Helper.AsSchema<CBaseEntity>(entity);
 
-        return filter->QueryShapeAttributes.EntityIdsToIgnore[0] != ent.Index && filter->QueryShapeAttributes.EntityIdsToIgnore[1] != ent.Index ? (byte)1 : (byte)0;
+        return ent == null || !ent.IsValid
+            ? (byte)0
+            : filter->QueryShapeAttributes.EntityIdsToIgnore[0] != ent.Index && filter->QueryShapeAttributes.EntityIdsToIgnore[1] != ent.Index ? (byte)1 : (byte)0;
     }
 
     static unsafe CTraceFilterVTable()
