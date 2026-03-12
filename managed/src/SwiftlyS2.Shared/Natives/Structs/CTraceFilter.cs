@@ -46,7 +46,13 @@ internal static class CTraceFilterVTable
     }
 
     [UnmanagedCallersOnly]
-    public unsafe static byte ShouldHitEntity()
+    public unsafe static nint SomeLinuxFunction( CTraceFilter* filter )
+    {
+        return 0;
+    }
+
+    [UnmanagedCallersOnly]
+    public static byte ShouldHitEntity()
     {
         return 1;
     }
@@ -62,14 +68,31 @@ internal static class CTraceFilterVTable
 
     static unsafe CTraceFilterVTable()
     {
-        pCTraceFilterVTable = Marshal.AllocHGlobal(sizeof(nint) * 2);
-        Span<nint> vtable = new((void*)pCTraceFilterVTable, 2);
-        vtable[0] = (nint)(delegate* unmanaged< CTraceFilter*, byte, void >)(&Destructor);
-        vtable[1] = (nint)(delegate* unmanaged< byte >)(&ShouldHitEntity);
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            pCTraceFilterVTable = Marshal.AllocHGlobal(sizeof(nint) * 2);
+            Span<nint> vtable = new((void*)pCTraceFilterVTable, 2);
+            vtable[0] = (nint)(delegate* unmanaged< CTraceFilter*, byte, void >)(&Destructor);
+            vtable[1] = (nint)(delegate* unmanaged< byte >)(&ShouldHitEntity);
 
-        pCTraceFilterShouldHitFunctionCall = Marshal.AllocHGlobal(sizeof(nint) * 2);
-        Span<nint> funcTable = new((void*)pCTraceFilterShouldHitFunctionCall, 2);
-        funcTable[0] = (nint)(delegate* unmanaged< CTraceFilter*, byte, void >)(&Destructor);
-        funcTable[1] = (nint)(delegate* unmanaged< CTraceFilter*, nint, byte >)(&ShouldHitEntity);
+            pCTraceFilterShouldHitFunctionCall = Marshal.AllocHGlobal(sizeof(nint) * 2);
+            Span<nint> funcTable = new((void*)pCTraceFilterShouldHitFunctionCall, 2);
+            funcTable[0] = (nint)(delegate* unmanaged< CTraceFilter*, byte, void >)(&Destructor);
+            funcTable[1] = (nint)(delegate* unmanaged< CTraceFilter*, nint, byte >)(&ShouldHitEntity);
+        }
+        else
+        {
+            pCTraceFilterVTable = Marshal.AllocHGlobal(sizeof(nint) * 3);
+            Span<nint> vtable = new((void*)pCTraceFilterVTable, 3);
+            vtable[0] = (nint)(delegate* unmanaged< CTraceFilter*, byte, void >)(&Destructor);
+            vtable[1] = (nint)(delegate* unmanaged< CTraceFilter*, nint >)(&SomeLinuxFunction);
+            vtable[2] = (nint)(delegate* unmanaged< byte >)(&ShouldHitEntity);
+
+            pCTraceFilterShouldHitFunctionCall = Marshal.AllocHGlobal(sizeof(nint) * 3);
+            Span<nint> funcTable = new((void*)pCTraceFilterShouldHitFunctionCall, 3);
+            funcTable[0] = (nint)(delegate* unmanaged< CTraceFilter*, byte, void >)(&Destructor);
+            funcTable[1] = (nint)(delegate* unmanaged< CTraceFilter*, nint >)(&SomeLinuxFunction);
+            funcTable[2] = (nint)(delegate* unmanaged< CTraceFilter*, nint, byte >)(&ShouldHitEntity);
+        }
     }
 }
