@@ -1,6 +1,7 @@
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using SwiftlyS2.Core.EntitySystem;
 using SwiftlyS2.Shared.SchemaDefinitions;
-using System.Runtime.InteropServices;
 
 namespace SwiftlyS2.Shared.Natives;
 
@@ -75,6 +76,11 @@ public unsafe struct CTraceFilter : IDisposable
         }
     }
 
+    public bool ShouldIgnoreEntity( CEntityInstance ent )
+    {
+        return ent == null || !ent.IsValid || QueryShapeAttributes.EntityIdsToIgnore[0] == ent.Index || QueryShapeAttributes.EntityIdsToIgnore[1] == ent.Index;
+    }
+
     public void Dispose()
     {
         if (_pVTable != null)
@@ -82,6 +88,28 @@ public unsafe struct CTraceFilter : IDisposable
             NativeMemory.Free(_pVTable);
             _pVTable = null;
         }
+    }
+}
+
+[StructLayout(LayoutKind.Explicit)]
+internal struct CTraceFilterCustom
+{
+    [FieldOffset(0)]
+    internal CTraceFilter Data;
+
+    [FieldOffset(72)]
+    internal bool CheckIgnoredEntities;
+
+    [FieldOffset(80)]
+    internal Func<CEntityInstance, bool>? Callback = null;
+
+    public CTraceFilterCustom() : this(true) { }
+
+    public CTraceFilterCustom( bool checkIgnoredEntities )
+    {
+        CheckIgnoredEntities = checkIgnoredEntities;
+        Data = new CTraceFilter(checkIgnoredEntities);
+        unsafe { Data.ShouldHitEntity = &CTraceFilterVTable.ShouldHitEntity_Custom; }
     }
 }
 
@@ -122,8 +150,21 @@ internal unsafe struct CTraceFilterVTable
     {
         var ent = EntityManager.GetEntityByAddress(entity) as CBaseEntity ?? Helper.AsSchema<CBaseEntity>(entity);
 
-        return ent == null || !ent.IsValid
-            ? (byte)0
-            : filter->QueryShapeAttributes.EntityIdsToIgnore[0] != ent.Index && filter->QueryShapeAttributes.EntityIdsToIgnore[1] != ent.Index ? (byte)1 : (byte)0;
+        return filter->ShouldIgnoreEntity(ent) ? (byte)0 : (byte)1;
+    }
+
+    [UnmanagedCallersOnly]
+    internal static byte ShouldHitEntity_Custom( CTraceFilter* filter, nint entity )
+    {
+        var ent = EntityManager.GetEntityByAddress(entity) as CBaseEntity ?? Helper.AsSchema<CBaseEntity>(entity);
+        var customFilter = Unsafe.AsRef<CTraceFilterCustom>(filter);
+        var hit = !customFilter.CheckIgnoredEntities || !customFilter.Data.ShouldIgnoreEntity(ent);
+
+        if (hit && customFilter.Callback != null)
+        {
+            hit = customFilter.Callback!.Invoke(ent);
+        }
+
+        return hit ? (byte)1 : (byte)0;
     }
 }

@@ -1449,21 +1449,15 @@ public class TestPlugin : BasePlugin
         var trace = new CGameTrace();
         Core.Trace.TracePlayerBBox(start, end, bbox, filter, ref trace);
 
-        unsafe
-        {
-            [UnmanagedCallersOnly]
-            static byte Callback( CTraceFilter* filter, nint ent )
+        using var filter2 = new ManagedCTraceFilter() {
+            IterateEntities = true,
+            ShouldHitEntity = (ent) =>
             {
-                return 1;
+                return true;
             }
+        };
 
-            using var filter2 = new ManagedCTraceFilter() {
-                IterateEntities = true,
-                ShouldHitEntity = &Callback
-            };
-
-            Core.Trace.TracePlayerBBox(start, end, bbox, filter2, ref trace);
-        }
+        Core.Trace.TracePlayerBBox(start, end, bbox, filter2, ref trace);
     }
 
     [Command("los")]
