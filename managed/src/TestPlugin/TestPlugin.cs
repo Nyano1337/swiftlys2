@@ -770,7 +770,7 @@ public class TestPlugin : BasePlugin
         Ray_t ray = new();
         ray.Init(Vector.Zero, Vector.Zero);
 
-        var filter = new CTraceFilter {
+        using var filter = new ManagedCTraceFilter {
             // unk01 = 1,
             IterateEntities = true,
             QueryShapeAttributes = new RnQueryShapeAttr_t {
@@ -1429,6 +1429,41 @@ public class TestPlugin : BasePlugin
             .ToList()
             .FirstOrDefault()
             ?.Teleport(player.PlayerPawn!.AbsOrigin!.Value, player.PlayerPawn!.EyeAngles, Vector.Zero);
+    }
+
+    [Command("ttbbox")]
+    public void TestTraceBBox( ICommandContext context )
+    {
+        var player = context.Sender;
+        var pawn = player?.Pawn;
+        var start = (Vector)pawn?.AbsOrigin!;
+        var end = (Vector)pawn?.AbsOrigin!;
+        var bbox = new BBox_t() {
+            Mins = new Vector(-16.0f, -16.0f, 0.0f),
+            Maxs = new Vector(16.0f, 16.0f, 72.0f)
+        };
+
+        using var filter = new ManagedCTraceFilter() {
+            IterateEntities = true,
+        };
+        var trace = new CGameTrace();
+        Core.Trace.TracePlayerBBox(start, end, bbox, filter, ref trace);
+
+        unsafe
+        {
+            [UnmanagedCallersOnly]
+            static byte Callback( CTraceFilter* filter, nint ent )
+            {
+                return 1;
+            }
+
+            using var filter2 = new ManagedCTraceFilter() {
+                IterateEntities = true,
+                ShouldHitEntity = &Callback
+            };
+
+            Core.Trace.TracePlayerBBox(start, end, bbox, filter2, ref trace);
+        }
     }
 
     [Command("los")]
