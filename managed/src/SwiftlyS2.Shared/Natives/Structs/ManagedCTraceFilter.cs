@@ -7,6 +7,7 @@ public class ManagedCTraceFilter : IDisposable
     private CTraceFilterCustom _filter;
     private bool _disposed;
 
+    /// <inheritdoc cref="CTraceFilter.IterateEntities"/>
     public bool IterateEntities {
         set { _filter.Data.IterateEntities = value; }
     }

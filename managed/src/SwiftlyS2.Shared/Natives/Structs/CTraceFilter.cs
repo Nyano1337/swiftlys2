@@ -24,6 +24,10 @@ public unsafe struct CTraceFilter : IDisposable
     [MarshalAs(UnmanagedType.U1)]
     private bool _IterateEntities_Win;
 
+    /// <summary>
+    /// If true then calls ShouldHitEntity for each hit entity.
+    /// <para>Default value: <see langword="true"/></para>
+    /// </summary>
     public bool IterateEntities {
         readonly get => IsWindows ? _IterateEntities_Win : _IterateEntities_Linux;
         set {
@@ -56,6 +60,8 @@ public unsafe struct CTraceFilter : IDisposable
         EnsureValid();
         ShouldHitEntity = checkIgnoredEntities ? &CTraceFilterVTable.ShouldHitEntity_CheckIgnoredEntities : &CTraceFilterVTable.ShouldHitEntity_Always;
         QueryShapeAttributes = new RnQueryShapeAttr_t();
+
+        IterateEntities = true;
     }
 
     public void EnsureValid()
