@@ -58,9 +58,9 @@ public unsafe struct CTraceFilter : IDisposable
     public CTraceFilter( bool checkIgnoredEntities )
     {
         EnsureValid();
+
         ShouldHitEntity = checkIgnoredEntities ? &CTraceFilterVTable.ShouldHitEntity_CheckIgnoredEntities : &CTraceFilterVTable.ShouldHitEntity_Always;
         QueryShapeAttributes = new RnQueryShapeAttr_t();
-
         IterateEntities = true;
     }
 
